@@ -11,7 +11,7 @@ resource "aws_codebuild_project" "deploy_project" {
     privileged_mode = false
 
     environment_variable {
-      name  = "WEBSITE_BUCKET"
+      name  = "WEBSITE_BUCKET_NAME"
       value = local.website_bucket
     }
   }
