@@ -11,7 +11,7 @@ resource "aws_codebuild_project" "deploy_project" {
     privileged_mode = false
 
     environment_variable {
-      name  = "WEBSITE_BUCKET"
+      name  = "WEBSITE_BUCKET_NAME"
       value = local.website_bucket
     }
   }
@@ -47,18 +47,6 @@ resource "aws_codebuild_webhook" "this_webhook" {
 
     filter {
       type    = "HEAD_REF"
-      pattern = "^refs/heads/develop"
-    }
-  }
-
-  filter_group {
-    filter {
-      type    = "EVENT"
-      pattern = "PULL_REQUEST_MERGED"
-    }
-
-    filter {
-      type    = "BASE_REF"
       pattern = "^refs/heads/develop"
     }
   }
