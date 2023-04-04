@@ -1,0 +1,23 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+
+  pre_build:
+    commands:
+      # Install node dependencies
+      - npm install
+  build:
+    commands:
+      # Build/Package the website files
+      - npm run build
+      # Copy files to S3 static site bucket
+      - cd dist/
+      - aws s3 sync . s3://${WEBSITE_BUCKET_NAME} --exclude ".*"
+      # Invalidate CloudFront cache to reflect changes
+      - aws cloudfront create-invalidation --distribution-id E2RUBT7UINOTJP --paths "/*"
