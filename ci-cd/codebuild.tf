@@ -50,18 +50,6 @@ resource "aws_codebuild_webhook" "this_webhook" {
       pattern = "^refs/heads/develop"
     }
   }
-
-  filter_group {
-    filter {
-      type    = "EVENT"
-      pattern = "PULL_REQUEST_MERGED"
-    }
-
-    filter {
-      type    = "BASE_REF"
-      pattern = "^refs/heads/develop"
-    }
-  }
 }
 
 data "aws_iam_policy_document" "trust_policy_document_codebuild" {
