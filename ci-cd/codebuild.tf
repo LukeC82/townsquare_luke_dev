@@ -14,6 +14,12 @@ resource "aws_codebuild_project" "deploy_project" {
       name  = "WEBSITE_BUCKET_NAME"
       value = local.website_bucket
     }
+
+    environment_variable {
+      name  = "CLOUDFRONT_DISTRIBUTION"
+      value = local.cloudfront_distribution
+    }
+
   }
 
   source {

@@ -20,4 +20,4 @@ phases:
       - cd dist/
       - aws s3 sync . s3://${WEBSITE_BUCKET_NAME} --exclude ".*"
       # Invalidate CloudFront cache to reflect changes
-      - aws cloudfront create-invalidation --distribution-id E2RUBT7UINOTJP --paths "/*"
+      - aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DISTRIBUTION}" --paths "/*"
