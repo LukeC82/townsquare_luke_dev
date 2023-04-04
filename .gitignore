@@ -3,6 +3,7 @@ dist
 
 # Local .terraform directories
 **/*.terraform
+**/secrets.auto.tfvars
 
 # .tfstate files
 townsquare/**/*.tfstate

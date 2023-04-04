@@ -1,6 +1,6 @@
 # Townsquare Infra
-Terraform infrstructure as code to spin up a static hosted website in AWS using
-CloudFront, S3 and Route53.
+Terraform infrstructure as code to spin up a CodeBuild job to deploy any code changes
+merged or pushed to the develop branch.
 
 ## Requirements
 
@@ -19,7 +19,7 @@ CloudFront, S3 and Route53.
         Default output format [json]: json
 * Change into the terraform directory:
 
-        cd infra
+        cd cd-cd
 
 * Apply the terraform
 
