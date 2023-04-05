@@ -137,6 +137,17 @@ data "aws_iam_policy_document" "codebuild_policy_statement" {
   }
 
   statement {
+    sid    = "AllowCloudFrontCacheRefresh"
+    effect = "Allow"
+    actions = [
+      "cloudfront:CreateInvalidation"
+    ]
+    resources = [
+      "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${local.cloudfront_distribution}"
+    ]
+  }
+
+  statement {
     sid    = "IAM"
     effect = "Allow"
     actions = [
