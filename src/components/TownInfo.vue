@@ -67,6 +67,10 @@
         Night phase
         <font-awesome-icon :icon="['fas', 'cloud-moon']" />
       </span>
+      <span v-if="grimoire.isHiddenVoting">
+        Hidden Voting
+        <font-awesome-icon :icon="['fas', 'eye-slash']" />
+      </span>
     </li>
   </ul>
 </template>

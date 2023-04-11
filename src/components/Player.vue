@@ -10,7 +10,8 @@
           'no-vote': player.isVoteless,
           you: session.sessionId && player.id && player.id === session.playerId,
           'vote-yes': session.votes[index],
-          'vote-lock': voteLocked
+          'vote-lock': voteLocked,
+          'hidden-voting': grimoire.isHiddenVoting
         },
         player.role.team
       ]"
@@ -52,6 +53,12 @@
         />
         <font-awesome-icon
           icon="times"
+          class="vote"
+          title="Hand DOWN"
+          @click="vote()"
+        />
+        <font-awesome-icon
+          icon="eye-slash"
           class="vote"
           title="Hand DOWN"
           @click="vote()"
@@ -556,6 +563,9 @@ export default {
     &.fa-times * {
       fill: url(#townsfolk);
     }
+    &.fa-eye-slash * {
+      fill: rgb(21, 39, 20);
+    }
   }
 }
 
@@ -565,10 +575,17 @@ export default {
   transform: scale(1);
 }
 
-// you voted yes | a locked vote yes | a locked vote no
+// you voted yes | a locked vote yes | a locked vote no (hidden & not hidden)
 #townsquare.vote .player.you.vote-yes .overlay svg.vote.fa-hand-paper,
 #townsquare.vote .player.vote-lock.vote-yes .overlay svg.vote.fa-hand-paper,
-#townsquare.vote .player.vote-lock:not(.vote-yes) .overlay svg.vote.fa-times {
+#townsquare.vote
+  .player.vote-lock:not(.vote-yes):not(.hidden-voting)
+  .overlay
+  svg.vote.fa-times,
+#townsquare.vote
+  .player.vote-lock:not(.vote-yes).hidden-voting
+  .overlay
+  svg.vote.fa-eye-slash {
   opacity: 1;
   transform: scale(1);
 }

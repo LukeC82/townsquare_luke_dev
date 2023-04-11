@@ -71,15 +71,19 @@ Commit messages should be verbose enough to allow someone else to follow your ch
 
 ### Commonly used NPM scripts
 
-``` bash
-# watch and auto re-build dist/
-$ npm run serve
+``` bash\GitbBash
+$ export NODE_OPTIONS=--openssl-legacy-provider
 
 # build all dist files, including npm packages
 $ npm run build
 
 # run linting scripts
 $ npm run lint
+
+# watch and auto re-build dist/
+# optionally add --fix to correct any minor build warnings
+$ npm run serve
+
 ```
 
 ## Project Structure

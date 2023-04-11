@@ -1,7 +1,16 @@
 # Release Notes
 
+### Version 2.16.2
+- added the Organ Grinder character (minion)
+- added support for Hidden Voting as a grimoire gamestate (by @LukeC82)
+-- missing: alllow the ST to override a hidden vote & only update target player
+- amended the custom script list (hosted at https://gist.github.com/LukeC82)
+- jinx and character changes for the Lleech
+
+---
+
 ### Version 2.16.1
-Updated character night order to be consistent with script tool
+- Updated character night order to be consistent with script tool
 
 ---
 
