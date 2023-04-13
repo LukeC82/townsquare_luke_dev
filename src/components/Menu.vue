@@ -58,6 +58,11 @@
             <template v-if="grimoire.isNight">Switch to Day</template>
             <em>[S]</em>
           </li>
+          <li @click="toggleHiddenVoting" v-if="!session.isSpectator">
+            <template v-if="!grimoire.isHiddenVoting">Hide Voting</template>
+            <template v-if="grimoire.isHiddenVoting">Show Voting</template>
+            <em>[H]</em>
+          </li>
           <li @click="toggleNightOrder" v-if="players.length">
             Night order
             <em>
@@ -122,7 +127,7 @@
             Live Session
           </li>
           <template v-if="!session.sessionId">
-            <li @click="hostSession">Host (Storyteller)<em>[H]</em></li>
+            <li @click="hostSession">Host (Storyteller)<em>[O]</em></li>
             <li @click="joinSession">Join (Player)<em>[J]</em></li>
           </template>
           <template v-else>
@@ -340,9 +345,34 @@ export default {
       }
     },
     toggleNight() {
-      this.$store.commit("toggleNight");
-      if (this.grimoire.isNight) {
-        this.$store.commit("session/setMarkedPlayer", -1);
+      //Prompt the ST if they switch directly from Hidden Voting to Night
+      //If it's already hidden voting, it's not Night.
+      if (this.grimoire.isHiddenVoting) {
+        if (this.grimoire.isNight) {
+          this.$store.commit("toggleNight");
+        } else {
+          if (confirm("Are you sure you want to un-hide voting?")) {
+            this.$store.commit("toggleHiddenVoting");
+            this.$store.commit("toggleNight");
+            this.$store.commit("session/setMarkedPlayer", -1);
+          }
+        }
+      } else {
+        this.$store.commit("toggleNight");
+        if (this.grimoire.isNight) {
+          this.$store.commit("session/setMarkedPlayer", -1);
+        }
+      }
+    },
+    toggleHiddenVoting() {
+      if (this.grimoire.isHiddenVoting) {
+        if (confirm("Are you sure you want to un-hide voting?")) {
+          this.$store.commit("toggleHiddenVoting");
+        }
+      } else {
+        //Hidden voting ends the night
+        this.$store.commit("toggleHiddenVoting");
+        this.$store.commit("toggleNight", false);
       }
     },
     ...mapMutations([

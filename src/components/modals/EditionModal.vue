@@ -95,12 +95,16 @@ export default {
       isCustom: false,
       scripts: [
         [
-          "Deadly Penance Day",
-          "https://gist.githubusercontent.com/bra1n/0337cc44c6fd2c44f7589256ed5486d2/raw/16be38fa3c01aaf49827303ac80577bdb52c0b25/penanceday.json"
+          "House of Madness",
+          "https://gist.githubusercontent.com/LukeC82/72a23aa50dcb035ad251b4c8e4dd3ad4/raw/d48c2c65b03455f1872cc221fe66406926f4e16f/House_of_Madness_v1.json"
         ],
         [
-          "Catfishing 11.1",
-          "https://gist.githubusercontent.com/bra1n/8a5ec41a7bbf945f6b7dfc1cef72b569/raw/a312ab93c2f302e0ef83c8b65a4e8e82760fda3a/catfishing.json"
+          "Lunar Eclipse v1.6",
+          "https://gist.githubusercontent.com/LukeC82/bbd4324a334e38bf2a78dfd5c36bedc4/raw/89c8189a883727c91ac1d644ac9944cb02b382b8/Lunar_Eclipse_v1.6.json"
+        ],
+        [
+          "Brainworms v1.1",
+          "https://gist.githubusercontent.com/LukeC82/24a9b4af13f0e8b82dccb84b0a6f46c7/raw/b208fdc1943c9e2f48ce41de3d672586032f1cf8/Brain_Worms_v1.1.json"
         ],
         [
           "On Thin Ice (Teensyville)",

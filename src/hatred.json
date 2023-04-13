@@ -361,7 +361,7 @@
     "hatred": [
       {
         "id": "Mastermind",
-        "reason": "If the Mastermind is alive and the Lleech's host dies by execution, the Lleech lives but loses their ability. "
+        "reason": "If the Lleech's host dies by execution (ending the game), the Lleech lives but loses their ability & play for 1 more day. If a player is then executed their team loses, or at dusk the Lleech's team loses."
       },
       {
         "id": "Slayer",

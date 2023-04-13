@@ -5,7 +5,8 @@
     tabindex="-1"
     :class="{
       night: grimoire.isNight,
-      static: grimoire.isStatic
+      static: grimoire.isStatic,
+      voting: grimoire.isHiddenVoting
     }"
     :style="{
       backgroundImage: grimoire.background
@@ -21,6 +22,7 @@
       loop
     ></video>
     <div class="backdrop"></div>
+    <div class="diseasecloud"></div>
     <transition name="blur">
       <Intro v-if="!players.length"></Intro>
       <TownInfo v-if="players.length && !session.nomination"></TownInfo>
@@ -92,7 +94,7 @@ export default {
         case "a":
           this.$refs.menu.addPlayer();
           break;
-        case "h":
+        case "o":
           this.$refs.menu.hostSession();
           break;
         case "j":
@@ -111,6 +113,10 @@ export default {
         case "c":
           if (this.session.isSpectator) return;
           this.$store.commit("toggleModal", "roles");
+          break;
+        case "h":
+          if (this.session.isSpectator) return;
+          this.$refs.menu.toggleHiddenVoting();
           break;
         case "v":
           if (this.session.voteHistory.length || !this.session.isSpectator) {
@@ -366,5 +372,48 @@ video#background {
 
 #app.night > .backdrop {
   opacity: 0.5;
+}
+
+/* Hidden Voting Disease Cloud */
+#app > .diseasecloud {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  pointer-events: none;
+  background: black;
+  background: linear-gradient(
+    180deg,
+    rgb(143, 176, 143) 0%,
+    rgb(46, 75, 47) 50%,
+    rgb(8, 32, 11) 100%
+  );
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  &:after {
+    content: " ";
+    display: block;
+    width: 100%;
+    padding-left: 2000px;
+    height: 100%;
+    background: url("assets/splatter.png") repeat;
+    background-size: 2000px auto;
+    animation: move-diseasecloud 45s linear infinite;
+    opacity: 0.2;
+  }
+}
+
+@keyframes move-diseasecloud {
+  from {
+    transform: translate3d(0px, 0px, 0px);
+  }
+  to {
+    transform: translate3d(-2000px, 0px, 0px);
+  }
+}
+
+#app.voting > .diseasecloud {
+  opacity: 0.6;
 }
 </style>
