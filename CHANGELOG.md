@@ -1,4 +1,12 @@
 # Release Notes
+### Ideas
+- A "Return to TS" button, play sound, animation to TS from ST only
+- Add a set  of emotes that come from a player position - maybe disabled during an active vote
+- Alignment change - hue colours to the new alignment
+- Evil Victory & Good Victory celebration animations?
+
+### Version 2.16.3
+- added the Vizier character (minion)
 
 ### Version 2.16.2
 - added the Organ Grinder character (minion)
