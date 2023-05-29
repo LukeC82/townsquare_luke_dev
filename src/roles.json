@@ -1438,6 +1438,32 @@
     "ability": "You have the ability of the recently killed executee. If they are evil, you are poisoned until a good player dies by execution."
   },
   {
+    "id": "knight",
+    "name": "Knight",
+    "edition": "",
+    "team": "townsfolk",
+    "firstNight": 53,
+    "firstNightReminder": "Point to the two players that are not the Demon",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["Not the Demon"],
+    "setup": false,
+    "ability": "You start knowing 2 players that are not the Demon."
+  },
+  {
+    "id": "steward",
+    "name": "Steward",
+    "edition": "",
+    "team": "townsfolk",
+    "firstNight": 54,
+    "firstNightReminder": "Point to one good player.",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["Good player"],
+    "setup": false,
+    "ability": "You start knowing 1 good player."
+  },
+  {
     "id": "snitch",
     "name": "Snitch",
     "edition": "",
@@ -1638,6 +1664,32 @@
     "ability": "If you are executed, all but 3 players die. 1 minute later, the player with the most players pointing at them dies."
   },
   {
+    "id": "organgrinder",
+    "name": "Organ Grinder",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["About to die"],
+    "setup": false,
+    "ability": "All players keep their eyes closed when voting & the vote tally is secret. Votes for you only count if you vote."
+  },
+  {
+    "id": "vizier",
+    "name": "Vizier",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["Good voted"],
+    "setup": false,
+    "ability": "All players know you are in play. You can not die during the day. If good voted, you may choose to execute immediately."
+  },
+  {
     "id": "lilmonsta",
     "name": "Lil' Monsta",
     "edition": "",
@@ -1700,7 +1752,7 @@
     "name": "Leviathan",
     "edition": "",
     "team": "demon",
-    "firstNight": 54,
+    "firstNight": 80,
     "firstNightReminder": "Place the Leviathan 'Day 1' marker. Announce 'The Leviathan is in play; this is Day 1.'",
     "otherNight": 73,
     "otherNightReminder": "Change the Leviathan Day reminder for the next day.",
@@ -1738,32 +1790,6 @@
     "reminders": [],
     "setup": false,
     "ability": "Once per day, you may choose to kill an alive neighbour, if your other alive neighbour agrees."
-  },
-  {
-    "id": "organgrinder",
-    "name": "Organ Grinder",
-    "edition": "",
-    "team": "minion",
-    "firstNight": 0,
-    "firstNightReminder": "",
-    "otherNight": 0,
-    "otherNightReminder": "",
-    "reminders": ["About to die"],
-    "setup": false,
-    "ability": "All players keep their eyes closed when voting & the vote tally is secret. Votes for you only count if you vote."
-  },
-  {
-    "id": "vizier",
-    "name": "Vizier",
-    "edition": "",
-    "team": "minion",
-    "firstNight": 0,
-    "firstNightReminder": "",
-    "otherNight": 0,
-    "otherNightReminder": "",
-    "reminders": ["Good voted"],
-    "setup": false,
-    "ability": "All players know you are in play. You can not die during the day. If good voted, you may choose to execute immediately."
   }
 ]
 

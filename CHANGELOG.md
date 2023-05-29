@@ -1,9 +1,15 @@
 # Release Notes
 ### Ideas
 - A "Return to TS" button, play sound, animation to TS from ST only
-- Add a set  of emotes that come from a player position - maybe disabled during an active vote
+- Add a set of emotes that come from a players seated position
+-- probably disable emotes during an active votes/other important activites
+-- "raise player" emote hand should be first, including a number to show who raised 1st, 2nd, etc.
 - Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
+- Need the "Boomdandy" group pointing, tally & countdown functionality implemnted
+
+### Version 2.16.4
+- added the Knight (Townsfolk) & Steward (Townsfolk)
 
 ### Version 2.16.3
 - added the Vizier character (minion)
