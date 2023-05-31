@@ -8,6 +8,11 @@
 - Evil Victory & Good Victory celebration animations?
 - Need the "Boomdandy" group pointing, tally & countdown functionality implemnted
 
+### Version 2.17.0
+- Fall of Rome:
+-- Added entire home brew script by Alex S
+-- Fall of Rome character night order is independent of the core/experimental scripts for the moment.
+
 ### Version 2.16.4
 - added the Knight (Townsfolk) & Steward (Townsfolk)
 

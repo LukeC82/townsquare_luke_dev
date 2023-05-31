@@ -34,5 +34,14 @@
     "level": "Veteran",
     "roles": ["balloonist", "savant", "amnesiac", "fisherman", "artist", "cannibal", "mutant", "lunatic", "widow", "goblin", "leviathan"],
     "isOfficial": true
+  },
+  {
+    "id": "rome",
+    "name": "Fall of Rome",
+    "author": "Alex S",
+    "description": "Should you fail: this will surely cause the… FALL OF ROME.",
+    "level": "Veteran",
+    "roles": ["Homebrew Script - Entierly new character sheet."],
+    "isOfficial": false
   }
 ]
