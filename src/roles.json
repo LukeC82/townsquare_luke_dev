@@ -1721,7 +1721,7 @@
     "firstNightReminder": "",
     "otherNight": 0,
     "otherNightReminder": "",
-    "reminders": ["Poisoned", "Nominated"],
+    "reminders": ["Poisoned", "Register Evil", "Register Good"],
     "setup": false,
     "ability": "You might register as good. Players you nominate register as their opposite alignment until dawn, and if they were good, they are also poisoned until dawn."
   },
