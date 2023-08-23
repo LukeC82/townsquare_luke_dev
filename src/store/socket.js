@@ -176,6 +176,10 @@ class LiveSession {
         if (!this._isSpectator) return;
         this._store.commit("toggleNight", params);
         break;
+      case "isHiddenVoting":
+        if (!this._isSpectator) return;
+        this._store.commit("toggleHiddenVoting", params);
+        break;
       case "isVoteHistoryAllowed":
         if (!this._isSpectator) return;
         this._store.commit("session/setVoteHistoryAllowed", params);
@@ -255,6 +259,9 @@ class LiveSession {
    */
   sendGamestate(playerId = "", isLightweight = false) {
     if (this._isSpectator) return;
+    const { session, grimoire } = this._store.state;
+    const { fabled } = this._store.state.players;
+    if (grimoire.isHiddenVoting && session.nomination) return;
     this._gamestate = this._store.state.players.players.map(player => ({
       name: player.name,
       id: player.id,
@@ -271,12 +278,11 @@ class LiveSession {
         isLightweight
       });
     } else {
-      const { session, grimoire } = this._store.state;
-      const { fabled } = this._store.state.players;
       this.sendEdition(playerId);
       this._sendDirect(playerId, "gs", {
         gamestate: this._gamestate,
         isNight: grimoire.isNight,
+        isHiddenVoting: grimoire.isHiddenVoting,
         isVoteHistoryAllowed: session.isVoteHistoryAllowed,
         nomination: session.nomination,
         votingSpeed: session.votingSpeed,
@@ -300,6 +306,7 @@ class LiveSession {
       gamestate,
       isLightweight,
       isNight,
+      isHiddenVoting,
       isVoteHistoryAllowed,
       nomination,
       votingSpeed,
@@ -353,6 +360,7 @@ class LiveSession {
     });
     if (!isLightweight) {
       this._store.commit("toggleNight", !!isNight);
+      this._store.commit("toggleHiddenVoting", !!isHiddenVoting);
       this._store.commit("session/setVoteHistoryAllowed", isVoteHistoryAllowed);
       this._store.commit("session/nomination", {
         nomination,
@@ -499,8 +507,22 @@ class LiveSession {
         });
       }
     } else {
-      // just update the player otherwise
-      this._store.commit("players/update", { player, property, value });
+      // See if you spent your own ghost vote during hidden voting.
+      if (
+        this._store.state.session.playerId !== player.id &&
+        property === "isVoteless" &&
+        this._store.state.grimoire.isHiddenVoting &&
+        value != player.isVoteless
+      ) {
+        this._store.commit("players/update", {
+          player,
+          property: "isVoteless",
+          value: player.isVoteless
+        });
+      } else {
+        // just update the player otherwise
+        this._store.commit("players/update", { player, property, value });
+      }
     }
   }
 
@@ -696,6 +718,18 @@ class LiveSession {
   }
 
   /**
+   * Set the isHiddenVoting status.
+   */
+  setHiddenVoting() {
+    if (this._isSpectator) return;
+    this._send("isHiddenVoting", this._store.state.grimoire.isHiddenVoting);
+    //When ending hidden voting, refresh the gamestate for all players
+    if (!this._store.state.grimoire.isHiddenVoting) {
+      this.sendGamestate();
+    }
+  }
+
+  /**
    * Send the isNight status. ST only
    */
   setIsNight() {
@@ -731,6 +765,7 @@ class LiveSession {
    */
   setMarked(playerIndex) {
     if (this._isSpectator) return;
+    if (this._store.state.grimoire.isHiddenVoting) return;
     this._send("marked", playerIndex);
   }
 
@@ -749,16 +784,28 @@ class LiveSession {
    */
   vote([index]) {
     const player = this._store.state.players.players[index];
+
+    // send vote only if it is your own vote or you are the storyteller
     if (
       this._store.state.session.playerId === player.id ||
       !this._isSpectator
     ) {
-      // send vote only if it is your own vote or you are the storyteller
-      this._send("vote", [
-        index,
-        this._store.state.session.votes[index],
-        !this._isSpectator
-      ]);
+      //During hidden voting, only send vote data directly to the ST
+      //If the ST has changed a vote, send that directly to the player
+      if (this._store.state.grimoire.isHiddenVoting) {
+        this._sendDirect("host", "vote", [
+          index,
+          this._store.state.session.votes[index],
+          !this._isSpectator
+        ]);
+      } else {
+        // broadcast the vote to the socket
+        this._send("vote", [
+          index,
+          this._store.state.session.votes[index],
+          !this._isSpectator
+        ]);
+      }
     }
   }
 
@@ -802,7 +849,10 @@ class LiveSession {
       const { lockedVote, nomination } = this._store.state.session;
       const { players } = this._store.state.players;
       const index = (nomination[1] + lockedVote - 1) % players.length;
-      if (this._store.state.session.votes[index] !== vote) {
+      if (
+        this._store.state.session.votes[index] !== vote &&
+        !this._store.state.grimoire.isHiddenVoting
+      ) {
         this._store.commit("session/vote", [index, vote]);
       }
     }
@@ -883,6 +933,9 @@ export default store => {
         break;
       case "toggleNight":
         session.setIsNight();
+        break;
+      case "toggleHiddenVoting":
+        session.setHiddenVoting();
         break;
       case "setEdition":
         session.sendEdition();
