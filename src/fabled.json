@@ -150,6 +150,7 @@
     "reminders": ["Spartacus"],
     "setup": false,
     "name": "I am Spartacus!",
+    "edition": "rome",
     "team": "fabled",
     "ability": "Each day, up to half the living players (rounded up & Travellers don't count) may publicly claim to be Sparatacus."
   }

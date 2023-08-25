@@ -107,12 +107,12 @@ export default {
           "https://gist.githubusercontent.com/LukeC82/24a9b4af13f0e8b82dccb84b0a6f46c7/raw/b208fdc1943c9e2f48ce41de3d672586032f1cf8/Brain_Worms_v1.1.json"
         ],
         [
-          "On Thin Ice (Teensyville)",
-          "https://gist.githubusercontent.com/bra1n/8dacd9f2abc6f428331ea1213ab153f5/raw/0cacbcaf8ed9bddae0cca25a9ada97e9958d868b/on-thin-ice.json"
+          "Hide & Seek v1",
+          "https://gist.githubusercontent.com/LukeC82/64cb5ee4fb0efb4d1baf75964a477743/raw/453b456d004fe9d8463c39177c41c9c20ce897e7/Hide_&_Seek_v1.json"
         ],
         [
-          "Race To The Bottom (Teensyville)",
-          "https://gist.githubusercontent.com/bra1n/63e1354cb3dc9d4032bcd0623dc48888/raw/5acb0eedcc0a67a64a99c7e0e6271de0b7b2e1b2/race-to-the-bottom.json"
+          "Harold Holt's Revenge",
+          "https://gist.githubusercontent.com/LukeC82/0bee5191ee630d773007f0848320786e/raw/2e22f0f3d583a19c7b6222d5b964a2ae68064e78/Harold_Holts_Revenge.json"
         ],
         [
           "Frankenstein's Mayor by Ted (Teensyville)",

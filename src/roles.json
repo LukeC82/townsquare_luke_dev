@@ -1464,6 +1464,45 @@
     "ability": "You start knowing 1 good player."
   },
   {
+    "id": "highpriestess",
+    "name": "High Priestess",
+    "edition": "",
+    "team": "townsfolk",
+    "firstNight": 47,
+    "firstNightReminder": "Each night, wake the High Priestess. Point to a player. Put the High Priestess to sleep.",
+    "otherNight": 65,
+    "otherNightReminder": "Each night, wake the High Priestess. Point to a player. Put the High Priestess to sleep.",
+    "reminders": [],
+    "setup": false,
+    "ability": "Each night, learn which player the Storyteller believes you should talk to most."
+  },
+  {
+    "id": "harpy",
+    "name": "Harpy",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 17,
+    "firstNightReminder": "The Harpy points to one player, then another player. Mark the first player with the “Mad” reminder and the second player with the “2nd” reminder. Put the Harpy to sleep. Wake the player marked “Mad”. Show the “This Character Selected You” info token then the Harpy token, then point to the player marked “2nd”. Put the player marked “Mad” to sleep.",
+    "otherNight": 7,
+    "otherNightReminder": "Tomorrow, if the player marked “mad” is not mad that the player marked “2nd” is evil, you may kill both players.",
+    "reminders": ["Mad", "2nd"],
+    "setup": false,
+    "ability": "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or both might die."
+  },
+  {
+    "id": "plaguedoctor",
+    "name": "Plague Doctor",
+    "edition": "",
+    "team": "outsider",
+    "firstNight": 17,
+    "firstNightReminder": "When the Plague Doctor dies, place a not-in-play Minion character token in the centre of the left side of Grimoire. Mark this with the Plague Doctor’s “Storyteller Ability” reminder. If applicable, add a night token to the night sheet.",
+    "otherNight": 7,
+    "otherNightReminder": "When this Minion would normally act, the relevant choices are made by the Storyteller.",
+    "reminders": ["Storyteller Ability"],
+    "setup": false,
+    "ability": "If you die, the Storyteller gains a not-in-play Minion ability."
+  },
+  {
     "id": "physician",
     "name": "Physician",
     "edition": "rome",
@@ -1472,7 +1511,7 @@
     "firstNightReminder": "Point to 2 players (not yourself).",
     "otherNight": 5,
     "otherNightReminder": "Point to 2 players (not yourself).",
-    "reminders": ["Sober/Healthy", "Learn Demon Type", "Ability used"],
+    "reminders": ["Sober/Healthy/True", "Learn Demon Type", "Ability used"],
     "setup": false,
     "ability": "Each night, choose 2 players (not yourself): they are sober, healthy & get true info tonight. The 1st time the Demon kills one, you learn the Demon type."
   },
@@ -1523,8 +1562,8 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 1,
-    "otherNightReminder": "If the Scholar nominated an Outsider today for the 1st time, wake the nnominated player: Show the \"YOU ARE\" token and their new Townsfolk token. The Scholar does not wake.",
-    "reminders": ["Ability used"],
+    "otherNightReminder": "If the Scholar nominated an Outsider today for the 1st time, wake the nominated player: Show the \"YOU ARE\" token and their new Townsfolk token. The Scholar does not wake.",
+    "reminders": ["Ability used","Nominated"],
     "setup": true,
     "ability": "The first time you nominate a living Outsider, they immediately become a not\u2212in\u2212play Townsfolk. [+1 Outsider]"
   },
@@ -1536,7 +1575,7 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 11,
-    "otherNightReminder": "Wake the Blacksmith and show them the \u2019You are\u2019 card, then show them their not-in-play Townsfolk character ability.",
+    "otherNightReminder": "If killed by the Demon and has their ability, Wake the Blacksmith and show them the \u2019You are\u2019 card, then show them their not-in-play Townsfolk character ability they have gained.",
     "remindersGlobal": ["Is the Blacksmith"],
     "reminders": ["Ability used"],
     "setup": false,
@@ -1563,7 +1602,7 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 16,
-    "otherNightReminder": "The Trumpeter learns the number of \"EVIL CLAIMED\" reminder tokens. If none are present they learn a '0'. Remove any \"EVIL CLAIMED\" reminder tokens.",
+    "otherNightReminder": "The Trumpeter learns the number of \"EVIL CLAIMED\" reminder tokens you placed at night. If none are present they learn a '0'. Remove any \"EVIL CLAIMED\" reminder tokens.",
     "reminders": ["Evil Claimed"],
     "setup": false,
     "ability": "Each night*, you learn how many evil players publicly claimed to be Spartacus today."
@@ -1576,7 +1615,7 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 17,
-    "otherNightReminder": "If they neighbour 1 or 2 evil players tell the Mortician \"Yes\", otherwise tell the player \"No\". If no player has a \"EXECUTED\" reminder token next to them, do not wake the Mortician. If more than 1 player was executed today, clarify which piece of information they are receiving first by pointing to the associated player with the \"EXECUTED\" reminder token.",
+    "otherNightReminder": "If the executed player neighbours 1 or 2 evil players tell the Mortician \"Yes\", otherwise tell the player \"No\". If no player has a \"EXECUTED\" reminder token next to them, do not wake the Mortician. If more than 1 player was executed today, clarify which piece of information they are receiving first by pointing to the associated player with the \"EXECUTED\" reminder token.",
     "reminders": ["Executed"],
     "setup": false,
     "ability": "Each night*, if a player died by execution today you learn if either of their living neighbours is evil."
@@ -1642,7 +1681,7 @@
     "firstNightReminder": "Choose if the Winemaker begins drunk, or if their Townsfolk neighbors are drunk. Rotate accordinly using the reminder tokens.",
     "otherNight": 3,
     "otherNightReminder": "Continue to rotate the reminder tokens to drunk either the Winemaker or their Townsfolk neighbors.",
-    "reminders": ["I'm drunk","Townsfolk Neighbors","drunk"],
+    "reminders": ["I'm drunk","Townsfolk Neighbours","Drunk"],
     "setup": false,
     "ability": "Your Townsfolk neighbors are drunk, but every other night, you are drunk until dusk, even if you are dead."
   },
@@ -1682,7 +1721,7 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Is a Bad Omen"],
+    "remindersGlobal": ["Bad Omen, False, ~Evil"],
     "setup": false,
     "ability": "You do not know you are a Bad Omen. You think you are a Townsfolk, but you recieve false information. You might register as evil, even if dead."
   },
@@ -1695,7 +1734,7 @@
     "firstNightReminder": "Wake the Temptress and ask them to choose two players. Place the \"SEDUCED\" reminder token next to the two players. Wake the two players separately showing the 'This character selected you' card, then the Temptress token.",
     "otherNight": 2,
     "otherNightReminder": "If one of the chosen (\"SEDUCED\") players has died by execution, wake the other \"SEDUCED\" player and indicate they are now evil. Change their alignment.",
-    "reminders": ["Seduced"],
+    "reminders": ["Seduced","Turns Evil"],
     "setup": false,
     "ability": "On your 1st night choose two players: they learn that they were chosen. The 1st time one of them dies by execution, the other becomes evil that night."
   },
@@ -1708,7 +1747,7 @@
     "firstNightReminder": "Wake the Haruspex and ask them to choose a player. Place the \"CHOSEN\" reminder token next to the chosen player and show the Haruspex the chosen players character.",
     "otherNight": 10,
     "otherNightReminder": "Wake the Haruspex and ask them to choose a player. If this is the first time the Haruspex has selected this player, place the \"CHOSEN\" reminder token next to the chosen player and show the Haruspex the chosen players character. If the chosen player is already \"CHOSEN\", show the character again & then replace the reminder token with the \"DIES\" token.",
-    "reminders": ["Chosen", "Dies", "Ability Used"],
+    "reminders": ["Chosen", "Dead", "Ability Used"],
     "setup": true,
     "ability": "Each night, choose a player: you learn their character. The 1st play you choose twice in this way, dies. [+ Spartacus]"
   },
@@ -1723,7 +1762,7 @@
     "otherNightReminder": "",
     "reminders": ["Poisoned", "Register Evil", "Register Good"],
     "setup": false,
-    "ability": "You might register as good. Players you nominate register as their opposite alignment until dawn, and if they were good, they are also poisoned until dawn."
+    "ability": "You might register as good. Players you nominate register as their opposite alignment until dawn, and if they were a good Townsfolk, they are also poisoned until dawn."
   },
   {
     "id": "augur",
@@ -1744,11 +1783,11 @@
     "edition": "rome",
     "team": "demon",
     "firstNight": 11,
-    "firstNightReminder": "Wake all minions. Show the \"THESE CHARACTERS ARE NOT IN PLAY\" token & show 3 not in play good characters.",
+    "firstNightReminder": "Wake all minions. Show the \"THESE CHARACTERS ARE NOT IN PLAY\" token & show 3 not in play good characters. Also show the minions who the Hannibal's are.",
     "otherNight": 8,
     "otherNightReminder": "A player might die for each living Hannibal. Place the \"DEAD\" reminder token(s) next to the chosen player(s). They die. If a Hannibal dies, that night wake the player and inform them that they are a good Hannibal.",
     "reminders": [],
-    "remindersGlobal": ["Dead","Is Hannibal"],
+    "remindersGlobal": ["Dead","EVIL Hannibal","GOOD Hannibal"],
     "setup": true,
     "ability": "You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player may die. The 1st Hannibal to die, becomes good. [+ Hannibal]"
   },
@@ -1761,7 +1800,7 @@
     "firstNightReminder": "Wake Cleopatra and ask them to choose two players. Place the \"CHOSEN\" reminder token next to the two players.",
     "otherNight": 6,
     "otherNightReminder": "Any chosen player that had nominated today, dies. Remove all \"CHOSEN\" reminders. Wake Cleopatra and ask them to choose two players. Place the \"CHOSEN\" reminder token next to the two players.",
-    "reminders": ["Chosen","Nominated","Dies"],
+    "reminders": ["Chosen","Nominated","Dead"],
     "setup": false,
     "ability": "Each night, choose two players: if they nominate tomorrow, they die that night. Each day, if a good player (Travellers don't count) does not nominate, evil wins."
   },
@@ -1774,7 +1813,7 @@
     "firstNightReminder": "",
     "otherNight": 7,
     "otherNightReminder": "Each night, ask Crassus to choose a player. Mark the chosen player with the DEAD reminder token. They die.",
-    "reminders": ["Dies","Ability used"],
+    "reminders": ["Dead","Ability used"],
     "setup": false,
     "ability": "Each night*, choose a player: they die. If the 1st Crassus publicly claims to be Spartacus & dies with 5 or more players alive, an evil player becomes Crassus."
   },
