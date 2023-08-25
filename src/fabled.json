@@ -142,5 +142,16 @@
     "name": "Deus ex Fiasco",
     "team": "fabled",
     "ability": "Once per game, the Storyteller will make a \"mistake\", correct it and publicly admit to it."
+  },
+  {
+    "id": "iamspartacus",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": ["Spartacus"],
+    "setup": false,
+    "name": "I am Spartacus!",
+    "edition": "rome",
+    "team": "fabled",
+    "ability": "Each day, up to half the living players (rounded up & Travellers don't count) may publicly claim to be Sparatacus."
   }
 ]
