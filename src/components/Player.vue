@@ -11,14 +11,15 @@
           you: session.sessionId && player.id && player.id === session.playerId,
           'vote-yes': session.votes[index],
           'vote-lock': voteLocked,
-          'hidden-voting': grimoire.isHiddenVoting
+          'hidden-voting': grimoire.isHiddenVoting,
+          'hand-raised': player.handRaised
         },
         player.role.team
       ]"
     >
       <div class="shroud" @click="toggleStatus()"></div>
       <div class="life" @click="toggleStatus()"></div>
-
+      <div class="handUp"></div>
       <div
         class="night-order first"
         v-if="nightOrder.get(player).first && grimoire.isNightOrder"
@@ -36,6 +37,12 @@
         <span v-if="player.role.otherNightReminder">{{
           player.role.otherNightReminder
         }}</span>
+      </div>
+
+      <div class="emote" @click="toggleHandRaised()">
+        <em>
+          <font-awesome-icon icon="hand-paper" />
+        </em>
       </div>
 
       <Token
@@ -292,6 +299,15 @@ export default {
         }
       }
     },
+    toggleHandRaised() {
+      if (this.session.isSpectator && this.player.id !== this.session.playerId)
+        return;
+      if (this.player.handRaised) {
+        this.updatePlayer("handRaised", false);
+      } else {
+        this.updatePlayer("handRaised", true);
+      }
+    },
     changeName() {
       if (this.session.isSpectator) return;
       const name = prompt("Player name", this.player.name) || this.player.name;
@@ -306,7 +322,8 @@ export default {
       if (
         this.session.isSpectator &&
         property !== "reminders" &&
-        property !== "pronouns"
+        property !== "pronouns" &&
+        property !== "handRaised"
       )
         return;
       this.$store.commit("players/update", {
@@ -429,6 +446,49 @@ export default {
 
   #townsquare:not(.spectator) &.dead .shroud:hover:before {
     opacity: 1;
+  }
+
+  .handUp {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 40%;
+    height: 45%;
+    transform: rotateX(0deg);
+    transform-origin: top left;
+    cursor: pointer;
+    transition: transform 200ms ease-in-out;
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+
+    &:before {
+      content: " ";
+      background: url("../assets/handUp.png") center -10px no-repeat;
+      background-size: auto 140%;
+      position: absolute;
+      margin-left: -100%;
+      width: 100%;
+      height: 100%;
+      left: 38%;
+      top: -30%;
+      opacity: 0;
+      transform: perspective(400px) scale(1.5);
+      transform-origin: top left;
+      transition: all 200ms;
+      pointer-events: none;
+    }
+
+    #townsquare.spectator & {
+      pointer-events: none;
+    }
+  }
+
+  &.hand-raised .handUp:before {
+    opacity: 1;
+    top: 0;
+    pointer-events: none;
+    transform: perspective(400px) scale(1);
   }
 }
 
@@ -853,6 +913,11 @@ li.move:not(.from) .player .overlay svg.move {
 }
 
 .player.dead .night-order em {
+  color: #ddd;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, gray 100%);
+}
+
+.player.dead .emote em {
   color: #ddd;
   background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, gray 100%);
 }

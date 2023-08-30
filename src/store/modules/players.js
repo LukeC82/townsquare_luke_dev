@@ -5,7 +5,8 @@ const NEWPLAYER = {
   reminders: [],
   isVoteless: false,
   isDead: false,
-  pronouns: ""
+  pronouns: "",
+  handRaised: false
 };
 
 const state = () => ({

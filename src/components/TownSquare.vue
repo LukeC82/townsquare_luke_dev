@@ -364,6 +364,7 @@ export default {
       // animation cascade
       .life,
       .token,
+      .handUp,
       .shroud,
       .night-order,
       .seat {
@@ -638,6 +639,55 @@ export default {
         border-right-color: $townsfolk;
       }
     }
+  }
+}
+
+/**** Riased Hand Icon ****/
+.emote {
+  position: absolute;
+  width: 100%;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 200ms;
+  display: flex;
+  top: 0;
+  align-items: center;
+  pointer-events: all;
+
+  &:after {
+    content: " ";
+    display: block;
+    padding-top: 100%;
+  }
+
+  #townsquare.public & {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:hover ~ .token .ability {
+    opacity: 0;
+  }
+
+  em {
+    font-style: normal;
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    bottom: -10%;
+    top: 15%;
+    left: -8%;
+    border: 3px solid black;
+    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+    background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, $fabled 100%);
+    font-weight: bold;
+    opacity: 1;
+    transition: opacity 200ms;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
   }
 }
 
