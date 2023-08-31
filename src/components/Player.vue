@@ -302,11 +302,7 @@ export default {
     toggleHandRaised() {
       if (this.session.isSpectator && this.player.id !== this.session.playerId)
         return;
-      if (this.player.handRaised) {
-        this.updatePlayer("handRaised", false);
-      } else {
-        this.updatePlayer("handRaised", true);
-      }
+      this.updatePlayer("handRaised", !this.player.handRaised);
     },
     changeName() {
       if (this.session.isSpectator) return;
