@@ -209,6 +209,9 @@ class LiveSession {
       case "pronouns":
         this._updatePlayerPronouns(params);
         break;
+      case "handRaised":
+        this._updateHandRaised(params);
+        break;
     }
   }
 
@@ -262,16 +265,31 @@ class LiveSession {
     const { session, grimoire } = this._store.state;
     const { fabled } = this._store.state.players;
     if (grimoire.isHiddenVoting && session.nomination) return;
-    this._gamestate = this._store.state.players.players.map(player => ({
-      name: player.name,
-      id: player.id,
-      isDead: player.isDead,
-      isVoteless: player.isVoteless,
-      pronouns: player.pronouns,
-      ...(player.role && player.role.team === "traveler"
-        ? { roleId: player.role.id }
-        : {})
-    }));
+    //When Hidden Voting, obscure ghost vote & marked player from the game state update
+    if (grimoire.isHiddenVoting) {
+      this._gamestate = this._store.state.players.players.map(player => ({
+        name: player.name,
+        id: player.id,
+        isDead: player.isDead,
+        handRaised: player.handRaised,
+        pronouns: player.pronouns,
+        ...(player.role && player.role.team === "traveler"
+          ? { roleId: player.role.id }
+          : {})
+      }));
+    } else {
+      this._gamestate = this._store.state.players.players.map(player => ({
+        name: player.name,
+        id: player.id,
+        isDead: player.isDead,
+        handRaised: player.handRaised,
+        isVoteless: player.isVoteless,
+        pronouns: player.pronouns,
+        ...(player.role && player.role.team === "traveler"
+          ? { roleId: player.role.id }
+          : {})
+      }));
+    }
     if (isLightweight) {
       this._sendDirect(playerId, "gs", {
         gamestate: this._gamestate,
@@ -279,19 +297,34 @@ class LiveSession {
       });
     } else {
       this.sendEdition(playerId);
-      this._sendDirect(playerId, "gs", {
-        gamestate: this._gamestate,
-        isNight: grimoire.isNight,
-        isHiddenVoting: grimoire.isHiddenVoting,
-        isVoteHistoryAllowed: session.isVoteHistoryAllowed,
-        nomination: session.nomination,
-        votingSpeed: session.votingSpeed,
-        lockedVote: session.lockedVote,
-        isVoteInProgress: session.isVoteInProgress,
-        markedPlayer: session.markedPlayer,
-        fabled: fabled.map(f => (f.isCustom ? f : { id: f.id })),
-        ...(session.nomination ? { votes: session.votes } : {})
-      });
+      if (grimoire.isHiddenVoting) {
+        this._sendDirect(playerId, "gs", {
+          gamestate: this._gamestate,
+          isNight: grimoire.isNight,
+          isHiddenVoting: grimoire.isHiddenVoting,
+          isVoteHistoryAllowed: session.isVoteHistoryAllowed,
+          nomination: session.nomination,
+          votingSpeed: session.votingSpeed,
+          lockedVote: session.lockedVote,
+          isVoteInProgress: session.isVoteInProgress,
+          fabled: fabled.map(f => (f.isCustom ? f : { id: f.id })),
+          ...(session.nomination ? { votes: session.votes } : {})
+        });
+      } else {
+        this._sendDirect(playerId, "gs", {
+          gamestate: this._gamestate,
+          isNight: grimoire.isNight,
+          isHiddenVoting: grimoire.isHiddenVoting,
+          isVoteHistoryAllowed: session.isVoteHistoryAllowed,
+          nomination: session.nomination,
+          votingSpeed: session.votingSpeed,
+          lockedVote: session.lockedVote,
+          isVoteInProgress: session.isVoteInProgress,
+          markedPlayer: session.markedPlayer,
+          fabled: fabled.map(f => (f.isCustom ? f : { id: f.id })),
+          ...(session.nomination ? { votes: session.votes } : {})
+        });
+      }
     }
   }
 
@@ -332,12 +365,14 @@ class LiveSession {
       const player = players[x];
       const { roleId } = state;
       // update relevant properties
-      ["name", "id", "isDead", "isVoteless", "pronouns"].forEach(property => {
-        const value = state[property];
-        if (player[property] !== value) {
-          this._store.commit("players/update", { player, property, value });
+      ["name", "id", "isDead", "isVoteless", "pronouns", "handRaised"].forEach(
+        property => {
+          const value = state[property];
+          if (player[property] !== value) {
+            this._store.commit("players/update", { player, property, value });
+          }
         }
-      });
+      );
       // roles are special, because of travelers
       if (roleId && player.role.id !== roleId) {
         const role =
@@ -545,6 +580,24 @@ class LiveSession {
   }
 
   /**
+   * Publish a player's raised hand update
+   * @param player
+   * @param value
+   * @param isFromSockets
+   */
+  sendHandRaised({ player, value, isFromSockets }) {
+    //send handRaised only for the seated player or storyteller
+    //Do not re-send pronoun data for an update that was recieved from the sockets layer
+    if (
+      isFromSockets ||
+      (this._isSpectator && this._store.state.session.playerId !== player.id)
+    )
+      return;
+    const index = this._store.state.players.players.indexOf(player);
+    this._send("handRaised", [index, value]);
+  }
+
+  /**
    * Update a pronouns based on incoming data.
    * @param index
    * @param value
@@ -556,6 +609,23 @@ class LiveSession {
     this._store.commit("players/update", {
       player,
       property: "pronouns",
+      value,
+      isFromSockets: true
+    });
+  }
+
+  /**
+   * Update a hand raised state based on incoming data.
+   * @param index
+   * @param value
+   * @private
+   */
+  _updateHandRaised([index, value]) {
+    const player = this._store.state.players.players[index];
+
+    this._store.commit("players/update", {
+      player,
+      property: "handRaised",
       value,
       isFromSockets: true
     });
@@ -963,6 +1033,8 @@ export default store => {
       case "players/update":
         if (payload.property === "pronouns") {
           session.sendPlayerPronouns(payload);
+        } else if (payload.property === "handRaised") {
+          session.sendHandRaised(payload);
         } else {
           session.sendPlayer(payload);
         }
