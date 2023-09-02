@@ -362,9 +362,9 @@ export default {
       }
 
       // animation cascade
+      .handUp,
       .life,
       .token,
-      .handUp,
       .shroud,
       .night-order,
       .seat {
