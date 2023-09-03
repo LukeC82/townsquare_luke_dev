@@ -356,7 +356,11 @@ export default {
             this.$store.commit("toggleNight");
             this.$store.commit("session/setMarkedPlayer", -1);
             this.players.forEach(player => {
-              this.$store.commit("players/update", {player, property: "handRaised", value: false});
+              this.$store.commit("players/update", {
+                player,
+                property: "handRaised",
+                value: false
+              });
             });
           }
         }
@@ -365,7 +369,11 @@ export default {
         if (this.grimoire.isNight) {
           this.$store.commit("session/setMarkedPlayer", -1);
           this.players.forEach(player => {
-            this.$store.commit("players/update", {player, property: "handRaised", value: false});
+            this.$store.commit("players/update", {
+              player,
+              property: "handRaised",
+              value: false
+            });
           });
         }
       }
