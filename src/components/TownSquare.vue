@@ -676,7 +676,7 @@ export default {
     height: 35px;
     border-radius: 50%;
     bottom: -10%;
-    top: 15%;
+    top: 16%;
     left: -8%;
     border: 3px solid black;
     filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));

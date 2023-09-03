@@ -355,12 +355,18 @@ export default {
             this.$store.commit("toggleHiddenVoting");
             this.$store.commit("toggleNight");
             this.$store.commit("session/setMarkedPlayer", -1);
+            this.players.forEach(player => {
+              this.$store.commit("players/update", {player, property: "handRaised", value: false});
+            });
           }
         }
       } else {
         this.$store.commit("toggleNight");
         if (this.grimoire.isNight) {
           this.$store.commit("session/setMarkedPlayer", -1);
+          this.players.forEach(player => {
+            this.$store.commit("players/update", {player, property: "handRaised", value: false});
+          });
         }
       }
     },
