@@ -672,13 +672,13 @@ export default {
   em {
     font-style: normal;
     position: absolute;
-    width: 35px;
-    height: 35px;
+    width: 31px;
+    height: 31px;
     border-radius: 50%;
     bottom: -10%;
-    top: 16%;
-    left: -8%;
-    border: 3px solid black;
+    top: -2%;
+    left: 8%;
+    border: 2.5px solid black;
     filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
     background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, $fabled 100%);
     font-weight: bold;

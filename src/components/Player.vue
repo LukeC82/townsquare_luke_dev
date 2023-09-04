@@ -41,7 +41,7 @@
 
       <div class="emote" @click="toggleHandRaised()">
         <em>
-          <font-awesome-icon icon="hand-paper" />
+          <font-awesome-icon icon="hand-paper" size="xs" />
         </em>
       </div>
 
@@ -468,7 +468,7 @@ export default {
       margin-top: -30%;
       width: 100%;
       height: 100%;
-      left: 36%;
+      left: 39%;
       top: -30%;
       opacity: 0;
       transform: perspective(400px) scale(1.5);
