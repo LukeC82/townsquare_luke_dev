@@ -5,20 +5,26 @@
 -- probably disable emotes during an active votes/other important activites
 - Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
-- Need the "Boomdandy" group pointing, tally & countdown functionality implemnted
+- Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
+
+### Version 2.17.3
+- added missing Jinx rules for: Bounty Hunter, Organ Grinder, Vizier, Plague Doctor
+- updated "Hand Raised" icon, position and z priority
+- added feature to put all emote hands down at the start of each night
 
 ### Version 2.17.2
 - added player "Hand Raise" emote
-- Minor fixes to the Hidden Voting connect/reconnect game state 
+- minor fixes to the Hidden Voting connect/reconnect game state 
 
 ### Version 2.17.1
 - added the High Priestess (Townsfolk)
 - added the Harpy (Minion)
 - added the Plague Doctor (Outsider)
+- updated the custom script list
 
 ### Version 2.17.0
-- Fall of Rome:
--- Added entire home brew script by Alex S
+- Fall of Rome (Homebrew):
+-- added entire home brew script by Alex S
 -- Fall of Rome character night order is independent of the core/experimental scripts for the moment.
 
 ### Version 2.16.4
@@ -30,7 +36,6 @@
 ### Version 2.16.2
 - added the Organ Grinder character (minion)
 - added support for Hidden Voting as a grimoire gamestate (by @LukeC82)
--- missing: alllow the ST to override a hidden vote & only update target player
 - amended the custom script list (hosted at https://gist.github.com/LukeC82)
 - jinx and character changes for the Lleech
 

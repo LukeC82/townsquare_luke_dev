@@ -41,7 +41,7 @@
 
       <div class="emote" @click="toggleHandRaised()">
         <em>
-          <font-awesome-icon icon="hand-paper" />
+          <font-awesome-icon icon="hand-paper" size="xs" />
         </em>
       </div>
 
@@ -448,30 +448,32 @@ export default {
     bottom: 0;
     left: 0;
     position: absolute;
-    width: 40%;
+    width: 60%;
     height: 45%;
     transform: rotateX(0deg);
+    transform: rotate(-20deg);
     transform-origin: top left;
     cursor: pointer;
     transition: transform 200ms ease-in-out;
-    z-index: 2;
+    z-index: 4;
     pointer-events: none;
     filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
 
     &:before {
       content: " ";
-      background: url("../assets/handUp.png") center -10px no-repeat;
-      background-size: auto 140%;
+      background: url("../assets/handUp.png") center -0px no-repeat;
+      background-size: auto 70%;
       position: absolute;
       margin-left: -100%;
+      margin-top: -30%;
       width: 100%;
       height: 100%;
-      left: 38%;
+      left: 39%;
       top: -30%;
       opacity: 0;
       transform: perspective(400px) scale(1.5);
       transform-origin: top left;
-      transition: all 200ms;
+      transition: all 250ms;
       pointer-events: none;
     }
 

@@ -365,11 +365,111 @@
       },
       {
         "id": "Slayer",
-        "reason": "If the Slayer slays the Lleech's host, the host dies. "
+        "reason": "If the Slayer slays the Lleech's host, the host dies."
       },
       {
         "id": "Heretic",
         "reason": "If the Lleech has poisoned the Heretic then the Lleech dies, the Heretic remains poisoned."
+      }
+    ]
+  },
+  {
+    "id": "Bounty Hunter",
+    "hatred": [
+      {
+        "id": "Spy",
+        "reason": "Technically can register as a Townsfolk in order to be made evil by the Bounty Hunter ability… Don't be a dick."
+      }
+    ]
+  },
+  {
+    "id": "Organ Grinder",
+    "hatred": [
+      {
+        "id": "Butler",
+        "reason": "If the Organ Grinder is causing eyes closed voting, the Butler may raise their hand to vote but their vote is only counted if their master voted too."
+      },
+      {
+        "id": "Flowergirl",
+        "reason": "If players' eyes were closed during the nominations, the Flowergirl learns how many times the Demon voted."
+      },
+      {
+        "id": "Lil' Monsta",
+        "reason": "Votes for the Organ Grinder count if the Organ Grinder is babysitting Lil' Monsta."
+      },
+      {
+        "id": "Minstrel",
+        "reason": "Only 1 jinxed character can be in play. Evil players start knowing which player and character it is."
+      },
+      {
+        "id": "Preacher",
+        "reason": "Only 1 jinxed character can be in play. Evil players start knowing which player and character it is."
+      }
+    ]
+  },
+  {
+    "id": "Vizier",
+    "hatred": [
+      {
+        "id": "Courtier",
+        "reason": "If the Vizier loses their ability, they learn this and if the Vizier is executed while they have their ability, their team wins."
+      },
+      {
+        "id": "Fearmonger",
+        "reason": "The Vizier wakes with the Fearmonger, learns who they choose and cannot choose to execute that player."
+      },
+      {
+        "id": "Investigator",
+        "reason": "If the Investigator learns that the Vizier is in play, the existence of the Vizier is not announced by the Storyteller. It does not matter how the Investigator learns the Vizier is in play, regardless of potential Recluse/drunk/poison, the Vizier is not announced."
+      },
+      {
+        "id": "Lil' Monsta",
+        "reason": "The Vizier can die by execution if they are babysitting Lil' Monsta."
+      },
+      {
+        "id": "Magician",
+        "reason": "Only 1 jinxed character can be in play. Evil players start knowing which player and character it is."
+      },
+      {
+        "id": "Preacher",
+        "reason": "If the Vizier loses their ability, they learn this and if the Vizier is executed while they have their ability, their team wins."
+      }
+    ]
+  },
+  {
+    "id": "Plague Doctor",
+    "hatred": [
+      {
+        "id": "Baron",
+        "reason": "If the Storyteller gains the Baron ability, up to two players become out-of-play Outsiders."
+      },
+      {
+        "id": "Boomdandy",
+        "reason": "If the Plague Doctor is executed and the Storyteller would gain the Boomdandy ability, the Boomdandy ability triggers immediately."
+      },
+      {
+        "id": "Evil Twin",
+        "reason": "The Storyteller cannot gain the Evil Twin ability if the Plague Doctor dies."
+      },
+      {
+        "id": "Fearmonger",
+        "reason": "If the Plague Doctor dies, a living Minion gains the Fearmonger ability in addition to their own ability, and learns this."
+      },
+      {
+        "id": "Goblin",
+        "reason": "If the Plague Doctor dies, a living Minion gains the Goblin ability in addition to their own ability, and learns this."
+      },
+      {
+        "id": "Marionette",
+        "reason": "If the Demon has a neighbour who is alive and a Townsfolk or Outsider when the Plague Doctor dies, that player becomes an evil Marionette. If there is already an extra evil player, this does not happen."
+      },
+      {
+        "id": "Scarlet Woman",
+        "reason": "If the Plague Doctor dies, a living Minion gains the Scarlet Woman ability in addition to their own ability, and learns this."
+      },
+      {
+        "id": "Spy",
+        "reason": "If the Plague Doctor dies, a living Minion gains the Spy ability in addition to their own ability, and learns this."
       }
     ]
   }
