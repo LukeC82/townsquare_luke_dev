@@ -676,10 +676,11 @@ export default {
     height: 31px;
     border-radius: 50%;
     bottom: -10%;
-    top: -2%;
-    left: 8%;
+    top: 15%;
+    left: -3%;
     border: 2.5px solid black;
     filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+    filter: sepia(75%);
     background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, $fabled 100%);
     font-weight: bold;
     opacity: 1;

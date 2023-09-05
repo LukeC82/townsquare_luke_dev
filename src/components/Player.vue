@@ -465,10 +465,10 @@ export default {
       background-size: auto 70%;
       position: absolute;
       margin-left: -100%;
-      margin-top: -30%;
+      margin-top: -24%;
       width: 100%;
       height: 100%;
-      left: 39%;
+      left: 45%;
       top: -30%;
       opacity: 0;
       transform: perspective(400px) scale(1.5);
@@ -783,13 +783,13 @@ li.move:not(.from) .player .overlay svg.move {
   right: 10%;
   display: flex;
   justify-content: center;
-  font-size: 120%;
+  font-size: 110%;
   line-height: 120%;
   cursor: pointer;
   white-space: nowrap;
-  width: 120%;
+  width: 113%;
   background: rgba(0, 0, 0, 0.5);
-  border: 3px solid black;
+  border: 2px solid black;
   border-radius: 10px;
   top: 5px;
   box-shadow: 0 0 5px black;
@@ -917,6 +917,7 @@ li.move:not(.from) .player .overlay svg.move {
 
 .player.dead .emote em {
   color: #ddd;
+  filter: sepia(40%);
   background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, gray 100%);
 }
 
