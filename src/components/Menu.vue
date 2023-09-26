@@ -63,6 +63,15 @@
             <template v-if="grimoire.isHiddenVoting">Show Voting</template>
             <em>[H]</em>
           </li>
+          <li @click="toggleReturnToTown" v-if="!session.isSpectator">
+            <template v-if="!grimoire.isReturnToTown">Return to Town</template>
+            <template v-if="grimoire.isReturnToTown"
+              ><l style="color: rgb(174, 174, 174)"
+                ><i>Gathering...</i></l
+              ></template
+            >
+            <em>[T]</em>
+          </li>
           <li @click="toggleNightOrder" v-if="players.length">
             Night order
             <em>
@@ -237,6 +246,7 @@
 
 <script>
 import { mapMutations, mapState } from "vuex";
+import sound from "../assets/sounds/gong.mp3";
 
 export default {
   computed: {
@@ -387,6 +397,17 @@ export default {
         //Hidden voting ends the night
         this.$store.commit("toggleHiddenVoting");
         this.$store.commit("toggleNight", false);
+      }
+    },
+    toggleReturnToTown() {
+      if (!this.grimoire.isReturnToTown && !this.grimoire.isMuted) {
+        const audio = new Audio(sound);
+        this.$store.commit("toggleReturnToTown");
+        audio.volume = 0.65;
+        audio.play();
+        setTimeout(() => {
+          this.$store.commit("toggleReturnToTown");
+        }, 5500);
       }
     },
     ...mapMutations([
