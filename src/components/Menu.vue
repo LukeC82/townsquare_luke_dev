@@ -241,12 +241,18 @@
         </template>
       </ul>
     </div>
+    <div id="audioGong" class="playGong" v-if="grimoire.isReturnToTown"> 
+      <audio
+        :autoplay="!grimoire.isMuted"
+        src="../assets/sounds/gong.mp3"
+        :muted="grimoire.isMuted"
+      ></audio>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapMutations, mapState } from "vuex";
-import sound from "../assets/sounds/gong.mp3";
 
 export default {
   computed: {
@@ -400,11 +406,10 @@ export default {
       }
     },
     toggleReturnToTown() {
-      if (!this.grimoire.isReturnToTown && !this.grimoire.isMuted) {
-        const audio = new Audio(sound);
+
+      if (!this.grimoire.isReturnToTown) {
+
         this.$store.commit("toggleReturnToTown");
-        audio.volume = 0.65;
-        audio.play();
         setTimeout(() => {
           this.$store.commit("toggleReturnToTown");
         }, 5500);
