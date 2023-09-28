@@ -1,11 +1,13 @@
 # Release Notes
 ### Ideas
-- A "Return to TS" button, play sound, animation to TS from ST only
 - Add a set of emotes that come from a players seated position
 -- probably disable emotes during an active votes/other important activites
 - Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
 - Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
+
+### Version 2.17.4
+ - Added a 'Return to Townsquare' menu item for the Story Teller.
 
 ### Version 2.17.3
 - added missing Jinx rules for: Bounty Hunter, Organ Grinder, Vizier, Plague Doctor

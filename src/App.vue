@@ -6,7 +6,8 @@
     :class="{
       night: grimoire.isNight,
       static: grimoire.isStatic,
-      voting: grimoire.isHiddenVoting
+      hiddenVoting: grimoire.isHiddenVoting,
+      returnToTown: grimoire.isReturnToTown
     }"
     :style="{
       backgroundImage: grimoire.background
@@ -23,6 +24,7 @@
     ></video>
     <div class="backdrop"></div>
     <div class="diseasecloud"></div>
+    <div class="returnCircle"></div>
     <transition name="blur">
       <Intro v-if="!players.length"></Intro>
       <TownInfo v-if="players.length && !session.nomination"></TownInfo>
@@ -117,6 +119,10 @@ export default {
         case "h":
           if (this.session.isSpectator) return;
           this.$refs.menu.toggleHiddenVoting();
+          break;
+        case "t":
+          if (this.session.isSpectator) return;
+          this.$refs.menu.toggleReturnToTown();
           break;
         case "v":
           if (this.session.voteHistory.length || !this.session.isSpectator) {
@@ -413,7 +419,35 @@ video#background {
   }
 }
 
-#app.voting > .diseasecloud {
+#app.hiddenVoting > .diseasecloud {
   opacity: 0.6;
+}
+
+/* Return to Town */
+#app > .returnCircle {
+  position: absolute;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: opacity 1s ease-in-out;
+  background: url("assets/returntotown.png") center center no-repeat;
+  opacity: 0;
+  background-size: auto 52%;
+  animation: move-returnCircle 12s linear infinite;
+}
+
+@keyframes move-returnCircle {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#app.returnToTown > .returnCircle {
+  opacity: 1;
 }
 </style>

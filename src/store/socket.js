@@ -180,6 +180,10 @@ class LiveSession {
         if (!this._isSpectator) return;
         this._store.commit("toggleHiddenVoting", params);
         break;
+      case "isReturnToTown":
+        if (!this._isSpectator) return;
+        this._store.commit("toggleReturnToTown", params);
+        break;
       case "isVoteHistoryAllowed":
         if (!this._isSpectator) return;
         this._store.commit("session/setVoteHistoryAllowed", params);
@@ -302,6 +306,7 @@ class LiveSession {
           gamestate: this._gamestate,
           isNight: grimoire.isNight,
           isHiddenVoting: grimoire.isHiddenVoting,
+          isReturnToTown: grimoire.isReturnToTown,
           isVoteHistoryAllowed: session.isVoteHistoryAllowed,
           nomination: session.nomination,
           votingSpeed: session.votingSpeed,
@@ -315,6 +320,7 @@ class LiveSession {
           gamestate: this._gamestate,
           isNight: grimoire.isNight,
           isHiddenVoting: grimoire.isHiddenVoting,
+          isReturnToTown: grimoire.isReturnToTown,
           isVoteHistoryAllowed: session.isVoteHistoryAllowed,
           nomination: session.nomination,
           votingSpeed: session.votingSpeed,
@@ -340,6 +346,7 @@ class LiveSession {
       isLightweight,
       isNight,
       isHiddenVoting,
+      isReturnToTown,
       isVoteHistoryAllowed,
       nomination,
       votingSpeed,
@@ -396,6 +403,7 @@ class LiveSession {
     if (!isLightweight) {
       this._store.commit("toggleNight", !!isNight);
       this._store.commit("toggleHiddenVoting", !!isHiddenVoting);
+      this._store.commit("toggleReturnToTown", !!isReturnToTown);
       this._store.commit("session/setVoteHistoryAllowed", isVoteHistoryAllowed);
       this._store.commit("session/nomination", {
         nomination,
@@ -799,6 +807,12 @@ class LiveSession {
     }
   }
 
+  setReturnToTown() {
+    if (this._isSpectator) return;
+    this._send("isReturnToTown", this._store.state.grimoire.isReturnToTown);
+    //this.sendGamestate();
+  }
+
   /**
    * Send the isNight status. ST only
    */
@@ -1006,6 +1020,9 @@ export default store => {
         break;
       case "toggleHiddenVoting":
         session.setHiddenVoting();
+        break;
+      case "toggleReturnToTown":
+        session.setReturnToTown();
         break;
       case "setEdition":
         session.sendEdition();

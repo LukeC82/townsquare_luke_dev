@@ -63,6 +63,15 @@
             <template v-if="grimoire.isHiddenVoting">Show Voting</template>
             <em>[H]</em>
           </li>
+          <li @click="toggleReturnToTown" v-if="!session.isSpectator">
+            <template v-if="!grimoire.isReturnToTown">Return to Town</template>
+            <template v-if="grimoire.isReturnToTown">
+              <l style="color: rgb(174, 174, 174)">
+                <i>Gathering...</i>
+              </l>
+            </template>
+            <em>[T]</em>
+          </li>
           <li @click="toggleNightOrder" v-if="players.length">
             Night order
             <em>
@@ -232,6 +241,13 @@
         </template>
       </ul>
     </div>
+    <div id="audioGong" class="playGong" v-if="grimoire.isReturnToTown">
+      <audio
+        :autoplay="!grimoire.isMuted"
+        src="../assets/sounds/gong.mp3"
+        :muted="grimoire.isMuted"
+      ></audio>
+    </div>
   </div>
 </template>
 
@@ -387,6 +403,15 @@ export default {
         //Hidden voting ends the night
         this.$store.commit("toggleHiddenVoting");
         this.$store.commit("toggleNight", false);
+      }
+    },
+    toggleReturnToTown() {
+      //Play the animation for a set duration, along with the audio.
+      if (!this.grimoire.isReturnToTown) {
+        this.$store.commit("toggleReturnToTown");
+        setTimeout(() => {
+          this.$store.commit("toggleReturnToTown");
+        }, 5500);
       }
     },
     ...mapMutations([
