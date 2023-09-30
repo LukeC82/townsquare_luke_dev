@@ -6,8 +6,12 @@
 - Evil Victory & Good Victory celebration animations?
 - Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
 
-### Version 2.17.4
- - Added a 'Return to Townsquare' menu item for the Story Teller.
+### Version 2.17.4.1
+ - Added a 'Return to Townsquare' menu item for the Story Teller
+ - Reduced the volume of the countdown audio
+ - Added the new townsfolk, 'Shugenja'
+ - Moved all Fall of Rome characters to the end of the roles file
+ - Fixed Chambermaid/Mathematician -  they are second & last to act on first night, respectively.
 
 ### Version 2.17.3
 - added missing Jinx rules for: Bounty Hunter, Organ Grinder, Vizier, Plague Doctor
