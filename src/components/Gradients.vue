@@ -28,6 +28,7 @@ export default {
       gradients: [
         ["demon", "#ce0100", "#000"],
         ["townsfolk", "#1f65ff", "#000"],
+        ["fabled", "#ffe91f", "#000"],
         ["default", "#4E4E4E", "#000"]
       ]
     };
