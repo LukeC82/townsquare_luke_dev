@@ -6,6 +6,10 @@
 - Evil Victory & Good Victory celebration animations?
 - Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
 
+### Version 2.17.5
+ - Added the 'Ojo' Demon.
+ - Adjusted the voting countdown volume.
+
 ### Version 2.17.4.1
  - Added a 'Return to Townsquare' menu item for the Story Teller
  - Reduced the volume of the countdown audio
