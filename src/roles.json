@@ -1839,7 +1839,7 @@
     "firstNightReminder": "",
     "otherNight": 35,
     "otherNightReminder": "Wake the Ojo and select a character (not a player) - if in play, that character dies (1 death). If not in play, the Storyteller chooses a playe to die.",
-    "reminders": [],
+    "reminders": ["Dead"],
     "setup": false,
     "ability": "Each night*, choose a character: they die. If they are not in play, the Storyteller chooses who dies."
   },
