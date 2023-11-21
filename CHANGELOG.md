@@ -6,6 +6,9 @@
 - Evil Victory & Good Victory celebration animations?
 - Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
 
+### Version 2.18
+- fixed custom script format to support new script tool JSON
+
 ### Version 2.17.5
  - Added the 'Ojo' Demon.
  - Adjusted the voting countdown volume.
