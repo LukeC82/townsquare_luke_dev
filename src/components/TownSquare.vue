@@ -29,6 +29,7 @@
       ref="bluffs"
       :class="{ closed: !isBluffsOpen }"
     >
+      <audio src="../assets/sounds/gong.mp3" preload="auto"></audio>
       <h3>
         <span v-if="session.isSpectator">Other characters</span>
         <span v-else>Demon bluffs</span>

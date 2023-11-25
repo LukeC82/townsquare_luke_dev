@@ -6,8 +6,17 @@
 - Evil Victory & Good Victory celebration animations?
 - Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
 
+- Menu item to enable the arrows for all players (toggle)
+- clicking on any arrow should:
+- but their name on your token, to the right of your arrow (who I am pointing at)
+- add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
+
 ### Version 2.18
 - fixed custom script format to support new script tool JSON
+- Added jinx's for the Ojo
+- Added simple reminders for the Riot
+- Gong sound - added a pre-load statment to the first use of the sound sync's with the animation
+- Updated the custome script list & basic instructions about the github gist.
 
 ### Version 2.17.5
  - Added the 'Ojo' Demon.
