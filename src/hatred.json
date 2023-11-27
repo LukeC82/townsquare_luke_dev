@@ -472,5 +472,18 @@
         "reason": "If the Plague Doctor dies, a living Minion gains the Spy ability in addition to their own ability, and learns this."
       }
     ]
+  },
+  {
+    "id": "Ojo",
+    "hatred": [
+      {
+        "id": "Goon",
+        "reason": "If the Ojo chooses Goon and is the first player to do so tonight, they are made drunk and change the Goon's alignment."
+      },
+      {
+        "id": "Lunatic",
+        "reason": "The Demon learns the player a Lunatic-Ojo ability ultimately targeted, not the character they chose."
+      }
+    ]
   }
 ]

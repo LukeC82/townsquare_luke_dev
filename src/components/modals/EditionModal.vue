@@ -103,8 +103,8 @@ export default {
           "https://gist.githubusercontent.com/LukeC82/bbd4324a334e38bf2a78dfd5c36bedc4/raw/89c8189a883727c91ac1d644ac9944cb02b382b8/Lunar_Eclipse_v1.6.json"
         ],
         [
-          "Brainworms v1.1",
-          "https://gist.githubusercontent.com/LukeC82/24a9b4af13f0e8b82dccb84b0a6f46c7/raw/b208fdc1943c9e2f48ce41de3d672586032f1cf8/Brain_Worms_v1.1.json"
+          "Brainworms v2",
+          "https://gist.githubusercontent.com/LukeC82/24a9b4af13f0e8b82dccb84b0a6f46c7/raw/57274f87c9d554ff76aeaab48f195abe0ef1ee99/Brain_Worms_v2.json"
         ],
         [
           "Hide & Seek v1",
@@ -115,8 +115,8 @@ export default {
           "https://gist.githubusercontent.com/LukeC82/0bee5191ee630d773007f0848320786e/raw/2e22f0f3d583a19c7b6222d5b964a2ae68064e78/Harold_Holts_Revenge.json"
         ],
         [
-          "Frankenstein's Mayor by Ted (Teensyville)",
-          "https://gist.githubusercontent.com/bra1n/32c52b422cc01b934a4291eeb81dbcee/raw/5bf770693bbf7aff5e86601c82ca4af3222f4ba6/Frankensteins_Mayor_by_Ted.json"
+          "Murder by Death v1",
+          "https://gist.githubusercontent.com/LukeC82/04789e52b4055d1dc07275bb81a1311c/raw/53a50a39bac097f2005fb264cfa19fe5cc856292/Murder_by_Death_v1.json"
         ],
         [
           "Vigormortis High School (Teensyville)",

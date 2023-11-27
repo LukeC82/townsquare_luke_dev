@@ -86,6 +86,12 @@ $ npm run serve
 
 ```
 
+## Custom Script, GIT Gists:
+https://gist.github.com/LukeC82
+Click on a "Raw" script to get the correct path to update EditionModal.vue
+Example:
+https://gist.githubusercontent.com/LukeC82/0bee5191ee630d773007f0848320786e/raw/2e22f0f3d583a19c7b6222d5b964a2ae68064e78/Harold_Holts_Revenge.json
+
 ## Project Structure
 
 - **`dist`**: contains built files for distribution.
