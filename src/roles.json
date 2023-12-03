@@ -1595,6 +1595,19 @@
     "ability": "If you die, the Storyteller gains a not-in-play Minion ability."
   },
   {
+    "id": "hatter",
+    "name": "Hatter",
+    "edition": "",
+    "team": "outsider",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 39,
+    "otherNightReminder": "Wake each minion/demon, inform them the Hatter ability as targeted them. Each player may then choose a new minion/demon character to become (indicate if that character is already in play).",
+    "reminders": ["Tea Party Tonight"],
+    "setup": false,
+    "ability": "If you died today or tonight, the Minion & Demon players may choose new Minion & Demon characters to be."
+  },
+  {
     "id": "widow",
     "name": "Widow",
     "edition": "",

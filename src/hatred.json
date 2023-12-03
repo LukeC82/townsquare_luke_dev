@@ -485,5 +485,22 @@
         "reason": "The Demon learns the player a Lunatic-Ojo ability ultimately targeted, not the character they chose."
       }
     ]
+  },
+  {
+    "id": "Hatter",
+    "hatred": [
+      {
+        "id": "Legion",
+        "reason": "If the Hatter dies and Legion is in play, nothing happens. If the Hatter dies and an evil player chooses Legion, all current evil players become Legion. "
+      },
+      {
+        "id": "Leviathan",
+        "reason": "If the Hatter dies on or after day 5, the Demon cannot choose Leviathan."
+      },
+      {
+        "id": "Riot",
+        "reason": "If the Hatter dies, Riot is in play and a Riot chooses a different Demon, a normal evil team is created from the Riot players. If the Hatter dies and the Demon chooses Riot, Minions become Riot too."
+      }
+    ]
   }
 ]
