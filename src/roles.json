@@ -1490,6 +1490,19 @@
     "ability": "You start knowing if your closest evil player is clockwise or anti-clockwise. If equidistant, this info is arbitrary."
   },
   {
+    "id": "villageidiot",
+    "name": "Village Idiot",
+    "edition": "",
+    "team": "townsfolk",
+    "firstNight": 54,
+    "firstNightReminder": "Wake any Village Idiot. They point to a player. Give a thumbs up or a thumbs down. Put that Village Idiot to sleep. Repeat until all Village Idiots have acted.",
+    "otherNight": 65,
+    "otherNightReminder": "wake any Village Idiot. They point to a player. Give a thumbs up or a thumbs down. Put that Village Idiot to sleep. Repeat until all Village Idiots have acted.",
+    "reminders": ["Drunk"],
+    "setup": true,
+    "ability": "Each night, choose a player: you learn their alignment. [There can be 1-3 Village Idiots. If 2+ are in play, 1 Village Idiot is drunk]"
+  },
+  {
     "id": "snitch",
     "name": "Snitch",
     "edition": "",
@@ -1855,6 +1868,19 @@
     "reminders": ["Dead"],
     "setup": false,
     "ability": "Each night*, choose a character: they die. If they are not in play, the Storyteller chooses who dies."
+  },
+  {
+    "id": "kazali",
+    "name": "Kazali",
+    "edition": "",
+    "team": "demon",
+    "firstNight": 3,
+    "firstNightReminder": "The Kazali points at a player and a Minion on the character sheet. Replace their old character token with the Minion token, show them the “You Are” info token then the Minion character token, and give a thumbs down. Repeat until the normal number of Minions exist. Put the Kazali to sleep.",
+    "otherNight": 35,
+    "otherNightReminder": "Wake the Kazali. They point at any player. That player dies—mark them with the “Dead” reminder. Put the Kazali to sleep. ",
+    "reminders": ["Dead"],
+    "setup": true,
+    "ability": "Each night*, choose a player: they die. [You choose which players are which Minions. -? to +? Outsiders]"
   },
   {
     "id": "gangster",
