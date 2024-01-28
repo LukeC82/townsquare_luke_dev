@@ -12,7 +12,7 @@
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
 ### Version 2.18.2
-- Added the 'Kazali' (Demon) and 'Village Idiot' (Town Square) characters, icons and jinxes.
+- Added the 'Kazali' (Demon) and 'Village Idiot' (Townsfolk) characters, icons and jinxes.
 
 ### Version 2.18.1
 - Added 'Hatter' character, icon and jinxes.
