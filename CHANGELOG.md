@@ -11,6 +11,9 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.18.2
+- Added the 'Kazali' (Demon) and 'Village Idiot' (Town Square) characters, icons and jinxes.
+
 ### Version 2.18.1
 - Added 'Hatter' character, icon and jinxes.
 

@@ -487,6 +487,35 @@
     ]
   },
   {
+    "id": "Kazali",
+    "hatred": [
+      {
+        "id": "Bounty Hunter",
+        "reason": "An evil Townsfolk is only created if the Bounty Hunter is still in play after the Kazali acts."
+      },
+      {
+        "id": "Choirboy",
+        "reason": "The Kazali can not choose the King to become a Minion if a Choirboy is in play."
+      },
+      {
+        "id": "Huntsman",
+        "reason": "If the Kazali chooses the Damsel to become a Minion, and a Huntsman is in play, a good player becomes the Damsel."
+      },
+      {
+        "id": "Marionette",
+        "reason": "If the Kazali chooses to create a Marionette, they must choose one of their neighbours."
+      },
+      {
+        "id": "Soldier",
+        "reason": "Unlucky Kazali! You might be one Minion down now. Better pay attention during Demon Info to make sure you get told all the players you picked!"
+      },
+      {
+        "id": "Goon",
+        "reason": "If the Kazali chooses the Goon to become a Minion, remaining Minion choices are decided by the Storyteller."
+      }
+    ]
+  },
+  {
     "id": "Hatter",
     "hatred": [
       {
