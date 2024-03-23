@@ -1903,7 +1903,7 @@
     "firstNight": 3,
     "firstNightReminder": "During the first night, wake the Demon. Show this phrase, then put them to sleep.",
     "otherNight": 35,
-    "otherNightReminder": "Each time Demon says the secret phrase today, put a DEAD reminder on the board. At night, that many players die.",
+    "otherNightReminder": "Each time Demon says the secret phrase today, put a DEAD reminder on the board. At night, that many players may die.",
     "reminders": ["Dead"],
     "setup": false,
     "ability": "You start knowing a secret phrase. For each time you said it publicly today, a player might die."
