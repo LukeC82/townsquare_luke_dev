@@ -11,6 +11,12 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.19
+- Added Yaggababble Demon
+- Added Summoner Minion
+- Updated Jinxs
+- Minor adjustments to Kazali icon.
+
 ### Version 2.18.2
 - Added the 'Kazali' (Demon) and 'Village Idiot' (Townsfolk) characters, icons and jinxes.
 
