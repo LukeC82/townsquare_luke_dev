@@ -575,6 +575,97 @@
       {
         "id": "Riot",
         "reason": "If the Summoner creates Riot, the chosen player and all evil players become Riot. The chosen player must be one of the Summoner's living good neighbours."
+      },
+      {
+        "id": "Pukka",
+        "reason": "The Summoner may choose a player to become the Pukka on the 2nd night."
+      }
+    ]
+  },
+  {
+    "id": "Banshee",
+    "hatred": [
+      {
+        "id": "Leviathan",
+        "reason": "If Leviathan is in play, and the Banshee dies by execution, all players learn that the Banshee has died, and the Banshee gains their ability."
+      },
+      {
+        "id": "Riot",
+        "reason": "If Riot nominates and kills the Banshee, all players learn that the Banshee has died, and the Banshee may nominate two players immediately."
+      },
+      {
+        "id": "Vortox",
+        "reason": "If the Vortox is in play and the Demon kills the Banshee, the players still learn that the Banshee has died."
+      },
+      {
+        "id": "Resurrection",
+        "reason": "If the Banshee is resurrected, their ability resets. Therefore, a resurrected Banshee has their normal ability text, but can only nominate once per day and vote once per nomination."
+      }
+    ]
+  },
+  {
+    "id": "Ogre",
+    "hatred": [
+      {
+        "id": "Pit-Hag",
+        "reason": "If the Pit-Hag turns an evil player into the Ogre, they can't turn good due to their own ability."
+      },
+      {
+        "id": "Recluse",
+        "reason": "If the Recluse registers as evil to the Ogre, the Ogre learns that they are evil."
+      },
+      {
+        "id": "Spy",
+        "reason": "The Spy registers as evil to the Ogre."
+      },
+      {
+        "id": "Bounty Hunter",
+        "reason": "A sober Bounty Hunter can be shown an evil Ogre."
+      },
+      {
+        "id": "Cannibal",
+        "reason": "If a good Ogre is executed, the Cannibal gains the Ogre ability, wakes to pick a player, and becomes the alignment of that player. They are not told their alignment. The next time a player dies to execution, the Cannibal loses the Ogre ability but stays the alignment of the player they chose for the rest of the game. If an evil Ogre is executed, the Cannibal is poisoned due to the Cannibal's ability."
+      },
+      {
+        "id": "Mezepheles",
+        "reason": "If a good Ogre says the Mez word, they turn evil and learn that they are now evil. If an evil Ogre says the Mez word, nothing happens, and a good player may still say the word and turn evil."
+      },
+      {
+        "id": "Spy",
+        "reason": "The Spy does not see which player the Ogre selected, but may see the Ogre's alignment."
+      },
+      {
+        "id": "Widow",
+        "reason": "The Widow does not see which player the Ogre selected, but may see the Ogre's alignment."
+      },
+      {
+        "id": "Drunk/Poisoned",
+        "reason": "The Ogre becomes the alignment of their chosen friend regardless of any drunkenness or poison."
+      }
+    ]
+  },
+  {
+    "id": "Alsaahir",
+    "hatred": [
+      {
+        "id": "Legion",
+        "reason": "If a player registers as both a Minion and a Demon, the Alsaahir must guess that player as a Demon in order for their guess to be correct."
+      },
+      {
+        "id": "Lil' Monsta",
+        "reason": "If a player registers as both a Minion and a Demon, the Alsaahir must guess that player as a Demon in order for their guess to be correct."
+      },
+      {
+        "id": "Spy",
+        "reason": "Yes, but don't."
+      },
+      {
+        "id": "Recluse",
+        "reason": "Yes, but don't."
+      },
+      {
+        "id": "Vizier",
+        "reason": "If the Vizier is in play, the Alsaahir must also guess which Demon(s) are in play."
       }
     ]
   }
