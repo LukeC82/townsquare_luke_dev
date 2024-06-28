@@ -11,6 +11,11 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.20
+- Added Banshee (Townsfolk)
+- Added Ogre (Outsider)
+- Added Alsaahir (Townsfolk)
+
 ### Version 2.19
 - Added Yaggababble Demon
 - Added Summoner Minion
