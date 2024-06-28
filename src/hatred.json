@@ -575,6 +575,10 @@
       {
         "id": "Riot",
         "reason": "If the Summoner creates Riot, the chosen player and all evil players become Riot. The chosen player must be one of the Summoner's living good neighbours."
+      },
+      {
+        "id": "Pukka",
+        "reason": "The Summoner may choose a player to become the Pukka on the 2nd night."
       }
     ]
   },
