@@ -1660,6 +1660,19 @@
     "ability": "On your 1st night, choose a player (not yourself): you become their alignment (you don't know which) even if drunk or poisoned."
   },
   {
+    "id": "zealot",
+    "name": "Zealot",
+    "edition": "",
+    "team": "outsider",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "ability": "If there are 5 or more players alive, you must vote for every nomination."
+  },
+  {
     "id": "widow",
     "name": "Widow",
     "edition": "",
@@ -1929,7 +1942,7 @@
     "firstNight": 3,
     "firstNightReminder": "The Kazali points at a player and a Minion on the character sheet. Replace their old character token with the Minion token, show them the “You Are” info token then the Minion character token, and give a thumbs down. Repeat until the normal number of Minions exist. Put the Kazali to sleep.",
     "otherNight": 35,
-    "otherNightReminder": "Wake the Kazali. They point at any player. That player dies—mark them with the “Dead” reminder. Put the Kazali to sleep. ",
+    "otherNightReminder": "Wake the Kazali. They point at any player. That player dies — mark them with the “Dead” reminder. Put the Kazali to sleep.",
     "reminders": ["Dead"],
     "setup": true,
     "ability": "Each night*, choose a player: they die. [You choose which players are which Minions. -? to +? Outsiders]"
@@ -1946,6 +1959,19 @@
     "reminders": ["Dead"],
     "setup": false,
     "ability": "You start knowing a secret phrase. For each time you said it publicly today, a player might die."
+  },
+  {
+    "id": "lordoftyphon",
+    "name": "Lord Of Typhon",
+    "edition": "",
+    "team": "demon",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 35,
+    "otherNightReminder": "Wake the Lord Of Typhon. They point at any player. That player dies — mark them with the “Dead” reminder. Put the Lord Of Typhon to sleep.",
+    "reminders": ["Dead"],
+    "setup": true,
+    "ability": "Each night*, choose a player: they die. [Evil characters are in a line. You are in the middle. +1 Minion. -? to +? Outsiders]"
   },
   {
     "id": "gangster",

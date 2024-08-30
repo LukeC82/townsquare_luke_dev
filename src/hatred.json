@@ -668,5 +668,47 @@
         "reason": "If the Vizier is in play, the Alsaahir must also guess which Demon(s) are in play."
       }
     ]
+  },
+  {
+    "id": "Zealot",
+    "hatred": [
+      {
+        "id": "Cannibal",
+        "reason": "If the Cannibal gains the Zealot ability, the Cannibal learns this."
+      },
+      {
+        "id": "Cerenovus",
+        "reason": "If a player is made mad as the Zealot, they are expected to vote on every nomination."
+      },
+      {
+        "id": "Vizier",
+        "reason": "The Zealot might register as evil to the Vizier."
+      },
+      {
+        "id": "Legion",
+        "reason": "The Zealot might register as evil to Legion's ability."
+      },
+      {
+        "id": "Riot",
+        "reason": "If you are nominated, you must nominate again, even if dead."
+      }
+    ]
+  },
+  {
+    "id": "Lord Of Typhon",
+    "hatred": [
+      {
+        "id": "Summoner",
+        "reason": "If the Summoner creates a Lord Of Typhon, the Lord Of Typhon must neighbor a Minion. The other neighbor becomes a not-in-play evil Minion."
+      },
+      {
+        "id": "Alsaahir",
+        "reason": "Needs to remember to guess an extra Minion if they think it's a Lord Of Typhon game! "
+      },
+      {
+        "id": "Soldier",
+        "reason": "The Soldier doesn't have an active ability during setup, so they are not safe from becoming a Minion to the Lord Of Typhon."
+      }
+    ]
   }
 ]
