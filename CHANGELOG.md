@@ -11,6 +11,11 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.21
+- Added Zealot (Outsider)
+- Added Lord of Typhon (Demon)
+- Minor: accept formatting from updated npm compile (EditionModal).
+
 ### Version 2.20.1
 - Added new Jinx for the Summoner/Pukka not in Discord, but in the official script tool.
 
