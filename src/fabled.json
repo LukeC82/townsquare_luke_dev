@@ -153,5 +153,38 @@
     "edition": "rome",
     "team": "fabled",
     "ability": "Each day, up to half the living players (rounded up & Travellers don't count) may publicly claim to be Sparatacus."
+  },
+  {
+    "id": "bootlegger",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "name": "Bootlegger",
+    "edition": "",
+    "team": "fabled",
+    "ability": "This script has homebrew characters or rules."
+  },
+  {
+    "id": "ferryman",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "name": "Ferryman",
+    "edition": "",
+    "team": "fabled",
+    "ability": "On the final day, all dead players regain their vote token."
+  },
+  {
+    "id": "gardener",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "name": "Gardener",
+    "edition": "",
+    "team": "fabled",
+    "ability": "The Storyteller assigns 1 players' characters"
   }
 ]

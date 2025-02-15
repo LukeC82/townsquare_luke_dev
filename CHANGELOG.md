@@ -11,6 +11,16 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.3
+- Added Boffin (Minion)
+- Added Xaan (Minion)
+- Added Wizard (Minion)
+- Added Trapezist (Townsfolk) - This is the revised Acrobat from the UBOTCT Discord.
+- Added Gnome (Traveller)
+- Added Bootlegger (Fabled)
+- Added Ferryman (Fabled)
+- Added Gardener (Fabled)
+
 ### Version 2.21
 - Added Zealot (Outsider)
 - Added Lord of Typhon (Demon)
