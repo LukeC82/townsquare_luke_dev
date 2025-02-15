@@ -703,11 +703,52 @@
       },
       {
         "id": "Alsaahir",
-        "reason": "Needs to remember to guess an extra Minion if they think it's a Lord Of Typhon game! "
+        "reason": "Needs to remember to guess an extra Minion if they think it's a Lord Of Typhon game!"
       },
       {
         "id": "Soldier",
         "reason": "The Soldier doesn't have an active ability during setup, so they are not safe from becoming a Minion to the Lord Of Typhon."
+      }
+    ]
+  },
+  {
+    "id": "Boffin",
+    "hatred": [
+      {
+        "id": "Alchemist",
+        "reason": "If the Alchemist has the Boffin ability, the Alchemist does not learn what ability the Demon has."
+      },
+      {
+        "id": "Amnesiac",
+        "reason": "Go nuts."
+      },
+      {
+        "id": "Cult Leader",
+        "reason": "If the Demon has the Cult Leader ability, they can't turn good due to this ability."
+      },
+      {
+        "id": "Drunk",
+        "reason": "If the Demon would have the Drunk ability, the Boffin chooses a Townsfolk player to have this ability instead. *Note: If the Boffin points to a player who is not a Townsfolk, the Boffin picks again until they have pointed to a Townsfolk player. While the Boffin is alive, this Townsfolk does not have their original Townsfolk ability. When the Boffin dies, the Townsfolk loses the Drunk ability and now has their original Townsfolk ability."
+      },
+      {
+        "id": "Goon",
+        "reason": "If the Demon has the Goon ability, they can't turn good due to this ability."
+      },
+      {
+        "id": "Heretic",
+        "reason": "The Demon cannot have the Heretic ability."
+      },
+      {
+        "id": "Ogre",
+        "reason": "The Demon cannot have the Ogre ability."
+      },
+      {
+        "id": "Politician",
+        "reason": "The Demon cannot have the Politician ability."
+      },
+      {
+        "id": "Village Idiot",
+        "reason": " If there is a spare token, the Boffin can give the Demon the Village Idiot ability."
       }
     ]
   }

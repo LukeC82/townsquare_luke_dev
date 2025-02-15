@@ -355,6 +355,19 @@
     "ability": "You must use a vote token to vote. Dead players may choose to give you theirs. If so, you learn their alignment. You are sober & healthy."
   },
   {
+    "id": "gnome",
+    "name": "Gnome",
+    "edition": "",
+    "team": "traveler",
+    "firstNight": 0,
+    "firstNightReminder": "During the day, as soon as the Gnome has entered play, mark a player of the same alignment with the “Amigo” reminder. Declare that this player is the same alignment as the Gnome.",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["Amigo"],
+    "setup": false,
+    "ability": "All players start knowing a player of your alignment. You may choose to kill anyone who nominates them."
+  },
+  {
     "id": "grandmother",
     "name": "Grandmother",
     "edition": "bmr",
@@ -1217,7 +1230,7 @@
     "team": "townsfolk",
     "firstNight": 14,
     "firstNightReminder": "The Preacher chooses a player. If a Minion is chosen, wake the Minion and show the 'This character selected you' card and then the Preacher token.",
-    "otherNight": 8,
+    "otherNight": 7,
     "otherNightReminder": "The Preacher chooses a player. If a Minion is chosen, wake the Minion and show the 'This character selected you' card and then the Preacher token.",
     "reminders": ["At a sermon"],
     "setup": false,
@@ -1529,6 +1542,19 @@
     "ability": "Once per day, if you publicly guess which players are Minion(s) and which are Demon(s), good wins."
   },
   {
+    "id": "trapezist",
+    "name": "Trapezist",
+    "edition": "",
+    "team": "townsfolk",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 15,
+    "otherNightReminder": "Wake the Trapezist and have them choose a player: if that player is or becomes drunk or poisoned tonight, you die.",
+    "reminders": ["Flying High"],
+    "setup": false,
+    "ability": "Each night*, choose a player: if they are or become drunk or poisoned tonight, you die."
+  },
+  {
     "id": "snitch",
     "name": "Snitch",
     "edition": "",
@@ -1831,6 +1857,45 @@
     "reminders": ["Night 1", "Night 2", "Night 3"],
     "setup": true,
     "ability": "You get 3 bluffs. On the 3rd night, choose a player: they become an evil Demon of your choice. [No Demon]"
+  },
+  {
+    "id": "boffin",
+    "name": "Boffin",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 3,
+    "firstNightReminder": "During the 1st night; wake Boffin and inform them what ability they have provided the Demon, then wake the Demon and tell them which Boffin granted ability they have. Place a note by the Demon character token.",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": true,
+    "ability": "The Demon (even if drunk or poisoned) has a not-in-play good character's ability. You both learn which."
+  },
+  {
+    "id": "xaan",
+    "name": "Xaan",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 15,
+    "firstNightReminder": "On the 1st night, add the “Night 1” Xaan reminder to the Grimoire. If there was only 1 Outsider in play when the game began, add the “Poisoned” reminder to the Grimoire, and remove it the following dusk.",
+    "otherNight": 8,
+    "otherNightReminder": "Increment the “Night X” Xaan reminder in the Grimoire. On the night that equals the number of Outsiders in play when the game began, add the “Poisoned” reminder to the Grimoire, and remove it the following dusk.",
+    "reminders": ["1st Night", "2nd Night", "3rd Night", "4th Night", "Poisoned"],
+    "setup": true,
+    "ability": "On night X, all Townsfolk are poisoned until dusk. [X Outsiders]"
+  },
+  {
+    "id": "wizard",
+    "name": "Wizard",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 15,
+    "firstNightReminder": "When the Wizard makes a wish decide whether to accept or decline that wish. If the wish is declined, prompt the Wizard to wish again, or tell them that they have no more wishes.",
+    "otherNight": 8,
+    "otherNightReminder": "When the Wizard makes a wish decide whether to accept or decline that wish. If the wish is declined, prompt the Wizard to wish again, or tell them that they have no more wishes.",
+    "reminders": ["No ability"],
+    "setup": false,
+    "ability": "Once per game, choose to make a wish. If granted, it might have a price & leave a clue as to its nature."
   },
   {
     "id": "lilmonsta",
