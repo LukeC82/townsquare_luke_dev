@@ -11,6 +11,20 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.3.1
+- Updated Riot (Demon)
+-- Ability was: "Nominees die, but may nominate again immediately (on day 3, they must). After day 3, evil wins. [All Minions are Riot]"
+-- Ability is:  "On day 3, Minions become Riot & nominees die but nominate an alive player immediately. This must happen."
+
+- Updated Organ Grinder (Minion)
+-- Ability was: "All players keep their eyes closed when voting & the vote tally is secret. Votes for you only count if you vote."
+-- Ability is:  "All players keep their eyes closed when voting & the vote tally is secret. Each night, choose if you are drunk until dusk or not."
+
+- Updated Lycanthrope (Townsfolk)
+-- Ability was: "Each night*, choose an alive player: If good, they die & the Demon doesn't kill tonight."
+
+-- Ability is: "Each night*, choose an alive player: If good, they die & the Demon doesn't kill tonight. One good player registers as evil."
+
 ### Version 2.3
 - Added Boffin (Minion)
 - Added Xaan (Minion)
