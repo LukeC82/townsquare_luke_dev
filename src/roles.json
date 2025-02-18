@@ -1287,10 +1287,10 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 22,
-    "otherNightReminder": "The Lycanthrope points to a living player: if good, they die and no one else can die tonight.",
-    "reminders": ["Dead"],
+    "otherNightReminder": "The Lycanthrope points to a living player: if good, they die & the Demon doesn't kill tonight",
+    "reminders": ["Dead","Registers Evil"],
     "setup": false,
-    "ability": "Each night*, choose a living player: if good, they die, but they are the only player that can die tonight."
+    "ability": "Each night*, choose an alive player: If good, they die & the Demon doesn't kill tonight. One good player registers as evil."
   },
   {
     "id": "amnesiac",
@@ -1813,11 +1813,11 @@
     "team": "minion",
     "firstNight": 0,
     "firstNightReminder": "",
-    "otherNight": 0,
-    "otherNightReminder": "",
-    "reminders": ["About to die"],
+    "otherNight": 15,
+    "otherNightReminder": "The Organ Grinder wakes to decide if they are drunk until dusk or not.",
+    "reminders": ["About to die", "Drunk"],
     "setup": false,
-    "ability": "All players keep their eyes closed when voting & the vote tally is secret. Votes for you only count if you vote."
+    "ability": "All players keep their eyes closed when voting & the vote tally is secret. Each night, choose if you are drunk until dusk or not."
   },
   {
     "id": "vizier",
@@ -1980,11 +1980,11 @@
     "team": "demon",
     "firstNight": 0,
     "firstNightReminder": "",
-    "otherNight": 0,
-    "otherNightReminder": "",
+    "otherNight": 3,
+    "otherNightReminder": "On the 3rd night, wake each Minion. Tell them they have become a “Riot” Demon, then put each Minion to sleep. Either now or anytime until nominations begin on the 3rd day, replace all Minion tokens with Riot tokens.",
     "reminders": ["Day 1","Day 2","Day 3"],
     "setup": true,
-    "ability": "Nominees die, but may nominate again immediately (on day 3, they must). After day 3, evil wins. [All Minions are Riot]"
+    "ability": "On day 3, Minions become Riot & nominees die but nominate an alive player immediately. This must happen."
   },
   {
     "id": "ojo",
