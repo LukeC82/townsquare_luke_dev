@@ -1257,14 +1257,14 @@
     "firstNight": 45,
     "firstNightReminder": "Choose a character type. Point to a player whose character is of that type. Place the Balloonist's Seen reminder next to that character.",
     "otherNight": 62,
-    "otherNightReminder": "Choose a character type that does not yet have a Seen reminder next to a character of that type. Point to a player whose character is of that type, if there are any. Place the Balloonist's Seen reminder next to that character.",
+    "otherNightReminder": "Choose a player whose character type is different to the currennt Seen reminder token. Remove the previous Seen token and place a corresponding token for the chosen player.",
     "reminders": ["Seen Townsfolk",
         "Seen Outsider",
         "Seen Minion",
         "Seen Demon",
         "Seen Traveller"],
     "setup": true,
-    "ability": "Each night, you learn 1 player of each character type, until there are no more types to learn. [+1 Outsider]"
+    "ability": "Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]"
   },
   {
     "id": "cultleader",
@@ -1287,7 +1287,7 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 22,
-    "otherNightReminder": "The Lycanthrope points to a living player: if good, they die & the Demon doesn't kill tonight",
+    "otherNightReminder": "The Lycanthrope points to a living player: if good, they die & the Demon doesn't kill tonight (but does wake as normal).",
     "reminders": ["Dead","Registers Evil"],
     "setup": false,
     "ability": "Each night*, choose an alive player: If good, they die & the Demon doesn't kill tonight. One good player registers as evil."
@@ -1840,10 +1840,10 @@
     "firstNight": 17,
     "firstNightReminder": "The Harpy points to one player, then another player. Mark the first player with the “Mad” reminder and the second player with the “2nd” reminder. Put the Harpy to sleep. Wake the player marked “Mad”. Show the “This Character Selected You” info token then the Harpy token, then point to the player marked “2nd”. Put the player marked “Mad” to sleep.",
     "otherNight": 8,
-    "otherNightReminder": "Tomorrow, if the player marked “mad” is not mad that the player marked “2nd” is evil, you may kill both players.",
+    "otherNightReminder": "Tomorrow, if the player marked “mad” is not mad that the player marked “2nd” is evil, you may kill one or both players.",
     "reminders": ["Mad", "2nd"],
     "setup": false,
-    "ability": "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or both might die."
+    "ability": "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die."
   },
   {
     "id": "summoner",
@@ -1949,7 +1949,7 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 23,
-    "otherNightReminder": "Choose a player, that player dies.",
+    "otherNightReminder": "Most nights, kill a Legion. Your aim is to get to three players; two good players and one Legion player. On the final day, if the players don't execute, kill a good player that night so that evil wins.",
     "reminders": ["Dead",
         "About to die"],
     "setup": true,
