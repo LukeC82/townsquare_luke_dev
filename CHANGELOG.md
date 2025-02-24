@@ -14,7 +14,7 @@
 ### Version 2.3.2
 - Harpy (Minion), Ability - "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die."
 - Balloonist (Townsfolk), Ability - "Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]"
-- Added Storyteller reminder into the Lycanthrope ability; a Demon still wakes and chooses if applicable, but they'd don't cause a death if they would.
+- Added Storyteller reminder into the Lycanthrope ability; a Demon still wakes and chooses if applicable, but they don't cause a death if they normally would.
 - Added Storyteller reminder to the Legion night sheet - "Most nights, kill a Legion. Your aim is to get to three players; two good players and one Legion player. On the final day, if the players don't execute, kill a good player that night so that evil wins."
 
 ### Version 2.3.1
