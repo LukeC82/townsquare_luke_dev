@@ -10,7 +10,9 @@
       returnToTown: grimoire.isReturnToTown
     }"
     :style="{
-      backgroundImage: grimoire.background
+      backgroundImage: randomBackground
+        ? `url('${randomBackground}')`
+        : grimoire.background
         ? `url('${grimoire.background}')`
         : ''
     }"
@@ -61,6 +63,12 @@ import FabledModal from "@/components/modals/FabledModal";
 import VoteHistoryModal from "@/components/modals/VoteHistoryModal";
 import GameStateModal from "@/components/modals/GameStateModal";
 
+const backgrounds = require.context(
+  "./assets/backgrounds",
+  false,
+  /\.jpg$/i
+);
+
 export default {
   components: {
     GameStateModal,
@@ -77,14 +85,24 @@ export default {
     RolesModal,
     Gradients
   },
+  data() {
+    return {
+      version,
+      randomBackground: null
+    };
+  },
   computed: {
     ...mapState(["grimoire", "session"]),
     ...mapState("players", ["players"])
   },
-  data() {
-    return {
-      version
-    };
+  created() {
+    // Get all images from the background folder
+    const bgImages = backgrounds.keys();
+    // Pick one at random on load & refresh
+    if (bgImages.length) {
+      const randomIndex = Math.floor(Math.random() * bgImages.length);
+      this.randomBackground = backgrounds(bgImages[randomIndex]);
+    }
   },
   methods: {
     keyup({ key, ctrlKey, metaKey }) {
@@ -165,7 +183,6 @@ html,
 body {
   font-size: 1.2em;
   line-height: 1.4;
-  background: url("assets/background.jpg") center center;
   background-size: cover;
   color: white;
   height: 100%;
