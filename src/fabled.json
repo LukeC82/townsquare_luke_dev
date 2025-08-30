@@ -139,9 +139,9 @@
     "otherNightReminder": "",
     "reminders": ["Whoops"],
     "setup": false,
-    "name": "Deus ex Fiasco",
+    "name": "Deus Ex Fiasco",
     "team": "fabled",
-    "ability": "Once per game, the Storyteller will make a \"mistake\", correct it and publicly admit to it."
+    "ability": "At least once per game, the Storyteller will make a mistake, correct it, and publicly admit to it."
   },
   {
     "id": "iamspartacus",

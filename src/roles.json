@@ -1555,6 +1555,19 @@
     "ability": "Each night*, choose a player: if they are or become drunk or poisoned tonight, you die."
   },
   {
+    "id": "princess",
+    "name": "Princess",
+    "edition": "",
+    "team": "townsfolk",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["Doesn't Kill"],
+    "setup": false,
+    "ability": "On your 1st day, if you nominated & executed a player, the Demon doesn't kill tonight."
+  },
+  {
     "id": "snitch",
     "name": "Snitch",
     "edition": "",
@@ -1697,6 +1710,19 @@
     "reminders": [],
     "setup": false,
     "ability": "If there are 5 or more players alive, you must vote for every nomination."
+  },
+    {
+    "id": "hermit",
+    "name": "Hermit",
+    "edition": "",
+    "team": "outsider",
+    "firstNight": 0,
+    "firstNightReminder": "",
+    "otherNight": 0,
+    "otherNightReminder": "",
+    "reminders": ["1","2","3"],
+    "setup": true,
+    "ability": "You have all Outsider abilities. [-0 or -1 Outsider]"
   },
   {
     "id": "widow",
@@ -1883,6 +1909,19 @@
     "reminders": ["1st Night", "2nd Night", "3rd Night", "4th Night", "Poisoned"],
     "setup": true,
     "ability": "On night X, all Townsfolk are poisoned until dusk. [X Outsiders]"
+  },
+  {
+    "id": "wraith",
+    "name": "Wraith",
+    "edition": "",
+    "team": "minion",
+    "firstNight": 1,
+    "firstNightReminder": "Each time you wake an evil player at night, first wake the Wraith. When you put that evil player to sleep, put the Wraith to sleep.",
+    "otherNight": 1,
+    "otherNightReminder": "Each time you wake an evil player at night, first wake the Wraith. When you put that evil player to sleep, put the Wraith to sleep.",
+    "reminders": [],
+    "setup": false,
+    "ability": "You may choose to open your eyes at night. You wake when other evil players do."
   },
   {
     "id": "wizard",
