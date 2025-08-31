@@ -11,6 +11,13 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.4.0
+- Added new & randomised backgrounds
+- Added Hermit (Outsider)
+- Added Deus ex Fiasco (Fabled)
+- Added Princess (Townsfolk)
+- Added Wraith (Minion)
+
 ### Version 2.3.2
 - Harpy (Minion), Ability - "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die."
 - Balloonist (Townsfolk), Ability - "Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]"
