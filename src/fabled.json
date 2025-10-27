@@ -186,5 +186,27 @@
     "edition": "",
     "team": "fabled",
     "ability": "The Storyteller assigns 1 players' characters"
+  },
+  {
+    "id": "bigwig",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "name": "Big Wig",
+    "edition": "",
+    "team": "fabled",
+    "ability": "Each nominee chooses a player: until voting, only they may speak & they are mad the nominee is good or might die."
+  },
+  {
+    "id": "tor",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "name": "Tor",
+    "edition": "",
+    "team": "fabled",
+    "ability": "Players don't know their characters or alignment, they learn them when they die."
   }
 ]
