@@ -11,20 +11,25 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
-### Version 2.4.0
+### Version 2.23.1
+- Added the Big Wig (Loric)
+- Added the Tor (Loric)
+- Minor Loric label added
+
+### Version 2.23
 - Added new & randomised backgrounds
 - Added Hermit (Outsider)
 - Added Deus ex Fiasco (Fabled)
 - Added Princess (Townsfolk)
 - Added Wraith (Minion)
 
-### Version 2.3.2
+### Version 2.22.2
 - Harpy (Minion), Ability - "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die."
 - Balloonist (Townsfolk), Ability - "Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]"
 - Added Storyteller reminder into the Lycanthrope ability; a Demon still wakes and chooses if applicable, but they don't cause a death if they normally would.
 - Added Storyteller reminder to the Legion night sheet - "Most nights, kill a Legion. Your aim is to get to three players; two good players and one Legion player. On the final day, if the players don't execute, kill a good player that night so that evil wins."
 
-### Version 2.3.1
+### Version 2.22.1
 - Updated Riot (Demon)
 -- Ability was: "Nominees die, but may nominate again immediately (on day 3, they must). After day 3, evil wins. [All Minions are Riot]"
 -- Ability is:  "On day 3, Minions become Riot & nominees die but nominate an alive player immediately. This must happen."
@@ -37,7 +42,7 @@
 -- Ability was: "Each night*, choose an alive player: If good, they die & the Demon doesn't kill tonight."
 -- Ability is: "Each night*, choose an alive player: If good, they die & the Demon doesn't kill tonight. One good player registers as evil."
 
-### Version 2.3
+### Version 2.22
 - Added Boffin (Minion)
 - Added Xaan (Minion)
 - Added Wizard (Minion)

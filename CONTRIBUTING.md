@@ -69,10 +69,18 @@ module.exports = {
 
 Commit messages should be verbose enough to allow someone else to follow your changes and should include references to issues that are being worked on.
 
-### Commonly used NPM scripts
+### Local development commands:
 
+## 1. Go to socket.js and change to local host.
+
+## 2. Execute this command from the server directory:
+$ cd server/
+$ NODE_ENV=development node index.js
+
+## .3 Setup local variables
 ``` bash\GitbBash
 $ export NODE_OPTIONS=--openssl-legacy-provider
+$ export NODE_ENV=development
 
 # build all dist files, including npm packages
 $ npm run build

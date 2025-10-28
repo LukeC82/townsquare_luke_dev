@@ -194,7 +194,7 @@
             <em>[C]</em>
           </li>
           <li v-if="!session.isSpectator" @click="toggleModal('fabled')">
-            Add Fabled
+            Add Fabled & Loric
             <em><font-awesome-icon icon="dragon"/></em>
           </li>
           <li @click="clearRoles" v-if="players.length">

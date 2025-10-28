@@ -49,7 +49,7 @@
 
     <div class="fabled" :class="{ closed: !isFabledOpen }" v-if="fabled.length">
       <h3>
-        <span>Fabled</span>
+        <span>Fabled & Loric</span>
         <font-awesome-icon icon="times-circle" @click.stop="toggleFabled" />
         <font-awesome-icon icon="plus-circle" @click.stop="toggleFabled" />
       </h3>
