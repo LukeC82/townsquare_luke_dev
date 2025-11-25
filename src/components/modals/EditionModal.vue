@@ -213,9 +213,9 @@ ul.editions .edition {
   background-position: center center;
   background-size: 100% auto;
   background-repeat: no-repeat;
-  width: 30%;
+  width: 20%;
   margin: 5px;
-  font-size: 120%;
+  font-size: 90%;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
     1px 1px 0 #000, 0 0 5px rgba(0, 0, 0, 0.75);
   cursor: pointer;

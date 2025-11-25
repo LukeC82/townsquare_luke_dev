@@ -43,5 +43,14 @@
     "level": "Veteran",
     "roles": ["Homebrew Script - Entierly new character sheet."],
     "isOfficial": false
+  },
+  {
+    "id": "christmas",
+    "name": "A Very Merry Clocktower Christmas",
+    "author": "Nashable",
+    "description": "Gather your friends, don your Santa hats, and step into this enchanting mystery where your decisions shape the story. Merry sleuthing!",
+    "level": "Veteran",
+    "roles": ["Homebrew Script - Entierly new character sheet."],
+    "isOfficial": false
   }
 ]

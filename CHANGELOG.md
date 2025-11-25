@@ -11,6 +11,10 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.24.0
+- Added the full homebrew script of "A Very Merry Clocktower Christmas"
+- https://chillclocktower.com/homebrew/merrryclocktower/almanac/#synopsis
+
 ### Version 2.23.1
 - Added the Big Wig (Loric)
 - Added the Tor (Loric)
