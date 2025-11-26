@@ -64,7 +64,8 @@ import VoteHistoryModal from "@/components/modals/VoteHistoryModal";
 import GameStateModal from "@/components/modals/GameStateModal";
 
 const backgrounds = require.context(
-  "./assets/backgrounds",
+  "./assets/backgrounds/xmas",
+  //"./assets/backgrounds",
   false,
   /\.jpg$/i
 );
@@ -354,8 +355,50 @@ video#background {
   object-fit: cover;
 }
 
-/* Night phase backdrop */
+/* Snowy backdrop */
 #app > .backdrop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  pointer-events: none;
+  background: black;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(1, 22, 46, 1) 50%,
+    rgba(0, 39, 70, 1) 100%
+  );
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  &:after {
+    content: " ";
+    display: block;
+    width: 100%;
+    padding-right: 0px;
+    height: 100%;
+    background: url("assets/snow.png");
+    background-repeat: repeat;
+    background-size: auto 2000px;
+    background-position: 0 0; /* begin fully visible */
+    animation: scroll-snow 30s linear infinite;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+@keyframes scroll-snow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 1200px; /* same value as background-size height */
+  }
+}
+
+/* Night phase backdrop */
+#app > .oldbackdrop {
   position: absolute;
   left: 0;
   right: 0;

@@ -11,6 +11,10 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.24.1
+- Added the final florishes to the Christmas themed Townsquare:
+- Updated gong, night animation and background
+
 ### Version 2.24.0
 - Added the full homebrew script of "A Very Merry Clocktower Christmas"
 - https://chillclocktower.com/homebrew/merrryclocktower/almanac/#synopsis
