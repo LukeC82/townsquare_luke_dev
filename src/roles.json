@@ -900,6 +900,7 @@
     "otherNight": 4,
     "otherNightReminder": "If the Philosopher has not used their ability: the Philosopher either shows a 'no' head signal, or points to a good character on their sheet. If they chose a character: Swap the out-of-play character token with the Philosopher token and add the 'Is the Philosopher' reminder. If the character is in play, place the drunk marker by that player.",
     "remindersGlobal": ["Drunk","Is the Philosopher"],
+    "reminders": [],
     "setup": false,
     "ability": "Once per game, at night, choose a good character: gain that ability. If this character is in play, they are drunk."
   },
@@ -2428,7 +2429,7 @@
     "otherNightReminder": "Most characters who do not wake before you on night 1 are good.",
     "reminders": [],
     "setup": false,
-    "ability": "You start knowing the closest alive player, excluding Travelers, who did not wake tonight due to their ability. If equidistant you learn both."
+    "ability": "You start knowing the closest alive player, who did not wake tonight due to their ability. If equidistant you learn both."
   },
   {
     "id": "frosty",
@@ -2462,7 +2463,7 @@
     "edition": "christmas",
     "team": "townsfolk",
     "firstNight": 27,
-    "firstNightReminder": "Each night, wake the Holiday Elf and ask them to either choose another player or themselves. If they choose another player mark the player with the GIFT reminder token. If they choose themselves, mark the Holiday Elf with Opened Gifts reminder token, show them all the characters of players marked with a gift reminder token, plus one additional out-of-play character.",
+    "firstNightReminder": "Each night, ask them to either choose another player or themselves. If they choose another player mark them with the GIFT reminder. If they choose themselves, show them all the characters of players marked with a GIFT reminders, plus one out-of-play character, in any order.",
     "otherNight": 14,
     "otherNightReminder": "The order you show these characters is entirely up to the Storyteller.",
     "reminders": ["Gift","Open Gifts"],
@@ -2480,7 +2481,7 @@
     "otherNightReminder": "Starting on the second night, Rudolph points at up to three players equal to the base count of minions. Show them how many minions are in the group and send them to sleep. Any minions chosen, wake and show them \"You were chosen by\" and the Rudolph token. Point to Rudolph.",
     "reminders": ["Chosen By..."],
     "setup": false,
-    "ability": "Each night*, choose as many players as there are base minions (not yourself). You learn how many minions are among the group. If you choose a minion they learn who you are."
+    "ability": "Each night*, choose as many players as there are base minions (not yourself). You learn how many minions are among the group; a chosen minion learns who you are."
   },
   {
     "id": "ghostpresent",
@@ -2503,7 +2504,7 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 18,
-    "otherNightReminder": "Wake Ghost Future and point to two players, not themselves, and predict Rock, Paper, Scissors. Send them to sleep. Wake the targets and play SECRET roshambo and repeat until there is a winner. If Ghost Future successfully guessed a shape in the final roshambo, show them the token of the loser. If Ghost Future's prediction was not in the final roshambo, the Storyteller marks 0-3 players as dead.",
+    "otherNightReminder": "Wake Ghost Future and choose two players (not themselves) and predict Rock/Paper/Scissors then sleep. Wake the targets and play SECRET roshambo and repeat until there is a winner. If you successfully guessed a shape in the final roshambo, show them the losers token. If your prediction was not in the round, the Storyteller marks 0-3 players as dead.",
     "reminders": ["Dead"],
     "setup": false,
     "ability": "Each night*, choose two players (not yourself) to roshambo (they don't learn who they play against). If you successfully predict either shape used in the game you learn the loser's character. If you are wrong you and/or the chosen players may die."
@@ -2529,10 +2530,10 @@
     "firstNight": 0,
     "firstNightReminder": "It's pronounced Was-sail-er.",
     "otherNight": 0,
-    "otherNightReminder": "The format players should use is: \"Own Name\" greets \"Wassailer Player Name\"; Greeting!",
+    "otherNightReminder": "It's pronounced Was-sail-er. Players should use variations of: \"Own Name\" greets \"Wassailer Player Name\"; Greetings!",
     "reminders": ["Greetings!","Drunk"],
     "setup": false,
-    "ability": "Each dawn, up to half the living players (rounded-up) can perform a greeting. Note those who greet the Wassailer player by name; any 1 non-greeter could be drunk until tomorrow. During the day visit the Storyteller for some info about those who greeted you today."
+    "ability": "Each dawn, up to half the living players (rounded-up) can perform a greeting. Any 1 player who did not greet the Wassailer by player name could be drunk until tomorrow. During the day visit the Storyteller for some info about those who greeted you today."
   },
   {
     "id": "christmasangel",
@@ -2596,6 +2597,7 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "remindersGlobal": ["Is Broken Toy"],
+    "reminders": [],
     "setup": false,
     "ability": "You think you are another Outsider. You may die at any time. You might register as evil & as a Minion or Demon, even if dead."
   },
@@ -2698,10 +2700,10 @@
     "firstNight": 0,
     "firstNightReminder": "",
     "otherNight": 3,
-    "otherNightReminder": "Each night, remove any Mistletoe poisoned reminder tokens. Wake up Mistletoe and have them choose two players. Mark the chosen players with the swap reminders. Wake each swapped player individually, tell them their new character. Swap their characters on the grimoire and poison one of them. Remove both Swap reminder tokens.",
+    "otherNightReminder": "Wake up Mistletoe and choose two players. Mark the chosen players with reminders. Wake each swapped player, tell them their new character. Swap their characters on the grimoire. If you choose to not swap (once) all other players are drunk until dusk tomorrow.",
     "reminders": ["Swap","Poisoned"],
     "setup": true,
-    "ability": "Each night*, choose two alive players and swap their characters. If you swap a player back to their first night character you lose your ability. If you choose to not swap (once) all other players (except Travellers) are drunk until dusk tomorrow [-1 Outsider]"
+    "ability": "Each night*, choose two alive players and swap their characters. If you swap a player back to their first night character you lose your ability. If you choose to not swap (once) all other players are drunk until dusk tomorrow [-1 Outsider]"
   },
   {
     "id": "belsnickel",
@@ -2711,7 +2713,7 @@
     "firstNight": 32,
     "firstNightReminder": "Wake Belsnickel up on the first night and show them the grimoire. After showing them the grimoire they choose a player, thumbs up is join the evil team and thumbs down to die. Send them to sleep.",
     "otherNight": 9,
-    "otherNightReminder": "Following nights, have them wake up and choose a player to join the evil team (and learn you are the Belsnickel) or to die. If there are fewer evil players due to Belsnickel's ability than the base count of minions then a player can be converted to evil otherwise regardless of what Belsnickel chooses the player dies.",
+    "otherNightReminder": "Have them wake up and choose a player to die or to join the evil team (and learn you are the Belsnickel). If the Belsnickel's ability has converted evil players up to base minion count, the Belsnickel's targets can only die.",
     "reminders": ["Die"],
     "setup": true,
     "ability": "You start knowing the entire Grimoire. Each night choose a player to join your team (up to minion count) and learn who you are or die. [No Minions, +1 Outsider]"
