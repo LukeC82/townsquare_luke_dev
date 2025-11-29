@@ -362,6 +362,14 @@ export default {
         transform: rotate($rot * -1deg);
       }
 
+      // subtle downward nudge for tooltips for the very first item (position 1)
+      @if $i == 1 {
+        .ability {
+          transform: translateY(35px); /* adjust px to taste */
+          transform-origin: top center;
+        }
+      }
+
       // animation cascade
       .handUp,
       .life,
