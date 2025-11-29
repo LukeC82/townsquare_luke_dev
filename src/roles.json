@@ -2659,12 +2659,12 @@
     "edition": "christmas",
     "team": "minion",
     "firstNight": 23,
-    "firstNightReminder": "Wake Miser, have them choose Heat or Snow (set that reminder in the grimoire) which alternates each night. Heat - when executed, one or both of their alive neighbors die instead. Cold - when executed, a player of the other alignment dies instead.",
+    "firstNightReminder": "Wake Miser, have them choose Heat or Snow (set that reminder in the grimoire) which alternates each night. Heat - when executed, one or both of their alive neighbors die instead. Snow - when executed, a player of the other alignment dies instead.",
     "otherNight": 5,
-    "otherNightReminder": "If the Miser is executed, check if they have been previously executed as Heat or Cold. If not, apply the Heat or Cold death affect instead of dying yourself. This effectively means you can possibly survive two separate executions.",
-    "reminders": ["Heat","Cold","Executed Heat","Executed Cold"],
+    "otherNightReminder": "If the Miser is executed, check if they have been previously executed as Heat or Snow. If not, apply the Heat or Snow death affect instead of dying yourself. This effectively means you can survive two separate executions.",
+    "reminders": ["Heat","Snow","Executed Heat","Executed Snow"],
     "setup": false,
-    "ability": "First night choose if you are Heat or Snow then alternate each night. The first time you are executed as Heat and Snow other players may die instead of you."
+    "ability": "First night choose if you're Heat or Snow which alternates each night. The first time you are executed as Heat one or both alive neighbors may die instead of you; the first time executed as Snow a player on the other team may die instead of you."
   },
   {
     "id": "krampus",
