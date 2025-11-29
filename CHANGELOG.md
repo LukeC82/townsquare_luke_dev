@@ -11,6 +11,10 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.24.2
+- Very minor character text changes for "A Very Merry Clocktower Christmas"
+- Added a Wassailer as a "fabled" character, just to remind the Story Teller to do this
+
 ### Version 2.24.1
 - Added the final florishes to the Christmas themed Townsquare:
 - Updated gong, night animation and background
