@@ -2488,13 +2488,13 @@
     "name": "Ghost Present",
     "edition": "christmas",
     "team": "townsfolk",
-    "firstNight": 0,
-    "firstNightReminder": "",
+    "firstNight": 19,
+    "firstNightReminder": "Place the SCROOGE reminder token on Scrooge if in play.",
     "otherNight": 17,
     "otherNightReminder": "Wake Ghost Present, have them choose a player. Based on their choice, take the reminder tokens next to that player and show them one by one in any order. If there are no reminders tokens to show the Ghost Present then show them a 0.",
-    "reminders": ["Scrooge"],
+    "reminders": ["SCROOGE"],
     "setup": false,
-    "ability": "Each night*, choose a player. You learn all the reminder tokens of that player and if they are Scrooge."
+    "ability": "Each night*, choose a player. You learn all the reminder tokens on that player (but not their alignment) and if they are Scrooge."
   },
   {
     "id": "ghostfuture",
@@ -2572,7 +2572,7 @@
     "otherNightReminder": "An evil player selecting Gingerbread Man in the day does not trigger the Gingerbread Man's ability",
     "reminders": ["No Ability","Redirected"],
     "setup": false,
-    "ability": "At night when chosen by an evil player (once), wake and pick an alive player for their ability to affect."
+    "ability": "At night the first time you're chosen by an evil player (once), wake and pick an alive player for their ability to affect instead of you."
   },
   {
     "id": "thenutcracker",
@@ -2620,12 +2620,12 @@
     "edition": "christmas",
     "team": "outsider",
     "firstNight": 30,
-    "firstNightReminder": "At the start of the first night, change any one good player, including Scrooge, to Evil (wake and tell them). Decide if Scrooge will have 1-3 Visitors and place Past, Present, Future tokens on them; they each must have abilities that can choose a player. Wake Scrooge and show them the character tokens in order of Past, Present, Future",
+    "firstNightReminder": "At the start of the first night, change any one good players alignment (including Scrooge) to Evil. Decide if Scrooge will have 1-3 Visitors and place Past, Present, Future tokens on them; they each must have abilities that can choose a player. Wake Scrooge and show them the character tokens in order of Past, Present, Future",
     "otherNight": 19,
-    "otherNightReminder": "If a marked player chooses Scrooge at night, they get a \"Visited\" token. When all the known characters have visited Scrooge, any 1 evil player becomes good. If Scrooge is poisoned on a night they are chosen by one of their Visitors, you still place the visited token.",
+    "otherNightReminder": "If a marked player chooses Scrooge at night, they get a \"Visited\" token. When all the known characters have visited Scrooge, any 1 evil player immediately becomes good. If Scrooge is poisoned on a night they are chosen by one of their Visitors, you still place the visited token.",
     "reminders": ["Past","Present","Future","Visited"],
     "setup": true,
-    "ability": "Scrooge starts knowing up-to three in-play good characters. One evil player becomes good if you are chosen by the all players you started knowing. [1 good is evil]"
+    "ability": "You start knowing up-to three in-play good characters. One evil player becomes good if you are chosen by the all players you started knowing. [1 good player is evil]"
   },
   {
     "id": "secretsanta",
@@ -2659,12 +2659,12 @@
     "edition": "christmas",
     "team": "minion",
     "firstNight": 23,
-    "firstNightReminder": "Wake Miser, have them choose Heat or Snow (set that reminder in the grimoire) which alternates each night. Heat - when executed, one or both of their alive neighbors die instead. Cold - when executed, a player of the other alignment dies instead.",
+    "firstNightReminder": "Wake Miser, have them choose Heat or Snow (set that reminder in the grimoire) which alternates each night. Heat - when executed, one or both of their alive neighbors die instead. Snow - when executed, a player of the other alignment dies instead.",
     "otherNight": 5,
-    "otherNightReminder": "If the Miser is executed, check if they have been previously executed as Heat or Cold. If not, apply the Heat or Cold death affect instead of dying yourself. This effectively means you can possibly survive two separate executions.",
-    "reminders": ["Heat","Cold","Executed Heat","Executed Cold"],
+    "otherNightReminder": "If the Miser is executed, check if they have been previously executed as Heat or Snow. If not, apply the Heat or Snow death affect instead of dying yourself. This effectively means you can survive two separate executions.",
+    "reminders": ["Heat","Snow","Executed Heat","Executed Snow"],
     "setup": false,
-    "ability": "First night choose if you are Heat or Snow then alternate each night. The first time you are executed as Heat and Snow other players may die instead of you."
+    "ability": "First night choose if you're Heat or Snow which alternates each night. The first time you are executed as Heat one or both alive neighbors may die instead of you; the first time executed as Snow a player on the other team may die instead of you."
   },
   {
     "id": "krampus",
@@ -2716,7 +2716,7 @@
     "otherNightReminder": "Have them wake up and choose a player to die or to join the evil team (and learn you are the Belsnickel). If the Belsnickel's ability has converted evil players up to base minion count, the Belsnickel's targets can only die.",
     "reminders": ["Die"],
     "setup": true,
-    "ability": "You start knowing the entire Grimoire. Each night choose a player to join your team (up to minion count) and learn who you are or die. [No Minions, +1 Outsider]"
+    "ability": "You start knowing the Grimoire. Each night choose a player and decide if they die, or, if they learn who you are & join your team (up to minion count). [No Minions, +1 Outsider]"
   },
   {
     "id": "grinch",
@@ -2755,7 +2755,7 @@
     "otherNightReminder": "The resurrected player regains their ability, even a “once per game” ability they used already. Finally announce the player death(s) from the night.",
     "reminders": ["Death 1","Death 2"],
     "setup": false,
-    "ability": "Each night* choose 2 alive players, they die tonight. If you die this way, a Minion becomes Frostbite and you become an out of play Minion. At dawn, there is a snap vote to resurrect one of the chosen players (a draw ends in 2 deaths)."
+    "ability": "Each night* choose 2 alive players, they die tonight. If you die this way, a Minion becomes Frostbite and you become an out of play Minion. At dawn, if both chosen players died, there is an immediate vote to resurrect one of the chosen players (a draw ends in 2 deaths)."
   }
 ]
 

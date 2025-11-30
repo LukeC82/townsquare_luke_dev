@@ -199,6 +199,17 @@
     "ability": "Each nominee chooses a player: until voting, only they may speak & they are mad the nominee is good or might die."
   },
   {
+    "id": "wassailerfabled",
+    "firstNightReminder": "",
+    "otherNightReminder": "",
+    "reminders": [],
+    "setup": false,
+    "name": "Wassailer",
+    "edition": "christmas",
+    "team": "fabled",
+    "ability": "Each dawn, up to half the living players (rounded-up) can each perform a greeting to a specific player by name."
+  },
+  {
     "id": "tor",
     "firstNightReminder": "",
     "otherNightReminder": "",
