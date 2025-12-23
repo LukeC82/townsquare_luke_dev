@@ -5,29 +5,34 @@
     @close="toggleModal('roles')"
   >
     <h3>Select the characters for {{ nonTravelers }} players:</h3>
-    <ul class="tokens" v-for="(teamRoles, team) in roleSelection" :key="team">
-      <li class="count" :class="[team]">
-        {{ teamRoles.reduce((a, { selected }) => a + selected, 0) }} /
-        {{ game[nonTravelers - 5][team] }}
-      </li>
-      <li
-        v-for="role in teamRoles"
-        :class="[role.team, role.selected ? 'selected' : '']"
-        :key="role.id"
-        @click="role.selected = role.selected ? 0 : 1"
-      >
-        <Token :role="role" />
-        <font-awesome-icon icon="exclamation-triangle" v-if="role.setup" />
-        <div class="buttons" v-if="allowMultiple">
-          <font-awesome-icon
-            icon="minus-circle"
-            @click.stop="role.selected--"
-          />
-          <span>{{ role.selected > 1 ? "x" + role.selected : "" }}</span>
-          <font-awesome-icon icon="plus-circle" @click.stop="role.selected++" />
-        </div>
-      </li>
-    </ul>
+    <div class="scroll">
+      <ul class="tokens" v-for="(teamRoles, team) in roleSelection" :key="team">
+        <li class="count" :class="[team]">
+          {{ teamRoles.reduce((a, { selected }) => a + selected, 0) }} /
+          {{ game[nonTravelers - 5][team] }}
+        </li>
+        <li
+          v-for="role in teamRoles"
+          :class="[role.team, role.selected ? 'selected' : '']"
+          :key="role.id"
+          @click="role.selected = role.selected ? 0 : 1"
+        >
+          <Token :role="role" />
+          <font-awesome-icon icon="exclamation-triangle" v-if="role.setup" />
+          <div class="buttons" v-if="allowMultiple">
+            <font-awesome-icon
+              icon="minus-circle"
+              @click.stop="role.selected--"
+            />
+            <span>{{ role.selected > 1 ? "x" + role.selected : "" }}</span>
+            <font-awesome-icon
+              icon="plus-circle"
+              @click.stop="role.selected++"
+            />
+          </div>
+        </li>
+      </ul>
+    </div>
     <div class="warning" v-if="hasSelectedSetupRoles">
       <font-awesome-icon icon="exclamation-triangle" />
       <span>
@@ -165,12 +170,19 @@ export default {
 <style lang="scss" scoped>
 @import "../../vars.scss";
 
+/* vertical-only scroll wrapper for tokens; doesn't change token sizes */
+.scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 ul.tokens {
   padding-left: 5%;
   li {
     border-radius: 50%;
     width: 5vw;
-    margin: 5px;
+    margin: 4px;
     opacity: 0.5;
     transition: all 250ms;
     &.selected {

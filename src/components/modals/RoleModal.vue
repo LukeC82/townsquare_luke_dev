@@ -8,26 +8,28 @@
           : "bluffing"
       }}
     </h3>
-    <ul class="tokens" v-if="tab === 'editionRoles' || !otherTravelers.size">
-      <li
-        v-for="role in availableRoles"
-        :class="[role.team]"
-        :key="role.id"
-        @click="setRole(role)"
-      >
-        <Token :role="role" />
-      </li>
-    </ul>
-    <ul class="tokens" v-if="tab === 'otherTravelers' && otherTravelers.size">
-      <li
-        v-for="role in otherTravelers.values()"
-        :class="[role.team]"
-        :key="role.id"
-        @click="setRole(role)"
-      >
-        <Token :role="role" />
-      </li>
-    </ul>
+    <div class="scroll">
+      <ul class="tokens" v-if="tab === 'editionRoles' || !otherTravelers.size">
+        <li
+          v-for="role in availableRoles"
+          :class="[role.team]"
+          :key="role.id"
+          @click="setRole(role)"
+        >
+          <Token :role="role" />
+        </li>
+      </ul>
+      <ul class="tokens" v-if="tab === 'otherTravelers' && otherTravelers.size">
+        <li
+          v-for="role in otherTravelers.values()"
+          :class="[role.team]"
+          :key="role.id"
+          @click="setRole(role)"
+        >
+          <Token :role="role" />
+        </li>
+      </ul>
+    </div>
     <div
       class="button-group"
       v-if="playerIndex >= 0 && otherTravelers.size && !session.isSpectator"
@@ -115,10 +117,17 @@ export default {
 <style scoped lang="scss">
 @import "../../vars.scss";
 
+/* vertical-only scroll wrapper for tokens; doesn't change token sizes */
+.scroll {
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 ul.tokens li {
   border-radius: 50%;
-  width: 6vw;
-  margin: 1%;
+  width: 5.5vw;
+  margin: 0.7%;
   transition: transform 500ms ease;
 
   &.townsfolk {

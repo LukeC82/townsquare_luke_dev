@@ -64,8 +64,8 @@ import VoteHistoryModal from "@/components/modals/VoteHistoryModal";
 import GameStateModal from "@/components/modals/GameStateModal";
 
 const backgrounds = require.context(
-  "./assets/backgrounds/xmas",
-  //"./assets/backgrounds",
+  //"./assets/backgrounds/xmas",
+  "./assets/backgrounds",
   false,
   /\.jpg$/i
 );
@@ -356,7 +356,7 @@ video#background {
 }
 
 /* Snowy backdrop */
-#app > .backdrop {
+#app > .xmasbackdrop {
   position: absolute;
   left: 0;
   right: 0;
@@ -398,7 +398,7 @@ video#background {
 }
 
 /* Night phase backdrop */
-#app > .oldbackdrop {
+#app > .backdrop {
   position: absolute;
   left: 0;
   right: 0;

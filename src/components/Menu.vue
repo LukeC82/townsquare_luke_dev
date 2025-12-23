@@ -244,7 +244,7 @@
     <div id="audioGong" class="playGong" v-if="grimoire.isReturnToTown">
       <audio
         :autoplay="!grimoire.isMuted"
-        src="../assets/sounds/santa-ho-ho-ho.mp3"
+        src="../assets/sounds/gong.mp3"
         :muted="grimoire.isMuted"
       ></audio>
     </div>
@@ -411,7 +411,7 @@ export default {
         this.$store.commit("toggleReturnToTown");
         setTimeout(() => {
           this.$store.commit("toggleReturnToTown");
-        }, 9500);
+        }, 5500);
       }
     },
     ...mapMutations([
