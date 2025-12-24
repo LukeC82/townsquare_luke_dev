@@ -11,6 +11,10 @@
 - but their name on your token, to the right of your arrow (who I am pointing at)
 - add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
 
+### Version 2.25.0
+- Removed the Christmas themed gong, snowy backdrop.
+- Added a vertical scroll bar to the character selection and assignment modals
+
 ### Version 2.24.2
 - Very minor character text changes for "A Very Merry Clocktower Christmas"
 - Added a Wassailer as a "fabled" character, just to remind the Story Teller to do this
