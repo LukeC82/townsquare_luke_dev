@@ -1,5 +1,5 @@
 <template>
-  <div class="token" @click="setRole" :class="[role.id]">
+  <div class="token" @click="setRole" @mouseenter="showAbility" @mouseleave="hideAbility" :class="[role.id]">
     <span
       class="icon"
       v-if="role.id"
@@ -40,9 +40,7 @@
       </text>
     </svg>
     <div class="edition" :class="[`edition-${role.edition}`, role.team]"></div>
-    <div class="ability" v-if="role.ability">
-      {{ role.ability }}
-    </div>
+    <!-- tooltip rendered into document.body for correct stacking -->
   </div>
 </template>
 
@@ -67,7 +65,9 @@ export default {
     ...mapState(["grimoire"])
   },
   data() {
-    return {};
+    return {
+      tooltipEl: null
+    };
   },
   filters: {
     nameToFontSize: name => (name && name.length > 10 ? "90%" : "110%")
@@ -75,6 +75,63 @@ export default {
   methods: {
     setRole() {
       this.$emit("set-role");
+    },
+    showAbility() {
+      if (!this.role || !this.role.ability) return;
+      // create tooltip element if needed
+      if (!this.tooltipEl) {
+        this.tooltipEl = document.createElement('div');
+        this.tooltipEl.className = 'token-ability';
+        // base styles (use inline so not affected by scoped CSS)
+        Object.assign(this.tooltipEl.style, {
+          position: 'fixed',
+          width: '250px',
+          padding: '5px 10px',
+          background: 'rgba(0,0,0,0.6)',
+          color: 'white',
+          borderRadius: '10px',
+          border: '3px solid black',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.5)',
+          textAlign: 'left',
+          fontSize: '80%',
+          pointerEvents: 'none',
+          opacity: '0',
+          transition: 'opacity 150ms ease-in-out',
+          zIndex: '100000'
+        });
+        document.body.appendChild(this.tooltipEl);
+      }
+      this.tooltipEl.textContent = this.role.ability;
+      const rect = this.$el.getBoundingClientRect();
+      const gap = 8;
+      const tooltipWidth = parseInt(this.tooltipEl.style.width, 10) || 250;
+      let left = rect.right + gap;
+      if (left + tooltipWidth > window.innerWidth - gap) {
+        left = rect.left - tooltipWidth - gap;
+      }
+      let top = rect.top + rect.height / 2;
+      const minTop = gap + 8;
+      const maxTop = window.innerHeight - gap - 8;
+      if (top < minTop) top = minTop;
+      if (top > maxTop) top = maxTop;
+      Object.assign(this.tooltipEl.style, {
+        left: `${Math.max(left, gap)}px`,
+        top: `${top}px`,
+        transform: 'translateY(-50%)',
+        opacity: '1'
+      });
+    },
+    hideAbility() {
+      if (this.tooltipEl) this.tooltipEl.style.opacity = '0';
+    }
+  },
+  mounted() {
+    // nothing to do until hovered
+  },
+  beforeDestroy() {
+    if (this.tooltipEl && this.tooltipEl.parentNode) {
+      this.tooltipEl.parentNode.removeChild(this.tooltipEl);
+      this.tooltipEl = null;
     }
   }
 };
@@ -196,40 +253,6 @@ export default {
     display: none;
   }
 
-  .ability {
-    display: flex;
-    position: absolute;
-    padding: 5px 10px;
-    left: 120%;
-    width: 250px;
-    z-index: 25;
-    font-size: 80%;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    border: 3px solid black;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
-    text-align: left;
-    justify-items: center;
-    align-content: center;
-    align-items: center;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 200ms ease-in-out;
-
-    &:before {
-      content: " ";
-      border: 10px solid transparent;
-      width: 0;
-      height: 0;
-      border-right-color: black;
-      position: absolute;
-      margin-right: 2px;
-      right: 100%;
-    }
-  }
-
-  &:hover .ability {
-    opacity: 1;
-  }
+  /* tooltip is rendered to document.body; styles applied inline in JS */
 }
 </style>
