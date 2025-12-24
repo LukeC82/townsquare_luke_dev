@@ -172,9 +172,32 @@ export default {
 
 /* vertical-only scroll wrapper for tokens; doesn't change token sizes */
 .scroll {
-  max-height: 70vh;
+  max-height: 82vh;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: none;
+  padding-bottom: 2vh;
+}
+
+.scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+.scroll:hover {
+  scrollbar-width: thin;
+}
+
+.scroll:hover::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0);
+  border-radius: 4px;
+}
+
+.scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.35);
 }
 
 ul.tokens {
@@ -182,9 +205,10 @@ ul.tokens {
   li {
     border-radius: 50%;
     width: 5vw;
-    margin: 4px;
+    margin: 4.5px;
     opacity: 0.5;
     transition: all 250ms;
+    transform-origin: center bottom;
     &.selected {
       opacity: 1;
       .buttons {
@@ -210,7 +234,7 @@ ul.tokens {
       box-shadow: 0 0 10px $traveler, 0 0 10px $traveler;
     }
     &:hover {
-      transform: scale(1.2);
+      transform: scale(1.1);
       z-index: 10;
     }
     .fa-exclamation-triangle {
