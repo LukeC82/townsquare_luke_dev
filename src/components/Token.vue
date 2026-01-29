@@ -1,5 +1,11 @@
 <template>
-  <div class="token" @click="setRole" @mouseenter="showAbility" @mouseleave="hideAbility" :class="[role.id]">
+  <div
+    class="token"
+    @click="setRole"
+    @mouseenter="showAbility"
+    @mouseleave="hideAbility"
+    :class="[role.id]"
+  >
     <span
       class="icon"
       v-if="role.id"
@@ -80,24 +86,24 @@ export default {
       if (!this.role || !this.role.ability) return;
       // create tooltip element if needed
       if (!this.tooltipEl) {
-        this.tooltipEl = document.createElement('div');
-        this.tooltipEl.className = 'token-ability';
+        this.tooltipEl = document.createElement("div");
+        this.tooltipEl.className = "token-ability";
         // base styles (use inline so not affected by scoped CSS)
         Object.assign(this.tooltipEl.style, {
-          position: 'fixed',
-          width: '250px',
-          padding: '5px 10px',
-          background: 'rgba(0,0,0,0.6)',
-          color: 'white',
-          borderRadius: '10px',
-          border: '3px solid black',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.5)',
-          textAlign: 'left',
-          fontSize: '80%',
-          pointerEvents: 'none',
-          opacity: '0',
-          transition: 'opacity 150ms ease-in-out',
-          zIndex: '100000'
+          position: "fixed",
+          width: "250px",
+          padding: "5px 10px",
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          borderRadius: "10px",
+          border: "3px solid black",
+          boxShadow: "0 4px 6px rgba(0,0,0,0.5)",
+          textAlign: "left",
+          fontSize: "80%",
+          pointerEvents: "none",
+          opacity: "0",
+          transition: "opacity 150ms ease-in-out",
+          zIndex: "100000"
         });
         document.body.appendChild(this.tooltipEl);
       }
@@ -117,12 +123,12 @@ export default {
       Object.assign(this.tooltipEl.style, {
         left: `${Math.max(left, gap)}px`,
         top: `${top}px`,
-        transform: 'translateY(-50%)',
-        opacity: '1'
+        transform: "translateY(-50%)",
+        opacity: "1"
       });
     },
     hideAbility() {
-      if (this.tooltipEl) this.tooltipEl.style.opacity = '0';
+      if (this.tooltipEl) this.tooltipEl.style.opacity = "0";
     }
   },
   mounted() {
