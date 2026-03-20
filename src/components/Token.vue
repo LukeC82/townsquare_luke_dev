@@ -126,9 +126,36 @@ export default {
         transform: "translateY(-50%)",
         opacity: "1"
       });
+      // Safety-net: hide if the cursor leaves without firing mouseleave
+      if (!this._safetyPointermove) {
+        this._safetyPointermove = () => {
+          if (this.$el && !this.$el.matches(":hover")) {
+            this.hideAbility();
+          }
+        };
+        document.addEventListener("pointermove", this._safetyPointermove, {
+          passive: true
+        });
+      }
+      // Safety-net: hide on window blur (alt-tab, OS dialog, context menu, etc.)
+      if (!this._safetyBlur) {
+        this._safetyBlur = () => this.hideAbility();
+        window.addEventListener("blur", this._safetyBlur);
+      }
     },
     hideAbility() {
       if (this.tooltipEl) this.tooltipEl.style.opacity = "0";
+      this._removeSafetyListeners();
+    },
+    _removeSafetyListeners() {
+      if (this._safetyPointermove) {
+        document.removeEventListener("pointermove", this._safetyPointermove);
+        this._safetyPointermove = null;
+      }
+      if (this._safetyBlur) {
+        window.removeEventListener("blur", this._safetyBlur);
+        this._safetyBlur = null;
+      }
     }
   },
   mounted() {
@@ -139,6 +166,7 @@ export default {
       this.tooltipEl.parentNode.removeChild(this.tooltipEl);
       this.tooltipEl = null;
     }
+    this._removeSafetyListeners();
   }
 };
 </script>

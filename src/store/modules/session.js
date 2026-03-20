@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 /**
  * Handle a vote request.
  * If the vote is from a seat that is already locked, ignore it.
@@ -27,10 +29,26 @@ const state = () => ({
   voteHistory: [],
   markedPlayer: -1,
   isVoteHistoryAllowed: false,
-  isRolesDistributed: false
+  isRolesDistributed: false,
+  pointVoteActive: false,
+  pointVotes: {},
+  pointVoteCountdown: false,
+  pointVoteEnded: false
 });
 
-const getters = {};
+const getters = {
+  pointVoteLeaders(state) {
+    const tally = {};
+    for (const targetIdx of Object.values(state.pointVotes)) {
+      tally[targetIdx] = (tally[targetIdx] || 0) + 1;
+    }
+    const max = Math.max(...Object.values(tally), 0);
+    if (max === 0) return [];
+    return Object.keys(tally)
+      .filter(k => tally[k] === max)
+      .map(Number);
+  }
+};
 
 const actions = {};
 
@@ -91,6 +109,36 @@ const mutations = {
         .map(({ name }) => name)
     });
   },
+  /**
+   * Record a Point Vote result in the vote history.
+   * Only records when there is a single clear winner (no tie).
+   * @param state
+   * @param players
+   */
+  addPointVoteHistory(state, players) {
+    if (!state.isVoteHistoryAllowed && state.isSpectator) return;
+    const tally = {};
+    for (const t of Object.values(state.pointVotes)) {
+      tally[t] = (tally[t] || 0) + 1;
+    }
+    const max = Math.max(...Object.values(tally), 0);
+    if (max === 0) return;
+    const leaders = Object.keys(tally).filter(k => tally[k] === max).map(Number);
+    if (leaders.length !== 1) return;
+    const nominee = players[leaders[0]] ? players[leaders[0]].name : "Unknown";
+    const votes = Object.entries(state.pointVotes)
+      .filter(([, t]) => t === leaders[0])
+      .map(([voterIdx]) => (players[voterIdx] ? players[voterIdx].name : null))
+      .filter(Boolean);
+    state.voteHistory.push({
+      timestamp: new Date(),
+      nominator: "N/A",
+      nominee,
+      type: "Point Vote",
+      majority: "N/A",
+      votes
+    });
+  },
   clearVoteHistory(state) {
     state.voteHistory = [];
   },
@@ -104,6 +152,33 @@ const mutations = {
   voteSync: handleVote,
   lockVote(state, lock) {
     state.lockedVote = lock !== undefined ? lock : state.lockedVote + 1;
+  },
+  setPointVoteActive(state, val) {
+    state.pointVoteActive = val;
+    if (val) {
+      state.pointVotes = {};
+      state.pointVoteCountdown = false;
+      state.pointVoteEnded = false;
+    }
+  },
+  setPointVoteCountdown: set("pointVoteCountdown"),
+  setPointVoteEnded: set("pointVoteEnded"),
+  castPointVote(state, { voterIndex, targetIndex }) {
+    if (targetIndex === null) {
+      Vue.delete(state.pointVotes, voterIndex);
+    } else {
+      Vue.set(state.pointVotes, voterIndex, targetIndex);
+    }
+  },
+  castPointVoteSync(state, { voterIndex, targetIndex }) {
+    if (targetIndex === null) {
+      Vue.delete(state.pointVotes, voterIndex);
+    } else {
+      Vue.set(state.pointVotes, voterIndex, targetIndex);
+    }
+  },
+  setPointVotes(state, votes) {
+    state.pointVotes = votes || {};
   }
 };
 

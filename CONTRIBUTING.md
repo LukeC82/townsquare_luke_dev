@@ -77,7 +77,7 @@ Commit messages should be verbose enough to allow someone else to follow your ch
 $ cd server/
 $ NODE_ENV=development node index.js
 
-## .3 Setup local variables
+## 3. Setup local variables
 ``` bash\GitbBash
 $ export NODE_OPTIONS=--openssl-legacy-provider
 $ export NODE_ENV=development
@@ -93,6 +93,11 @@ $ npm run lint
 $ npm run serve
 
 ```
+## 4. Debug Tools
+VUE Debugging - requires browser plugin Vue.js DevTools
+Press F12 on the browser using the townsquare url
+Select the VUE to inspect the session variables
+
 
 ## Custom Script, GIT Gists:
 https://gist.github.com/LukeC82

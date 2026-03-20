@@ -4,12 +4,12 @@
 -- probably disable emotes during an active votes/other important activites
 - Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
-- Need the "Boomdandy"/"Riot" group pointing, tally & countdown functionality implemnted
 
-- Menu item to enable the arrows for all players (toggle)
-- clicking on any arrow should:
-- but their name on your token, to the right of your arrow (who I am pointing at)
-- add +1 to the target players "being pointed at" count, which is also displayed to the left of the arrow
+
+### Version 2.25.1
+- Added the Point Vote feature to the Townsquare.
+- Minor fix for lagging character tooltips
+- Added minor fix for the vote history toggling back on
 
 ### Version 2.25.0
 - Removed the Christmas themed gong, snowy backdrop.

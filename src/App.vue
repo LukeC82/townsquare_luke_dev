@@ -29,8 +29,9 @@
     <div class="returnCircle"></div>
     <transition name="blur">
       <Intro v-if="!players.length"></Intro>
-      <TownInfo v-if="players.length && !session.nomination"></TownInfo>
+      <TownInfo v-if="players.length && !session.nomination && !session.pointVoteActive && !session.pointVoteEnded"></TownInfo>
       <Vote v-if="session.nomination"></Vote>
+      <PointVote v-if="session.pointVoteActive || session.pointVoteEnded"></PointVote>
     </transition>
     <TownSquare></TownSquare>
     <Menu ref="menu"></Menu>
@@ -57,6 +58,7 @@ import EditionModal from "./components/modals/EditionModal";
 import Intro from "./components/Intro";
 import ReferenceModal from "./components/modals/ReferenceModal";
 import Vote from "./components/Vote";
+import PointVote from "./components/PointVote";
 import Gradients from "./components/Gradients";
 import NightOrderModal from "./components/modals/NightOrderModal";
 import FabledModal from "@/components/modals/FabledModal";
@@ -77,6 +79,7 @@ export default {
     FabledModal,
     NightOrderModal,
     Vote,
+    PointVote,
     ReferenceModal,
     Intro,
     TownInfo,
@@ -151,6 +154,11 @@ export default {
         case "s":
           if (this.session.isSpectator) return;
           this.$refs.menu.toggleNight();
+          break;
+        case "p":
+          if (this.session.isSpectator) return;
+          if (!this.players.length) return;
+          this.$refs.menu.togglePointVote();
           break;
         case "escape":
           this.$store.commit("toggleModal");
