@@ -1,6 +1,7 @@
 import Vue from "vue";
 import App from "./App";
 import store from "./store";
+import eventConfig from "./events";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
@@ -61,6 +62,7 @@ library.add(
   ...fabIcons.map(i => fab["fa" + i])
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.prototype.$event = eventConfig;
 Vue.config.productionTip = false;
 
 new Vue({

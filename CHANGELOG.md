@@ -5,6 +5,17 @@
 - Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
 
+### Version 2.25.2
+- New Feature — Seasonal Events System:
+-- A single-file toggle system for seasonal themes (e.g. Christmas). Changing one line in src/events.js switches the active event; no other files need editing.
+-- To add a future event: add an entry to configs in events.js, place assets in the appropriate subfolder, add a CSS block in App.vue for any new visual overlay, then set ACTIVE_EVENT.
+- Bug Fixes:
+- Fixed a rare TypeError whenever a player was removed during an active Point Vote
+- Deprecated substr replaced with slice
+- Fixed idle tab/browser sessions by sending a keepalive message & response ping
+- Better organisd session and grimoire settings
+- Safeguard against too many point-vote clicks being made in that mode
+- Fixed a delay in the point-vote highlighting as you progress clockwise around the townsquare
 
 ### Version 2.25.1
 - Added the Point Vote feature to the Townsquare.

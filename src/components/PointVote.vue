@@ -8,10 +8,20 @@
           <span class="summary">No votes were cast.</span>
         </template>
         <template v-else>
-          <div class="result-entry" v-for="leaderIdx in leaders" :key="leaderIdx">
+          <div
+            class="result-entry"
+            v-for="leaderIdx in leaders"
+            :key="leaderIdx"
+          >
             <span class="result-name">{{ players[leaderIdx].name }}</span>
-            <span class="result-tally">{{ leaderVoteCount }} vote{{ leaderVoteCount !== 1 ? 's' : '' }}</span>
-            <span class="result-voters">{{ votersForPlayer(leaderIdx).join(", ") }}</span>
+            <span class="result-tally"
+              >{{ leaderVoteCount }} vote{{
+                leaderVoteCount !== 1 ? "s" : ""
+              }}</span
+            >
+            <span class="result-voters">Voters: {{
+              votersForPlayer(leaderIdx).join(", ")
+            }}</span>
           </div>
         </template>
         <template v-if="!session.isSpectator">
@@ -91,7 +101,7 @@ export default {
         setTimeout(() => {
           this.$store.commit("session/setPointVoteActive", false);
           this.$store.commit("session/setPointVoteEnded", true);
-        }, 3500);
+        }, 4000);
       }
     }
   },
@@ -176,7 +186,7 @@ export default {
 
   .result-name {
     font-weight: bold;
-    font-size: 105%;
+    font-size: 130%;
     color: $townsfolk;
   }
 

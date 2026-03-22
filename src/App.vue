@@ -3,12 +3,15 @@
     id="app"
     @keyup="keyup"
     tabindex="-1"
-    :class="{
-      night: grimoire.isNight,
-      static: grimoire.isStatic,
-      hiddenVoting: grimoire.isHiddenVoting,
-      returnToTown: grimoire.isReturnToTown
-    }"
+    :class="[
+      {
+        night: session.isNight,
+        static: grimoire.isStatic,
+        hiddenVoting: session.isHiddenVoting,
+        returnToTown: session.isReturnToTown
+      },
+      $event.name !== 'default' ? 'event-' + $event.name : ''
+    ]"
     :style="{
       backgroundImage: randomBackground
         ? `url('${randomBackground}')`
@@ -25,13 +28,23 @@
       loop
     ></video>
     <div class="backdrop"></div>
+    <div class="event-overlay"></div>
     <div class="diseasecloud"></div>
     <div class="returnCircle"></div>
     <transition name="blur">
       <Intro v-if="!players.length"></Intro>
-      <TownInfo v-if="players.length && !session.nomination && !session.pointVoteActive && !session.pointVoteEnded"></TownInfo>
+      <TownInfo
+        v-if="
+          players.length &&
+            !session.nomination &&
+            !session.pointVoteActive &&
+            !session.pointVoteEnded
+        "
+      ></TownInfo>
       <Vote v-if="session.nomination"></Vote>
-      <PointVote v-if="session.pointVoteActive || session.pointVoteEnded"></PointVote>
+      <PointVote
+        v-if="session.pointVoteActive || session.pointVoteEnded"
+      ></PointVote>
     </transition>
     <TownSquare></TownSquare>
     <Menu ref="menu"></Menu>
@@ -65,12 +78,8 @@ import FabledModal from "@/components/modals/FabledModal";
 import VoteHistoryModal from "@/components/modals/VoteHistoryModal";
 import GameStateModal from "@/components/modals/GameStateModal";
 
-const backgrounds = require.context(
-  //"./assets/backgrounds/xmas",
-  "./assets/backgrounds",
-  false,
-  /\.jpg$/i
-);
+// Single recursive context covers all event subfolders — no changes needed here for new events.
+const allBackgrounds = require.context("./assets/backgrounds", true, /\.jpg$/i);
 
 export default {
   components: {
@@ -100,12 +109,15 @@ export default {
     ...mapState("players", ["players"])
   },
   created() {
-    // Get all images from the background folder
-    const bgImages = backgrounds.keys();
-    // Pick one at random on load & refresh
+    const folder = this.$event.backgroundsFolder;
+    const bgImages = allBackgrounds
+      .keys()
+      .filter(key =>
+        folder ? key.startsWith(`./${folder}/`) : !key.slice(2).includes("/")
+      );
     if (bgImages.length) {
       const randomIndex = Math.floor(Math.random() * bgImages.length);
-      this.randomBackground = backgrounds(bgImages[randomIndex]);
+      this.randomBackground = allBackgrounds(bgImages[randomIndex]);
     }
   },
   methods: {
@@ -158,6 +170,7 @@ export default {
         case "p":
           if (this.session.isSpectator) return;
           if (!this.players.length) return;
+          if (this.session.nomination) return;
           this.$refs.menu.togglePointVote();
           break;
         case "escape":
@@ -363,14 +376,25 @@ video#background {
   object-fit: cover;
 }
 
-/* Snowy backdrop */
-#app > .xmasbackdrop {
+/* Seasonal event overlay — base (hidden by default) */
+#app > .event-overlay {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   top: 0;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+/* Christmas: suppress normal night backdrop so clouds don't bleed through during fade */
+#app.event-xmas.night > .backdrop {
+  opacity: 0;
+}
+
+/* Christmas: visual content always present so opacity transition has something to fade */
+#app.event-xmas > .event-overlay {
   background: black;
   background: linear-gradient(
     180deg,
@@ -378,22 +402,24 @@ video#background {
     rgba(1, 22, 46, 1) 50%,
     rgba(0, 39, 70, 1) 100%
   );
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
   &:after {
     content: " ";
     display: block;
     width: 100%;
-    padding-right: 0px;
     height: 100%;
     background: url("assets/snow.png");
     background-repeat: repeat;
     background-size: auto 2000px;
-    background-position: 0 0; /* begin fully visible */
+    background-position: 0 0;
     animation: scroll-snow 30s linear infinite;
     opacity: 0.6;
     pointer-events: none;
   }
+}
+
+/* Christmas: night only — reveal the overlay */
+#app.event-xmas.night > .event-overlay {
+  opacity: 0.8;
 }
 
 @keyframes scroll-snow {
@@ -401,7 +427,7 @@ video#background {
     background-position: 0 0;
   }
   to {
-    background-position: 0 1200px; /* same value as background-size height */
+    background-position: 0 1200px;
   }
 }
 

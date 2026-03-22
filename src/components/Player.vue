@@ -11,7 +11,7 @@
           you: session.sessionId && player.id && player.id === session.playerId,
           'vote-yes': session.votes[index],
           'vote-lock': voteLocked,
-          'hidden-voting': grimoire.isHiddenVoting,
+          'hidden-voting': session.isHiddenVoting,
           'hand-raised': player.handRaised,
           'point-vote-leader': isPointVoteLeader
         },
@@ -136,7 +136,11 @@
 
       <div
         class="name"
-        @click="(!session.pointVoteActive || !players.some(p => p.id === session.playerId)) && (isMenuOpen = !isMenuOpen)"
+        @click="
+          (!session.pointVoteActive ||
+            !players.some(p => p.id === session.playerId)) &&
+            (isMenuOpen = !isMenuOpen)
+        "
         :class="{ active: isMenuOpen }"
       >
         <span>{{ player.name }}</span>
@@ -282,7 +286,8 @@ export default {
       );
     },
     pointVoteBearing() {
-      if (!this.session.pointVoteActive) return null;
+      if (!this.session.pointVoteActive && !this.session.pointVoteEnded)
+        return null;
       const targetIndex = this.session.pointVotes[this.index];
       if (targetIndex === undefined || targetIndex === null) return null;
       if (targetIndex === this.index) return null;
@@ -302,14 +307,16 @@ export default {
       const arrowOffsetY = -0.45 * (tokenVh / 50); // upward offset in radius units
 
       // Screen-space positions on unit circle (y positive = down)
-      const ix = Math.sin(rotI), iy = -Math.cos(rotI);
-      const jx = Math.sin(rotJ), jy = -Math.cos(rotJ);
+      const ix = Math.sin(rotI),
+        iy = -Math.cos(rotI);
+      const jx = Math.sin(rotJ),
+        jy = -Math.cos(rotJ);
 
       // Shoot from arrow's actual position, not token centre
       const ax = ix;
       const ay = iy + arrowOffsetY;
 
-      return Math.atan2(jx - ax, -(jy - ay)) * 180 / Math.PI;
+      return (Math.atan2(jx - ax, -(jy - ay)) * 180) / Math.PI;
     },
     zoom: function() {
       const unit = window.innerWidth > window.innerHeight ? "vh" : "vw";
@@ -326,8 +333,7 @@ export default {
   },
   data() {
     return {
-      isMenuOpen: false,
-      isSwap: false
+      isMenuOpen: false
     };
   },
   methods: {
@@ -439,6 +445,11 @@ export default {
     castPointVote() {
       // ST cannot vote (isSpectator === false means ST)
       if (!this.session.isSpectator) return;
+      if (this._pointVoteDebounce) return;
+      this._pointVoteDebounce = true;
+      setTimeout(() => {
+        this._pointVoteDebounce = false;
+      }, 250);
       const voterIndex = this.players.findIndex(
         p => p.id === this.session.playerId
       );
@@ -446,7 +457,10 @@ export default {
       // clicking the same player again removes the vote
       const currentTarget = this.session.pointVotes[voterIndex];
       const targetIndex = currentTarget === this.index ? null : this.index;
-      this.$store.commit("session/castPointVoteSync", { voterIndex, targetIndex });
+      this.$store.commit("session/castPointVoteSync", {
+        voterIndex,
+        targetIndex
+      });
     }
   }
 };
@@ -1174,7 +1188,8 @@ li.move:not(.from) .player .overlay svg.move {
 
 /***** Point Vote leader highlight *****/
 @keyframes point-vote-leader-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 6px 3px rgba(255, 215, 0, 0.7);
     border-color: gold;
   }
