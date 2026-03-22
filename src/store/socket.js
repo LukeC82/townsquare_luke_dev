@@ -1,7 +1,7 @@
 class LiveSession {
   constructor(store) {
     this._wss = "wss://live.axistownsquare.com:8080/";
-    // this._wss = "ws://localhost:8081/"; // uncomment if using local server with NODE_ENV=development
+    //this._wss = "ws://localhost:8081/"; // uncomment if using local server with NODE_ENV=development
     this._socket = null;
     this._isSpectator = true;
     this._gamestate = [];
@@ -216,6 +216,24 @@ class LiveSession {
       case "handRaised":
         this._updateHandRaised(params);
         break;
+      case "pointVoteActive":
+        if (!this._isSpectator) return;
+        this._store.commit("session/setPointVoteActive", params);
+        break;
+      case "pointVote":
+        this._store.commit("session/castPointVote", params);
+        break;
+      case "pointVoteCountdown":
+        if (!this._isSpectator) return;
+        this._store.commit("session/setPointVoteCountdown", params);
+        break;
+      case "pointVoteEnded":
+        if (!this._isSpectator) return;
+        if (!params) {
+          this._store.commit("session/addPointVoteHistory", this._store.state.players.players);
+        }
+        this._store.commit("session/setPointVoteEnded", params);
+        break;
     }
   }
 
@@ -313,6 +331,9 @@ class LiveSession {
           lockedVote: session.lockedVote,
           isVoteInProgress: session.isVoteInProgress,
           fabled: fabled.map(f => (f.isCustom ? f : { id: f.id })),
+          pointVoteActive: session.pointVoteActive,
+          pointVotes: session.pointVotes,
+          pointVoteEnded: session.pointVoteEnded,
           ...(session.nomination ? { votes: session.votes } : {})
         });
       } else {
@@ -328,6 +349,9 @@ class LiveSession {
           isVoteInProgress: session.isVoteInProgress,
           markedPlayer: session.markedPlayer,
           fabled: fabled.map(f => (f.isCustom ? f : { id: f.id })),
+          pointVoteActive: session.pointVoteActive,
+          pointVotes: session.pointVotes,
+          pointVoteEnded: session.pointVoteEnded,
           ...(session.nomination ? { votes: session.votes } : {})
         });
       }
@@ -354,7 +378,10 @@ class LiveSession {
       lockedVote,
       isVoteInProgress,
       markedPlayer,
-      fabled
+      fabled,
+      pointVoteActive,
+      pointVotes,
+      pointVoteEnded
     } = data;
     const players = this._store.state.players.players;
     // adjust number of players
@@ -405,6 +432,9 @@ class LiveSession {
       this._store.commit("toggleHiddenVoting", !!isHiddenVoting);
       this._store.commit("toggleReturnToTown", !!isReturnToTown);
       this._store.commit("session/setVoteHistoryAllowed", isVoteHistoryAllowed);
+      if (!isVoteHistoryAllowed) {
+        this._store.commit("session/clearVoteHistory");
+      }
       this._store.commit("session/nomination", {
         nomination,
         votes,
@@ -416,6 +446,13 @@ class LiveSession {
       this._store.commit("players/setFabled", {
         fabled: fabled.map(f => this._store.state.fabled.get(f.id) || f)
       });
+      if (pointVoteActive) {
+        this._store.commit("session/setPointVoteActive", true);
+        this._store.commit("session/setPointVotes", pointVotes || {});
+      } else if (pointVoteEnded) {
+        this._store.commit("session/setPointVotes", pointVotes || {});
+        this._store.commit("session/setPointVoteEnded", true);
+      }
     }
   }
 
@@ -968,6 +1005,41 @@ class LiveSession {
     if (this._isSpectator) return;
     this._send("remove", payload);
   }
+
+  /**
+   * Broadcast point vote active state. ST only.
+   */
+  setPointVoteActive() {
+    if (this._isSpectator) return;
+    this._send("pointVoteActive", this._store.state.session.pointVoteActive);
+  }
+
+  /**
+   * Broadcast a point vote cast by a player or received from a player.
+   * @param payload { voterIndex, targetIndex }
+   */
+  castPointVote(payload) {
+    this._send("pointVote", payload);
+  }
+
+  /**
+   * Broadcast point vote countdown state. ST only.
+   */
+  setPointVoteCountdown() {
+    if (this._isSpectator) return;
+    this._send(
+      "pointVoteCountdown",
+      this._store.state.session.pointVoteCountdown
+    );
+  }
+
+  /**
+   * Broadcast point vote ended state. ST only.
+   */
+  setPointVoteEnded() {
+    if (this._isSpectator) return;
+    this._send("pointVoteEnded", this._store.state.session.pointVoteEnded);
+  }
 }
 
 export default store => {
@@ -1032,6 +1104,18 @@ export default store => {
         break;
       case "session/setMarkedPlayer":
         session.setMarked(payload);
+        break;
+      case "session/setPointVoteActive":
+        session.setPointVoteActive();
+        break;
+      case "session/castPointVoteSync":
+        session.castPointVote(payload);
+        break;
+      case "session/setPointVoteCountdown":
+        session.setPointVoteCountdown();
+        break;
+      case "session/setPointVoteEnded":
+        session.setPointVoteEnded();
         break;
       case "players/swap":
         session.swapPlayer(payload);

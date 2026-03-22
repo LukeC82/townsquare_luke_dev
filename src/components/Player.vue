@@ -12,7 +12,8 @@
           'vote-yes': session.votes[index],
           'vote-lock': voteLocked,
           'hidden-voting': grimoire.isHiddenVoting,
-          'hand-raised': player.handRaised
+          'hand-raised': player.handRaised,
+          'point-vote-leader': isPointVoteLeader
         },
         player.role.team
       ]"
@@ -45,10 +46,7 @@
         </em>
       </div>
 
-      <Token
-        :role="player.role"
-        @set-role="$emit('trigger', ['openRoleModal'])"
-      />
+      <Token :role="player.role" @set-role="onTokenClick" />
 
       <!-- Overlay icons -->
       <div class="overlay">
@@ -117,9 +115,28 @@
       <div class="marked">
         <font-awesome-icon icon="skull" />
       </div>
+
+      <!-- Point Vote direction arrow -->
+      <div
+        class="point-vote-arrow"
+        v-if="pointVoteBearing !== null"
+        :style="{ transform: `rotate(${pointVoteBearing - 90}deg)` }"
+      >
+        <font-awesome-icon icon="hand-point-right" />
+      </div>
+
+      <!-- Point Vote tally overlay -->
+      <div
+        class="point-vote-tally"
+        v-if="session.pointVoteActive && pointVoteTally.length"
+      >
+        <span class="count">Votes: {{ pointVoteTally.length }}</span>
+        <span class="voters">{{ pointVoteTally.join(", ") }}</span>
+      </div>
+
       <div
         class="name"
-        @click="isMenuOpen = !isMenuOpen"
+        @click="(!session.pointVoteActive || !players.some(p => p.id === session.playerId)) && (isMenuOpen = !isMenuOpen)"
         :class="{ active: isMenuOpen }"
       >
         <span>{{ player.name }}</span>
@@ -235,7 +252,10 @@ export default {
   computed: {
     ...mapState("players", ["players"]),
     ...mapState(["grimoire", "session"]),
-    ...mapGetters({ nightOrder: "players/nightOrder" }),
+    ...mapGetters({
+      nightOrder: "players/nightOrder",
+      pointVoteLeaders: "session/pointVoteLeaders"
+    }),
     index: function() {
       return this.players.indexOf(this.player);
     },
@@ -246,6 +266,50 @@ export default {
       const indexAdjusted =
         (this.index - 1 + players - session.nomination[1]) % players;
       return indexAdjusted < session.lockedVote - 1;
+    },
+    pointVoteTally() {
+      return Object.entries(this.session.pointVotes)
+        .filter(([, targetIdx]) => targetIdx === this.index)
+        .map(([voterIdx]) =>
+          this.players[voterIdx] ? this.players[voterIdx].name : null
+        )
+        .filter(Boolean);
+    },
+    isPointVoteLeader() {
+      return (
+        (this.session.pointVoteActive || this.session.pointVoteEnded) &&
+        this.pointVoteLeaders.includes(this.index)
+      );
+    },
+    pointVoteBearing() {
+      if (!this.session.pointVoteActive) return null;
+      const targetIndex = this.session.pointVotes[this.index];
+      if (targetIndex === undefined || targetIndex === null) return null;
+      if (targetIndex === this.index) return null;
+      const n = this.players.length;
+      const rotI = (this.index / n) * 2 * Math.PI;
+      const rotJ = (targetIndex / n) * 2 * Math.PI;
+
+      // Arrow CSS: top:-20%, left:25%, width:50%, height:50%
+      // Arrow centre within .player: x=50%, y=5% → offset from token centre: dx=0, dy=-45%
+      // Token width as fraction of circle radius (R ≈ 50vh, token ≈ 16vh for ≤10 players)
+      const z = this.grimoire.zoom;
+      let tokenVh;
+      if (n < 7) tokenVh = 18 + z;
+      else if (n <= 10) tokenVh = 16 + z;
+      else if (n <= 15) tokenVh = 14 + z;
+      else tokenVh = 12 + z;
+      const arrowOffsetY = -0.45 * (tokenVh / 50); // upward offset in radius units
+
+      // Screen-space positions on unit circle (y positive = down)
+      const ix = Math.sin(rotI), iy = -Math.cos(rotI);
+      const jx = Math.sin(rotJ), jy = -Math.cos(rotJ);
+
+      // Shoot from arrow's actual position, not token centre
+      const ax = ix;
+      const ay = iy + arrowOffsetY;
+
+      return Math.atan2(jx - ax, -(jy - ay)) * 180 / Math.PI;
     },
     zoom: function() {
       const unit = window.innerWidth > window.innerHeight ? "vh" : "vw";
@@ -364,6 +428,25 @@ export default {
         this.index,
         !this.session.votes[this.index]
       ]);
+    },
+    onTokenClick() {
+      if (this.session.pointVoteActive) {
+        this.castPointVote();
+      } else {
+        this.$emit("trigger", ["openRoleModal"]);
+      }
+    },
+    castPointVote() {
+      // ST cannot vote (isSpectator === false means ST)
+      if (!this.session.isSpectator) return;
+      const voterIndex = this.players.findIndex(
+        p => p.id === this.session.playerId
+      );
+      if (voterIndex < 0) return;
+      // clicking the same player again removes the vote
+      const currentTarget = this.session.pointVotes[voterIndex];
+      const targetIndex = currentTarget === this.index ? null : this.index;
+      this.$store.commit("session/castPointVoteSync", { voterIndex, targetIndex });
     }
   }
 };
@@ -1033,5 +1116,75 @@ li.move:not(.from) .player .overlay svg.move {
 #townsquare.public .reminder {
   opacity: 0;
   pointer-events: none;
+}
+
+/***** Point Vote tally *****/
+.player .point-vote-tally {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 2px 5px;
+  text-align: center;
+  pointer-events: none;
+  width: 92%;
+
+  .count {
+    display: block;
+    font-size: 90%;
+    font-weight: bold;
+    color: $townsfolk;
+  }
+
+  .voters {
+    display: block;
+    font-size: 60%;
+    line-height: 1.3;
+    color: white;
+    word-break: break-word;
+    white-space: normal;
+  }
+}
+
+/***** Point Vote direction arrow *****/
+.player .point-vote-arrow {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: -20%;
+  left: 25%;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transform-origin: center center;
+
+  svg {
+    width: 70%;
+    height: 70%;
+    color: gold;
+    filter: drop-shadow(0 0 3px black);
+  }
+}
+
+/***** Point Vote leader highlight *****/
+@keyframes point-vote-leader-glow {
+  0%, 100% {
+    box-shadow: 0 0 6px 3px rgba(255, 215, 0, 0.7);
+    border-color: gold;
+  }
+  50% {
+    box-shadow: 0 0 16px 6px rgba(255, 215, 0, 0.95);
+    border-color: gold;
+  }
+}
+
+.player.point-vote-leader .token {
+  animation: point-vote-leader-glow 1.2s ease-in-out infinite;
 }
 </style>

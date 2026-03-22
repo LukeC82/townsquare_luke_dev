@@ -72,6 +72,14 @@
             </template>
             <em>[T]</em>
           </li>
+          <li
+            @click="togglePointVote"
+            v-if="!session.isSpectator && players.length"
+          >
+            <template v-if="!session.pointVoteActive">Point Vote</template>
+            <template v-if="session.pointVoteActive">End Point Vote</template>
+            <em>[P]</em>
+          </li>
           <li @click="toggleNightOrder" v-if="players.length">
             Night order
             <em>
@@ -279,6 +287,7 @@ export default {
       );
       if (sessionId) {
         this.$store.commit("session/clearVoteHistory");
+        this.$store.commit("session/setVoteHistoryAllowed", false);
         this.$store.commit("session/setSpectator", false);
         this.$store.commit("session/setSessionId", sessionId);
         this.copySessionUrl();
@@ -413,6 +422,18 @@ export default {
           this.$store.commit("toggleReturnToTown");
         }, 5500);
       }
+    },
+    togglePointVote() {
+      if (this.session.pointVoteActive) {
+        this.$store.commit("session/setPointVoteActive", false);
+      } else {
+        // abort any active nomination before starting point vote
+        if (this.session.nomination) {
+          this.$store.commit("session/nomination");
+        }
+        this.$store.commit("session/setPointVoteActive", true);
+      }
+      this.toggleMenu();
     },
     ...mapMutations([
       "toggleGrimoire",
