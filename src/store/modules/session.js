@@ -30,6 +30,9 @@ const state = () => ({
   markedPlayer: -1,
   isVoteHistoryAllowed: false,
   isRolesDistributed: false,
+  isNight: false,
+  isHiddenVoting: false,
+  isReturnToTown: false,
   pointVoteActive: false,
   pointVotes: {},
   pointVoteCountdown: false,
@@ -50,12 +53,17 @@ const getters = {
   }
 };
 
-const actions = {};
-
 // mutations helper functions
 const set = key => (state, val) => {
   state[key] = val;
 };
+
+const toggleFlag = key => (state, val) => {
+  state[key] = val === true || val === false ? val : !state[key];
+};
+
+// shared vote history accessibility check
+const canRecord = state => state.isVoteHistoryAllowed || !state.isSpectator;
 
 const mutations = {
   setPlayerId: set("playerId"),
@@ -74,7 +82,7 @@ const mutations = {
     state.sessionId = sessionId
       .toLocaleLowerCase()
       .replace(/[^0-9a-z]/g, "")
-      .substr(0, 10);
+      .slice(0, 10);
   },
   nomination(
     state,
@@ -93,7 +101,7 @@ const mutations = {
    * @param players
    */
   addHistory(state, players) {
-    if (!state.isVoteHistoryAllowed && state.isSpectator) return;
+    if (!canRecord(state)) return;
     if (!state.nomination || state.lockedVote <= players.length) return;
     const isExile = players[state.nomination[1]].role.team === "traveler";
     state.voteHistory.push({
@@ -116,14 +124,16 @@ const mutations = {
    * @param players
    */
   addPointVoteHistory(state, players) {
-    if (!state.isVoteHistoryAllowed && state.isSpectator) return;
+    if (!canRecord(state)) return;
     const tally = {};
     for (const t of Object.values(state.pointVotes)) {
       tally[t] = (tally[t] || 0) + 1;
     }
     const max = Math.max(...Object.values(tally), 0);
     if (max === 0) return;
-    const leaders = Object.keys(tally).filter(k => tally[k] === max).map(Number);
+    const leaders = Object.keys(tally)
+      .filter(k => tally[k] === max)
+      .map(Number);
     if (leaders.length !== 1) return;
     const nominee = players[leaders[0]] ? players[leaders[0]].name : "Unknown";
     const votes = Object.entries(state.pointVotes)
@@ -152,6 +162,28 @@ const mutations = {
   voteSync: handleVote,
   lockVote(state, lock) {
     state.lockedVote = lock !== undefined ? lock : state.lockedVote + 1;
+  },
+  toggleNight: toggleFlag("isNight"),
+  toggleHiddenVoting: toggleFlag("isHiddenVoting"),
+  toggleReturnToTown: toggleFlag("isReturnToTown"),
+  /**
+   * Re-index pointVotes after a player is removed.
+   * Drops votes cast by or for the removed player; decrements all higher indices.
+   */
+  removePlayerFromPointVotes(state, removedIndex) {
+    if (!state.pointVoteActive && !state.pointVoteEnded) return;
+    const updated = {};
+    for (const [voterIdxStr, targetIdxStr] of Object.entries(
+      state.pointVotes
+    )) {
+      const voter = Number(voterIdxStr);
+      const target = Number(targetIdxStr);
+      if (voter === removedIndex || target === removedIndex) continue;
+      const newVoter = voter > removedIndex ? voter - 1 : voter;
+      const newTarget = target > removedIndex ? target - 1 : target;
+      updated[newVoter] = newTarget;
+    }
+    state.pointVotes = updated;
   },
   setPointVoteActive(state, val) {
     state.pointVoteActive = val;
@@ -186,6 +218,5 @@ export default {
   namespaced: true,
   state,
   getters,
-  actions,
   mutations
 };

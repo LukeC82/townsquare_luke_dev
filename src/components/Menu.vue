@@ -54,18 +54,18 @@
             <em>[G]</em>
           </li>
           <li @click="toggleNight" v-if="!session.isSpectator">
-            <template v-if="!grimoire.isNight">Switch to Night</template>
-            <template v-if="grimoire.isNight">Switch to Day</template>
+            <template v-if="!session.isNight">Switch to Night</template>
+            <template v-if="session.isNight">Switch to Day</template>
             <em>[S]</em>
           </li>
           <li @click="toggleHiddenVoting" v-if="!session.isSpectator">
-            <template v-if="!grimoire.isHiddenVoting">Hide Voting</template>
-            <template v-if="grimoire.isHiddenVoting">Show Voting</template>
+            <template v-if="!session.isHiddenVoting">Hide Voting</template>
+            <template v-if="session.isHiddenVoting">Show Voting</template>
             <em>[H]</em>
           </li>
           <li @click="toggleReturnToTown" v-if="!session.isSpectator">
-            <template v-if="!grimoire.isReturnToTown">Return to Town</template>
-            <template v-if="grimoire.isReturnToTown">
+            <template v-if="!session.isReturnToTown">Return to Town</template>
+            <template v-if="session.isReturnToTown">
               <l style="color: rgb(174, 174, 174)">
                 <i>Gathering...</i>
               </l>
@@ -86,7 +86,7 @@
               <font-awesome-icon
                 :icon="[
                   'fas',
-                  grimoire.isNightOrder ? 'check-square' : 'square'
+                  session.isNightOrder ? 'check-square' : 'square'
                 ]"
               />
             </em>
@@ -249,10 +249,10 @@
         </template>
       </ul>
     </div>
-    <div id="audioGong" class="playGong" v-if="grimoire.isReturnToTown">
+    <div id="audioGong" class="playGong" v-if="session.isReturnToTown">
       <audio
         :autoplay="!grimoire.isMuted"
-        src="../assets/sounds/gong.mp3"
+        :src="$event.returnToTownSound"
         :muted="grimoire.isMuted"
       ></audio>
     </div>
@@ -372,13 +372,13 @@ export default {
     toggleNight() {
       //Prompt the ST if they switch directly from Hidden Voting to Night
       //If it's already hidden voting, it's not Night.
-      if (this.grimoire.isHiddenVoting) {
-        if (this.grimoire.isNight) {
-          this.$store.commit("toggleNight");
+      if (this.session.isHiddenVoting) {
+        if (this.session.isNight) {
+          this.$store.commit("session/toggleNight");
         } else {
           if (confirm("Are you sure you want to un-hide voting?")) {
-            this.$store.commit("toggleHiddenVoting");
-            this.$store.commit("toggleNight");
+            this.$store.commit("session/toggleHiddenVoting");
+            this.$store.commit("session/toggleNight");
             this.$store.commit("session/setMarkedPlayer", -1);
             this.players.forEach(player => {
               this.$store.commit("players/update", {
@@ -390,8 +390,8 @@ export default {
           }
         }
       } else {
-        this.$store.commit("toggleNight");
-        if (this.grimoire.isNight) {
+        this.$store.commit("session/toggleNight");
+        if (this.session.isNight) {
           this.$store.commit("session/setMarkedPlayer", -1);
           this.players.forEach(player => {
             this.$store.commit("players/update", {
@@ -404,23 +404,23 @@ export default {
       }
     },
     toggleHiddenVoting() {
-      if (this.grimoire.isHiddenVoting) {
+      if (this.session.isHiddenVoting) {
         if (confirm("Are you sure you want to un-hide voting?")) {
-          this.$store.commit("toggleHiddenVoting");
+          this.$store.commit("session/toggleHiddenVoting");
         }
       } else {
         //Hidden voting ends the night
-        this.$store.commit("toggleHiddenVoting");
-        this.$store.commit("toggleNight", false);
+        this.$store.commit("session/toggleHiddenVoting");
+        this.$store.commit("session/toggleNight", false);
       }
     },
     toggleReturnToTown() {
       //Play the animation for a set duration, along with the audio.
-      if (!this.grimoire.isReturnToTown) {
-        this.$store.commit("toggleReturnToTown");
+      if (!this.session.isReturnToTown) {
+        this.$store.commit("session/toggleReturnToTown");
         setTimeout(() => {
-          this.$store.commit("toggleReturnToTown");
-        }, 5500);
+          this.$store.commit("session/toggleReturnToTown");
+        }, this.$event.returnToTownDuration);
       }
     },
     togglePointVote() {

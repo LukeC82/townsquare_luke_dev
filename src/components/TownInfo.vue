@@ -63,11 +63,11 @@
           :icon="teams.traveler > 1 ? 'user-friends' : 'user'"
         />
       </span>
-      <span v-if="grimoire.isNight">
+      <span v-if="session.isNight">
         Night phase
         <font-awesome-icon :icon="['fas', 'cloud-moon']" />
       </span>
-      <span v-if="grimoire.isHiddenVoting">
+      <span v-if="session.isHiddenVoting">
         Hidden Voting
         <font-awesome-icon :icon="['fas', 'eye-slash']" />
       </span>
@@ -96,7 +96,7 @@ export default {
           ).length
       };
     },
-    ...mapState(["edition", "grimoire"]),
+    ...mapState(["edition", "grimoire", "session"]),
     ...mapState("players", ["players"])
   }
 };

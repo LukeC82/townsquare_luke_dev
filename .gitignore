@@ -46,6 +46,7 @@ override.tf.json
 .idea/
 
 .DS_Store
+.claude/settings.local.json
 /bin
 *.project
 **bin/

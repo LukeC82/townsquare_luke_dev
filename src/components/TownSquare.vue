@@ -381,6 +381,12 @@ export default {
         transition-delay: ($i - 1) * 50ms;
       }
 
+      // point-vote leader glow must start immediately at peak brightness,
+      // regardless of the cascade delay above
+      .player.point-vote-leader .token {
+        animation-delay: -0.6s;
+      }
+
       // move reminders closer to the sides of the circle
       $q: $item-count / 4;
       $x: $i - 1;

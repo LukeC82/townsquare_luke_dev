@@ -98,10 +98,7 @@ export default new Vuex.Store({
   },
   state: {
     grimoire: {
-      isNight: false,
       isNightOrder: true,
-      isHiddenVoting: false,
-      isReturnToTown: false,
       isPublic: true,
       isMenuOpen: false,
       isStatic: false,
@@ -169,10 +166,7 @@ export default new Vuex.Store({
     toggleMuted: toggle("isMuted"),
     toggleMenu: toggle("isMenuOpen"),
     toggleNightOrder: toggle("isNightOrder"),
-    toggleHiddenVoting: toggle("isHiddenVoting"),
-    toggleReturnToTown: toggle("isReturnToTown"),
     toggleStatic: toggle("isStatic"),
-    toggleNight: toggle("isNight"),
     toggleGrimoire: toggle("isPublic"),
     toggleImageOptIn: toggle("isImageOptIn"),
     toggleModal({ modals }, name) {

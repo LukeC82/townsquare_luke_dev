@@ -9,6 +9,7 @@ class LiveSession {
     this._pingInterval = 30 * 1000; // 30 seconds between pings
     this._pingTimer = null;
     this._reconnectTimer = null;
+    this._pointVoteSyncTimer = null;
     this._players = {}; // map of players connected to a session
     this._pings = {}; // map of player IDs to ping
     // reconnect to previous session
@@ -107,6 +108,13 @@ class LiveSession {
         : Object.keys(this._players).length,
       "latency"
     ]);
+    // ST: send a direct keepalive to each connected player to prevent
+    // browser timer throttling from causing spurious disconnections
+    if (!this._isSpectator) {
+      for (const playerId of Object.keys(this._players)) {
+        this._sendDirect(playerId, "keepalive", null);
+      }
+    }
     clearTimeout(this._pingTimer);
     this._pingTimer = setTimeout(this._ping.bind(this), this._pingInterval);
   }
@@ -145,6 +153,11 @@ class LiveSession {
       case "ping":
         this._handlePing(params);
         break;
+      case "keepalive":
+        // ST is keeping our connection alive — respond with an immediate ping
+        // to reset our eviction clock and counteract browser timer throttling
+        this._ping();
+        break;
       case "nomination":
         if (!this._isSpectator) return;
         if (!params) {
@@ -174,15 +187,15 @@ class LiveSession {
         break;
       case "isNight":
         if (!this._isSpectator) return;
-        this._store.commit("toggleNight", params);
+        this._store.commit("session/toggleNight", params);
         break;
       case "isHiddenVoting":
         if (!this._isSpectator) return;
-        this._store.commit("toggleHiddenVoting", params);
+        this._store.commit("session/toggleHiddenVoting", params);
         break;
       case "isReturnToTown":
         if (!this._isSpectator) return;
-        this._store.commit("toggleReturnToTown", params);
+        this._store.commit("session/toggleReturnToTown", params);
         break;
       case "isVoteHistoryAllowed":
         if (!this._isSpectator) return;
@@ -221,7 +234,11 @@ class LiveSession {
         this._store.commit("session/setPointVoteActive", params);
         break;
       case "pointVote":
+        if (!this._store.state.session.pointVoteActive) return;
         this._store.commit("session/castPointVote", params);
+        break;
+      case "pointVotesSync":
+        this._store.commit("session/setPointVotes", params || {});
         break;
       case "pointVoteCountdown":
         if (!this._isSpectator) return;
@@ -230,7 +247,10 @@ class LiveSession {
       case "pointVoteEnded":
         if (!this._isSpectator) return;
         if (!params) {
-          this._store.commit("session/addPointVoteHistory", this._store.state.players.players);
+          this._store.commit(
+            "session/addPointVoteHistory",
+            this._store.state.players.players
+          );
         }
         this._store.commit("session/setPointVoteEnded", params);
         break;
@@ -248,7 +268,7 @@ class LiveSession {
         "session/setPlayerId",
         Math.random()
           .toString(36)
-          .substr(2)
+          .slice(2)
       );
     }
     this._pings = {};
@@ -284,11 +304,11 @@ class LiveSession {
    */
   sendGamestate(playerId = "", isLightweight = false) {
     if (this._isSpectator) return;
-    const { session, grimoire } = this._store.state;
+    const { session } = this._store.state;
     const { fabled } = this._store.state.players;
-    if (grimoire.isHiddenVoting && session.nomination) return;
+    if (session.isHiddenVoting && session.nomination) return;
     //When Hidden Voting, obscure ghost vote & marked player from the game state update
-    if (grimoire.isHiddenVoting) {
+    if (session.isHiddenVoting) {
       this._gamestate = this._store.state.players.players.map(player => ({
         name: player.name,
         id: player.id,
@@ -319,12 +339,12 @@ class LiveSession {
       });
     } else {
       this.sendEdition(playerId);
-      if (grimoire.isHiddenVoting) {
+      if (session.isHiddenVoting) {
         this._sendDirect(playerId, "gs", {
           gamestate: this._gamestate,
-          isNight: grimoire.isNight,
-          isHiddenVoting: grimoire.isHiddenVoting,
-          isReturnToTown: grimoire.isReturnToTown,
+          isNight: session.isNight,
+          isHiddenVoting: session.isHiddenVoting,
+          isReturnToTown: session.isReturnToTown,
           isVoteHistoryAllowed: session.isVoteHistoryAllowed,
           nomination: session.nomination,
           votingSpeed: session.votingSpeed,
@@ -339,9 +359,9 @@ class LiveSession {
       } else {
         this._sendDirect(playerId, "gs", {
           gamestate: this._gamestate,
-          isNight: grimoire.isNight,
-          isHiddenVoting: grimoire.isHiddenVoting,
-          isReturnToTown: grimoire.isReturnToTown,
+          isNight: session.isNight,
+          isHiddenVoting: session.isHiddenVoting,
+          isReturnToTown: session.isReturnToTown,
           isVoteHistoryAllowed: session.isVoteHistoryAllowed,
           nomination: session.nomination,
           votingSpeed: session.votingSpeed,
@@ -428,9 +448,9 @@ class LiveSession {
       }
     });
     if (!isLightweight) {
-      this._store.commit("toggleNight", !!isNight);
-      this._store.commit("toggleHiddenVoting", !!isHiddenVoting);
-      this._store.commit("toggleReturnToTown", !!isReturnToTown);
+      this._store.commit("session/toggleNight", !!isNight);
+      this._store.commit("session/toggleHiddenVoting", !!isHiddenVoting);
+      this._store.commit("session/toggleReturnToTown", !!isReturnToTown);
       this._store.commit("session/setVoteHistoryAllowed", isVoteHistoryAllowed);
       if (!isVoteHistoryAllowed) {
         this._store.commit("session/clearVoteHistory");
@@ -591,7 +611,7 @@ class LiveSession {
       if (
         this._store.state.session.playerId !== player.id &&
         property === "isVoteless" &&
-        this._store.state.grimoire.isHiddenVoting &&
+        this._store.state.session.isHiddenVoting &&
         value != player.isVoteless
       ) {
         this._store.commit("players/update", {
@@ -837,16 +857,16 @@ class LiveSession {
    */
   setHiddenVoting() {
     if (this._isSpectator) return;
-    this._send("isHiddenVoting", this._store.state.grimoire.isHiddenVoting);
+    this._send("isHiddenVoting", this._store.state.session.isHiddenVoting);
     //When ending hidden voting, refresh the gamestate for all players
-    if (!this._store.state.grimoire.isHiddenVoting) {
+    if (!this._store.state.session.isHiddenVoting) {
       this.sendGamestate();
     }
   }
 
   setReturnToTown() {
     if (this._isSpectator) return;
-    this._send("isReturnToTown", this._store.state.grimoire.isReturnToTown);
+    this._send("isReturnToTown", this._store.state.session.isReturnToTown);
     //this.sendGamestate();
   }
 
@@ -855,7 +875,7 @@ class LiveSession {
    */
   setIsNight() {
     if (this._isSpectator) return;
-    this._send("isNight", this._store.state.grimoire.isNight);
+    this._send("isNight", this._store.state.session.isNight);
   }
 
   /**
@@ -886,7 +906,7 @@ class LiveSession {
    */
   setMarked(playerIndex) {
     if (this._isSpectator) return;
-    if (this._store.state.grimoire.isHiddenVoting) return;
+    if (this._store.state.session.isHiddenVoting) return;
     this._send("marked", playerIndex);
   }
 
@@ -913,7 +933,7 @@ class LiveSession {
     ) {
       //During hidden voting, only send vote data directly to the ST
       //If the ST has changed a vote, send that directly to the player
-      if (this._store.state.grimoire.isHiddenVoting) {
+      if (this._store.state.session.isHiddenVoting) {
         this._sendDirect("host", "vote", [
           index,
           this._store.state.session.votes[index],
@@ -972,7 +992,7 @@ class LiveSession {
       const index = (nomination[1] + lockedVote - 1) % players.length;
       if (
         this._store.state.session.votes[index] !== vote &&
-        !this._store.state.grimoire.isHiddenVoting
+        !this._store.state.session.isHiddenVoting
       ) {
         this._store.commit("session/vote", [index, vote]);
       }
@@ -1012,6 +1032,14 @@ class LiveSession {
   setPointVoteActive() {
     if (this._isSpectator) return;
     this._send("pointVoteActive", this._store.state.session.pointVoteActive);
+  }
+
+  /**
+   * Broadcast the full pointVotes map to all clients for reconciliation. ST only.
+   */
+  syncPointVotes() {
+    if (this._isSpectator) return;
+    this._send("pointVotesSync", this._store.state.session.pointVotes);
   }
 
   /**
@@ -1087,13 +1115,13 @@ export default store => {
       case "session/setVoteHistoryAllowed":
         session.setVoteHistoryAllowed();
         break;
-      case "toggleNight":
+      case "session/toggleNight":
         session.setIsNight();
         break;
-      case "toggleHiddenVoting":
+      case "session/toggleHiddenVoting":
         session.setHiddenVoting();
         break;
-      case "toggleReturnToTown":
+      case "session/toggleReturnToTown":
         session.setReturnToTown();
         break;
       case "setEdition":
@@ -1107,6 +1135,15 @@ export default store => {
         break;
       case "session/setPointVoteActive":
         session.setPointVoteActive();
+        if (store.state.session.pointVoteActive) {
+          session._pointVoteSyncTimer = setInterval(
+            () => session.syncPointVotes(),
+            3000
+          );
+        } else {
+          clearInterval(session._pointVoteSyncTimer);
+          session._pointVoteSyncTimer = null;
+        }
         break;
       case "session/castPointVoteSync":
         session.castPointVote(payload);
@@ -1115,6 +1152,10 @@ export default store => {
         session.setPointVoteCountdown();
         break;
       case "session/setPointVoteEnded":
+        clearInterval(session._pointVoteSyncTimer);
+        session._pointVoteSyncTimer = null;
+        // Broadcast final snapshot before ending so all clients land on identical results
+        if (payload) session.syncPointVotes();
         session.setPointVoteEnded();
         break;
       case "players/swap":
@@ -1124,6 +1165,7 @@ export default store => {
         session.movePlayer(payload);
         break;
       case "players/remove":
+        store.commit("session/removePlayerFromPointVotes", payload);
         session.removePlayer(payload);
         break;
       case "players/set":
@@ -1143,8 +1185,16 @@ export default store => {
     }
   });
 
+  // Re-ping immediately when a player returns to the tab, so their seat is
+  // confirmed without waiting up to 30 seconds for the next scheduled ping
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && session._socket) {
+      session._ping();
+    }
+  });
+
   // check for session Id in hash
-  const sessionId = window.location.hash.substr(1);
+  const sessionId = window.location.hash.slice(1);
   if (sessionId) {
     store.commit("session/setSpectator", true);
     store.commit("session/setSessionId", sessionId);
