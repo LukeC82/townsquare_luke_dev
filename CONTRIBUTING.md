@@ -79,7 +79,6 @@ $ NODE_ENV=development node index.js
 
 ## 3. Setup local variables
 ``` bash\GitbBash
-$ export NODE_OPTIONS=--openssl-legacy-provider
 $ export NODE_ENV=development
 
 # build all dist files, including npm packages
