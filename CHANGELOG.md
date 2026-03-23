@@ -5,6 +5,10 @@
 - Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
 
+### Version 2.25.1
+- Fixed: When you toggle to "Show" mode [G], a seated player could not point-vote.
+- Set NODE_OPTIONS within packahe.json instead of manually for local builds.
+
 ### Version 2.25.2
 - New Feature — Seasonal Events System:
 -- A single-file toggle system for seasonal themes (e.g. Christmas). Changing one line in src/events.js switches the active event; no other files need editing.

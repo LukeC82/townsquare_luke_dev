@@ -19,7 +19,10 @@
       ]"
     >
       <div class="shroud" @click="toggleStatus()"></div>
-      <div class="life" @click="toggleStatus()"></div>
+      <div
+        class="life"
+        @click="session.pointVoteActive ? onTokenClick() : toggleStatus()"
+      ></div>
       <div class="handUp"></div>
       <div
         class="night-order first"
