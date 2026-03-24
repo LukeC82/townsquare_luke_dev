@@ -104,7 +104,9 @@ export default {
     setRecordVoteHistory() {
       if (this._toggleCooldown) return;
       this._toggleCooldown = true;
-      setTimeout(() => { this._toggleCooldown = false; }, 1000);
+      setTimeout(() => {
+        this._toggleCooldown = false;
+      }, 1000);
       this.$store.commit(
         "session/setVoteHistoryAllowed",
         !this.session.isVoteHistoryAllowed

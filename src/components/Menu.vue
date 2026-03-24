@@ -367,6 +367,10 @@ export default {
     clearRoles() {
       if (confirm("Are you sure you want to remove all player roles?")) {
         this.$store.dispatch("players/clearRoles");
+        this.$store.commit("players/resetAllAlignments");
+        Object.keys(localStorage)
+          .filter(k => k.startsWith("localAlignment_"))
+          .forEach(k => localStorage.removeItem(k));
       }
     },
     toggleNight() {

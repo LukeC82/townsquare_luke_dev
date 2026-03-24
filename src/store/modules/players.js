@@ -6,7 +6,8 @@ const NEWPLAYER = {
   isVoteless: false,
   isDead: false,
   pronouns: "",
-  handRaised: false
+  handRaised: false,
+  alignment: null
 };
 
 const state = () => ({
@@ -102,6 +103,12 @@ const mutations = {
   },
   set(state, players = []) {
     state.players = players;
+  },
+  resetAllAlignments(state) {
+    state.players.forEach(player => {
+      player.alignment = null;
+    });
+    state.players.splice(0, 0);
   },
   /**
   The update mutation also has a property for isFromSockets

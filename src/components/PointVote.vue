@@ -19,9 +19,9 @@
                 leaderVoteCount !== 1 ? "s" : ""
               }}</span
             >
-            <span class="result-voters">Voters: {{
-              votersForPlayer(leaderIdx).join(", ")
-            }}</span>
+            <span class="result-voters"
+              >Voters: {{ votersForPlayer(leaderIdx).join(", ") }}</span
+            >
           </div>
         </template>
         <template v-if="!session.isSpectator">

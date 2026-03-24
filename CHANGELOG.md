@@ -2,8 +2,40 @@
 ### Ideas
 - Add a set of emotes that come from a players seated position
 -- probably disable emotes during an active votes/other important activites
-- Alignment change - hue colours to the new alignment
 - Evil Victory & Good Victory celebration animations?
+
+### Version 2.25.2
+- Added a button for the Storyteller and players to toggle the alignment of players.
+
+- Good/Evil Alignment Toggle (new feature)
+-- Seated players and the Storyteller can now privately annotate player alignment during a game.
+
+- Storyteller view
+-- A small circle button appears on each player token (top-right, matching the Night Order circle sizing and responsive scaling).
+-- Clicking cycles alignment: Townsfolk/Outsider toggle evil → null; Minion/Demon toggle good → null; Traveler cycles good → evil → null.
+-- A colour overlay (mix-blend-mode: color) tints the token blue (good) or red (evil).
+-- ST alignment state is stored in Vuex and not transmitted via socket.
+
+- Seated player view
+-- Alignment buttons are visible on all player tokens — clicking records a private, local-only annotation for that token.
+-- Annotations are stored in localStorage keyed by localAlignment_{playerId}_{targetPlayerId} — never transmitted through the socket.
+-- Own token button is always visible; other tokens' buttons appear only when annotated (good/evil set), or on hover when neutral.
+-- When a seated player has annotated their own token, the radiant pulsing glow behind their character token overrides the team colour: good → townsfolk blue, evil → demon red.
+
+- Raise-hand button
+-- The clickable raise-hand circle is hidden for seated players on other players' tokens.
+-- The raised-hand image itself remains visible across all clients when a player raises their hand.
+-- The ST can still click the button on behalf of any player.
+
+- Build / Cross-platform Fix
+-- Added cross-env devDependency so NODE_OPTIONS=--openssl-legacy-provider works on Windows without NODE_OPTIONS syntax errors.
+
+- Bug Fixes:
+-- String.substr() → String.slice() (deprecation) in socket.js.
+-- Night Order circles and raise-hand emote raised to z-index: 5 to render above the alignment colour overlay.
+-- Player context menu z-index: 50 — no longer drops behind other player tokens on hover.
+-- TownSquare.vue emote em raised to z-index: 5.
+-- Alignment button responsive sizing added to media.scss at <1200px and <992px breakpoints, matching the Night Order circle dimensions exactly.
 
 ### Version 2.25.1
 - Fixed: When you toggle to "Show" mode [G], a seated player could not point-vote.
