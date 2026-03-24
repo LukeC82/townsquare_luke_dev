@@ -149,6 +149,10 @@ export default {
             });
           }
         });
+        this.$store.commit("players/resetAllAlignments");
+        Object.keys(localStorage)
+          .filter(k => k.startsWith("localAlignment_"))
+          .forEach(k => localStorage.removeItem(k));
         this.$store.commit("toggleModal", "roles");
       }
     },

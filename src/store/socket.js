@@ -1178,6 +1178,8 @@ export default store => {
           session.sendPlayerPronouns(payload);
         } else if (payload.property === "handRaised") {
           session.sendHandRaised(payload);
+        } else if (payload.property === "alignment") {
+          // ST-only: alignment is never broadcast — visible to ST and self only
         } else {
           session.sendPlayer(payload);
         }

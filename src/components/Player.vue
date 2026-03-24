@@ -1,5 +1,5 @@
 <template>
-  <li :style="zoom">
+  <li :style="zoom" :class="{ 'menu-open': isMenuOpen }">
     <div
       ref="player"
       class="player"
@@ -13,7 +13,9 @@
           'vote-lock': voteLocked,
           'hidden-voting': session.isHiddenVoting,
           'hand-raised': player.handRaised,
-          'point-vote-leader': isPointVoteLeader
+          'point-vote-leader': isPointVoteLeader,
+          'glow-good': session.isSpectator && player.id === session.playerId && selfAlignment === 'good',
+          'glow-evil': session.isSpectator && player.id === session.playerId && selfAlignment === 'evil'
         },
         player.role.team
       ]"
@@ -43,13 +45,27 @@
         }}</span>
       </div>
 
-      <div class="emote" @click="toggleHandRaised()">
+      <div class="emote" v-if="!session.isSpectator || player.id === session.playerId" @click="toggleHandRaised()">
         <em>
           <font-awesome-icon icon="hand-paper" size="xs" />
         </em>
       </div>
 
       <Token :role="player.role" @set-role="onTokenClick" />
+
+      <!-- Alignment overlay (ST view: ST-set alignment; player view: self-set alignment) -->
+      <div
+        v-if="displayedAlignment"
+        class="alignment-overlay"
+        :class="displayedAlignment"
+      ></div>
+
+      <!-- Alignment toggle button -->
+      <div
+        class="alignment-btn"
+        :class="displayedAlignment || 'unset'"
+        @click.stop="cycleCurrentAlignment"
+      ></div>
 
       <!-- Overlay icons -->
       <div class="overlay">
@@ -282,6 +298,10 @@ export default {
         )
         .filter(Boolean);
     },
+    displayedAlignment() {
+      if (!this.session.isSpectator) return this.player.alignment || null;
+      return this.selfAlignment;
+    },
     isPointVoteLeader() {
       return (
         (this.session.pointVoteActive || this.session.pointVoteEnded) &&
@@ -336,10 +356,51 @@ export default {
   },
   data() {
     return {
-      isMenuOpen: false
+      isMenuOpen: false,
+      selfAlignment: null
     };
   },
+  mounted() {
+    const key = `localAlignment_${this.session.playerId}_${this.player.id}`;
+    this.selfAlignment = localStorage.getItem(key) || null;
+  },
   methods: {
+    cycleCurrentAlignment() {
+      if (!this.session.isSpectator) {
+        this.cycleAlignment();
+      } else {
+        this.cycleSelfAlignment();
+      }
+    },
+    alignmentCycleNext(current) {
+      const team = this.player.role.team;
+      if (team === "traveler") {
+        // full cycle: null → good → evil → null
+        if (current === null) return "good";
+        if (current === "good") return "evil";
+        return null;
+      }
+      const baseEvil = team === "minion" || team === "demon";
+      const opposite = baseEvil ? "good" : "evil";
+      // two-step cycle: null → opposite → null
+      return current === null ? opposite : null;
+    },
+    cycleAlignment() {
+      this.updatePlayer(
+        "alignment",
+        this.alignmentCycleNext(this.player.alignment)
+      );
+    },
+    cycleSelfAlignment() {
+      const next = this.alignmentCycleNext(this.selfAlignment);
+      this.selfAlignment = next;
+      const key = `localAlignment_${this.session.playerId}_${this.player.id}`;
+      if (next) {
+        localStorage.setItem(key, next);
+      } else {
+        localStorage.removeItem(key);
+      }
+    },
     changePronouns() {
       if (this.session.isSpectator && this.player.id !== this.session.playerId)
         return;
@@ -471,6 +532,10 @@ export default {
 
 <style lang="scss">
 @import "../vars.scss";
+
+.circle > li.menu-open {
+  z-index: 50 !important;
+}
 
 .fold-enter-active,
 .fold-leave-active {
@@ -663,6 +728,87 @@ export default {
   }
 }
 
+/***** Alignment button ******/
+.player .alignment-btn {
+  position: absolute;
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+  right: -3%;
+  bottom: -10%;
+  top: 12.5%;
+  border: 2.5px solid black;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+  cursor: pointer;
+  z-index: 5;
+  pointer-events: all;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 300ms ease;
+
+  &.unset {
+    background: linear-gradient(180deg, #555 0%, #888 100%);
+    opacity: 0.5;
+  }
+
+  &.good {
+    background: linear-gradient(180deg, #1a5fd4 0%, #4da6ff 100%);
+    opacity: 1;
+  }
+
+  &.evil {
+    background: linear-gradient(180deg, #a00 0%, #e03030 100%);
+    opacity: 1;
+  }
+
+  #townsquare.public & {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// Spectator view: own token button always visible; other tokens only on hover when unset
+#townsquare.spectator .player:not(.you) .alignment-btn.unset {
+  opacity: 0;
+}
+#townsquare.spectator li:hover .player:not(.you) .alignment-btn.unset {
+  opacity: 0.4;
+}
+
+/***** Alignment overlay ******/
+.player .alignment-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: color;
+  z-index: 3;
+  transition: background-color 400ms ease, transform 200ms ease-in-out;
+  transform: perspective(400px) rotateY(0deg);
+  backface-visibility: hidden;
+
+  &:before {
+    content: " ";
+    display: block;
+    padding-top: 100%;
+  }
+
+  &.good {
+    background: rgba(40, 110, 255, 0.85);
+  }
+
+  &.evil {
+    background: rgba(220, 40, 40, 0.85);
+  }
+}
+
+#townsquare.public .circle .alignment-overlay {
+  transform: perspective(400px) rotateY(-180deg);
+}
+
 /***** Role token ******/
 .player .token {
   position: absolute;
@@ -817,6 +963,14 @@ li.move:not(.from) .player .overlay svg.move {
   animation: townsfolk-glow 5s ease-in-out infinite;
 }
 
+// Alignment override: seated player's self-alignment overrides team glow
+.player.you.glow-good .token {
+  animation: townsfolk-glow 5s ease-in-out infinite !important;
+}
+.player.you.glow-evil .token {
+  animation: demon-glow 5s ease-in-out infinite !important;
+}
+
 /****** Marked icon ******/
 .player .marked {
   position: absolute;
@@ -966,6 +1120,7 @@ li.move:not(.from) .player .overlay svg.move {
   margin-left: 15px;
   cursor: pointer;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  z-index: 50;
 
   &:before {
     content: " ";
@@ -1007,7 +1162,7 @@ li.move:not(.from) .player .overlay svg.move {
 
 /**** Night reminders ****/
 .player .night-order {
-  z-index: 3;
+  z-index: 5;
 }
 
 .player.dead .night-order em {
