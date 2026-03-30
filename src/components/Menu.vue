@@ -1,6 +1,20 @@
 <template>
   <div id="controls">
     <span
+      class="victory-btn good"
+      v-if="!session.isSpectator && session.sessionId"
+      @click="declareVictory('good')"
+      title="Declare Good Victory"
+      >Good Wins</span
+    >
+    <span
+      class="victory-btn evil"
+      v-if="!session.isSpectator && session.sessionId"
+      @click="declareVictory('evil')"
+      title="Declare Evil Victory"
+      >Evil Wins</span
+    >
+    <span
       class="nomlog-summary"
       v-show="session.voteHistory.length && session.sessionId"
       @click="toggleModal('voteHistory')"
@@ -334,6 +348,14 @@ export default {
         this.$store.commit("session/setSessionId", sessionId);
       }
     },
+    declareVictory(team) {
+      const label = team === "good" ? "GOOD" : "EVIL";
+      if (
+        confirm(`Are you sure you want to end the game in ${label} Victory?`)
+      ) {
+        this.$store.commit("session/declareVictory", team);
+      }
+    },
     leaveSession() {
       if (confirm("Are you sure you want to leave the active live game?")) {
         this.$store.commit("session/setSpectator", false);
@@ -502,6 +524,25 @@ export default {
     }
     &.reconnecting {
       animation: blink 1s infinite;
+    }
+  }
+
+  span.victory-btn {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+    transition: opacity 200ms ease;
+    &:hover {
+      opacity: 0.75;
+    }
+    &.good {
+      color: #4da6ff;
+    }
+    &.evil {
+      color: #e03030;
     }
   }
 }

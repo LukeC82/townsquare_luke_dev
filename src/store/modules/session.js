@@ -36,7 +36,10 @@ const state = () => ({
   pointVoteActive: false,
   pointVotes: {},
   pointVoteCountdown: false,
-  pointVoteEnded: false
+  pointVoteEnded: false,
+  gameEnded: false,
+  winningTeam: null,
+  victoryCount: 0
 });
 
 const getters = {
@@ -184,6 +187,16 @@ const mutations = {
       updated[newVoter] = newTarget;
     }
     state.pointVotes = updated;
+  },
+  declareVictory(state, team) {
+    state.winningTeam = team;
+    state.gameEnded = true;
+    state.victoryCount++;
+  },
+  setVictoryCount: set("victoryCount"),
+  clearVictory(state) {
+    state.gameEnded = false;
+    state.winningTeam = null;
   },
   setPointVoteActive(state, val) {
     state.pointVoteActive = val;

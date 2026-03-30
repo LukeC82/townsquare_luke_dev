@@ -56,6 +56,7 @@
     <VoteHistoryModal />
     <GameStateModal />
     <Gradients />
+    <VictoryCelebration />
     <span id="version">v{{ version }}</span>
   </div>
 </template>
@@ -77,6 +78,7 @@ import NightOrderModal from "./components/modals/NightOrderModal";
 import FabledModal from "@/components/modals/FabledModal";
 import VoteHistoryModal from "@/components/modals/VoteHistoryModal";
 import GameStateModal from "@/components/modals/GameStateModal";
+import VictoryCelebration from "./components/VictoryCelebration";
 
 // Single recursive context covers all event subfolders — no changes needed here for new events.
 const allBackgrounds = require.context("./assets/backgrounds", true, /\.jpg$/i);
@@ -85,6 +87,7 @@ export default {
   components: {
     GameStateModal,
     VoteHistoryModal,
+    VictoryCelebration,
     FabledModal,
     NightOrderModal,
     Vote,

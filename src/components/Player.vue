@@ -14,8 +14,14 @@
           'hidden-voting': session.isHiddenVoting,
           'hand-raised': player.handRaised,
           'point-vote-leader': isPointVoteLeader,
-          'glow-good': session.isSpectator && player.id === session.playerId && selfAlignment === 'good',
-          'glow-evil': session.isSpectator && player.id === session.playerId && selfAlignment === 'evil'
+          'glow-good':
+            session.isSpectator &&
+            player.id === session.playerId &&
+            selfAlignment === 'good',
+          'glow-evil':
+            session.isSpectator &&
+            player.id === session.playerId &&
+            selfAlignment === 'evil'
         },
         player.role.team
       ]"
@@ -45,7 +51,11 @@
         }}</span>
       </div>
 
-      <div class="emote" v-if="!session.isSpectator || player.id === session.playerId" @click="toggleHandRaised()">
+      <div
+        class="emote"
+        v-if="!session.isSpectator || player.id === session.playerId"
+        @click="toggleHandRaised()"
+      >
         <em>
           <font-awesome-icon icon="hand-paper" size="xs" />
         </em>
@@ -620,7 +630,7 @@ export default {
     transform-origin: top left;
     cursor: pointer;
     transition: transform 200ms ease-in-out;
-    z-index: 4;
+    z-index: 6;
     pointer-events: none;
     filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
 

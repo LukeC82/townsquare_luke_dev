@@ -1,7 +1,7 @@
 class LiveSession {
   constructor(store) {
-    this._wss = "wss://live.axistownsquare.com:8080/";
-    //this._wss = "ws://localhost:8081/"; // uncomment if using local server with NODE_ENV=development
+    //this._wss = "wss://live.axistownsquare.com:8080/";
+    this._wss = "ws://localhost:8081/"; // uncomment if using local server with NODE_ENV=development
     this._socket = null;
     this._isSpectator = true;
     this._gamestate = [];
@@ -197,6 +197,11 @@ class LiveSession {
         if (!this._isSpectator) return;
         this._store.commit("session/toggleReturnToTown", params);
         break;
+      case "gameEnded":
+        if (!this._isSpectator) return;
+        if (params) this._store.commit("session/declareVictory", params);
+        else this._store.commit("session/clearVictory");
+        break;
       case "isVoteHistoryAllowed":
         if (!this._isSpectator) return;
         this._store.commit("session/setVoteHistoryAllowed", params);
@@ -354,6 +359,9 @@ class LiveSession {
           pointVoteActive: session.pointVoteActive,
           pointVotes: session.pointVotes,
           pointVoteEnded: session.pointVoteEnded,
+          gameEnded: session.gameEnded,
+          winningTeam: session.winningTeam,
+          victoryCount: session.victoryCount,
           ...(session.nomination ? { votes: session.votes } : {})
         });
       } else {
@@ -372,6 +380,9 @@ class LiveSession {
           pointVoteActive: session.pointVoteActive,
           pointVotes: session.pointVotes,
           pointVoteEnded: session.pointVoteEnded,
+          gameEnded: session.gameEnded,
+          winningTeam: session.winningTeam,
+          victoryCount: session.victoryCount,
           ...(session.nomination ? { votes: session.votes } : {})
         });
       }
@@ -401,7 +412,10 @@ class LiveSession {
       fabled,
       pointVoteActive,
       pointVotes,
-      pointVoteEnded
+      pointVoteEnded,
+      gameEnded,
+      winningTeam,
+      victoryCount
     } = data;
     const players = this._store.state.players.players;
     // adjust number of players
@@ -472,6 +486,12 @@ class LiveSession {
       } else if (pointVoteEnded) {
         this._store.commit("session/setPointVotes", pointVotes || {});
         this._store.commit("session/setPointVoteEnded", true);
+      }
+      if (gameEnded && winningTeam) {
+        this._store.commit("session/setVictoryCount", victoryCount || 0);
+        this._store.commit("session/declareVictory", winningTeam);
+      } else {
+        this._store.commit("session/clearVictory");
       }
     }
   }
@@ -870,6 +890,12 @@ class LiveSession {
     //this.sendGamestate();
   }
 
+  sendGameEnded() {
+    if (this._isSpectator) return;
+    const { gameEnded, winningTeam } = this._store.state.session;
+    this._send("gameEnded", gameEnded ? winningTeam : null);
+  }
+
   /**
    * Send the isNight status. ST only
    */
@@ -1150,6 +1176,9 @@ export default store => {
         break;
       case "session/setPointVoteCountdown":
         session.setPointVoteCountdown();
+        break;
+      case "session/declareVictory":
+        session.sendGameEnded();
         break;
       case "session/setPointVoteEnded":
         clearInterval(session._pointVoteSyncTimer);
