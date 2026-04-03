@@ -2,7 +2,19 @@
 ### Ideas
 - Add a set of emotes that come from a players seated position
 -- probably disable emotes during an active votes/other important activites
-- Evil Victory & Good Victory celebration animations?
+
+### Version 3.0.0
+- Added a Storyteller Victory reveal screen & grimoire reveal!
+- Victory Screen System — Full Implementation
+
+-- Delivers a complete end-to-end victory flow using authentic grimoire
+-- visuals and a structured ST workflow.
+
+- ST workflow:
+-- ST declares victory → celebration plays for everyone; ST joins the town
+-- ST dismisses → returned to Victory Modal to review/adjust alignments and select winners
+-- ST clicks Reveal Grimoire → synchronized reveal plays for all clients simultaneously
+-- Any client can dismiss their own reveal screen independently
 
 ### Version 2.25.2
 - Added a button for the Storyteller and players to toggle the alignment of players.
