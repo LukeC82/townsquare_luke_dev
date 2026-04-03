@@ -413,4 +413,54 @@ describe("VictoryModal — revealGrimoire", () => {
     revealGrimoire.call(ctx);
     expect(mockCommit.mock.calls[0][1].winners).toEqual([1, 2]);
   });
+
+  it("snapshot includes a revealOrder covering all player indices", () => {
+    const mockCommit = jest.fn();
+    const ctx = {
+      selectedCount: 1,
+      team: "evil",
+      players,
+      winners: [false, true],
+      $store: { commit: mockCommit },
+      close: jest.fn()
+    };
+    revealGrimoire.call(ctx);
+    const { revealOrder } = mockCommit.mock.calls[0][1];
+    expect(revealOrder).toHaveLength(players.length);
+    expect([...revealOrder].sort((a, b) => a - b)).toEqual(
+      players.map((_, i) => i)
+    );
+  });
+
+  it("evil victory: revealOrder places an evil player last", () => {
+    const mockCommit = jest.fn();
+    const ctx = {
+      selectedCount: 1,
+      team: "evil",
+      players,
+      winners: [false, true],
+      $store: { commit: mockCommit },
+      close: jest.fn()
+    };
+    revealGrimoire.call(ctx);
+    const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+    const last = snap[revealOrder[revealOrder.length - 1]];
+    expect(["minion", "demon"]).toContain(last.role.team);
+  });
+
+  it("good victory: revealOrder places a good player last", () => {
+    const mockCommit = jest.fn();
+    const ctx = {
+      selectedCount: 1,
+      team: "good",
+      players,
+      winners: [true, false],
+      $store: { commit: mockCommit },
+      close: jest.fn()
+    };
+    revealGrimoire.call(ctx);
+    const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+    const last = snap[revealOrder[revealOrder.length - 1]];
+    expect(["townsfolk", "outsider"]).toContain(last.role.team);
+  });
 });

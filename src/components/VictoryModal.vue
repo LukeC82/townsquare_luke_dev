@@ -124,8 +124,7 @@ export default {
       let next;
       if (roleTeam === "traveler") {
         // Full three-step cycle for travellers
-        next =
-          current === null ? "good" : current === "good" ? "evil" : null;
+        next = current === null ? "good" : current === "good" ? "evil" : null;
       } else {
         // Two-step: toggle to opposite of base team, or back to null
         const baseEvil = roleTeam === "minion" || roleTeam === "demon";
@@ -157,28 +156,71 @@ export default {
     revealGrimoire() {
       if (this.selectedCount === 0) return;
       const team = this.team;
+      const snapshotPlayers = this.players.map(player => ({
+        name: player.name,
+        role:
+          player.role && player.role.id
+            ? {
+                id: player.role.id,
+                name: player.role.name,
+                team: player.role.team,
+                image: player.role.image,
+                imageAlt: player.role.imageAlt
+              }
+            : {},
+        alignment: player.alignment,
+        isDead: player.isDead,
+        pronouns: player.pronouns
+      }));
+
+      // Generate the reveal order here so every client uses the same sequence.
+      const effectiveAlignment = p => {
+        if (p.alignment) return p.alignment;
+        if (!p.role || !p.role.team) return null;
+        if (["townsfolk", "outsider"].includes(p.role.team)) return "good";
+        if (["minion", "demon"].includes(p.role.team)) return "evil";
+        return null;
+      };
+      const n = snapshotPlayers.length;
+      const order = Array.from({ length: n }, (_, i) => i).sort(
+        () => Math.random() - 0.5
+      );
+      const featuredPos = alignment => {
+        const living = order.findIndex(
+          i =>
+            !snapshotPlayers[i].isDead &&
+            effectiveAlignment(snapshotPlayers[i]) === alignment
+        );
+        if (living !== -1) return living;
+        return order.findIndex(
+          i => effectiveAlignment(snapshotPlayers[i]) === alignment
+        );
+      };
+      const goodPos = featuredPos("good");
+      const evilPos = featuredPos("evil");
+      const candidates = [
+        { key: "good", pos: goodPos },
+        { key: "evil", pos: evilPos }
+      ]
+        .filter(p => p.pos !== -1)
+        .sort((a, b) => b.pos - a.pos);
+      const extracted = {};
+      for (const { key, pos } of candidates) {
+        extracted[key] = order.splice(pos, 1)[0];
+      }
+      const losingTeam = team === "evil" ? "good" : "evil";
+      if (extracted[losingTeam] !== undefined)
+        order.push(extracted[losingTeam]);
+      if (extracted[team] !== undefined) order.push(extracted[team]);
+
       const snapshot = {
-        players: this.players.map(player => ({
-          name: player.name,
-          role:
-            player.role && player.role.id
-              ? {
-                  id: player.role.id,
-                  name: player.role.name,
-                  team: player.role.team,
-                  image: player.role.image,
-                  imageAlt: player.role.imageAlt
-                }
-              : {},
-          alignment: player.alignment,
-          isDead: player.isDead,
-          pronouns: player.pronouns
-        })),
+        players: snapshotPlayers,
         winners: this.winners.reduce((acc, isWinner, i) => {
           if (isWinner) acc.push(i);
           return acc;
         }, []),
-        winningTeam: team
+        winningTeam: team,
+        revealOrder: order
       };
       this.$store.commit("session/setVictoryReveal", snapshot);
       this.close();

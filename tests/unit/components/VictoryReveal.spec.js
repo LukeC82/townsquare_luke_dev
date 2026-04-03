@@ -11,7 +11,12 @@ const { allRevealed } = VictoryReveal.computed;
 // ─────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────
-const makeCtx = (playerCount = 5, winners = [], isSpectator = true, winningTeam = "evil") => ({
+const makeCtx = (
+  playerCount = 5,
+  winners = [],
+  isSpectator = true,
+  winningTeam = "evil"
+) => ({
   dismissed: false,
   revealedIndices: [],
   revealOrder: [],
@@ -40,11 +45,21 @@ const makeMixedCtx = (winningTeam = "evil") => ({
   phase1Timer: null,
   phase2Interval: null,
   snapshotPlayers: [
-    { name: "Alice", role: { team: "townsfolk" }, alignment: null, isDead: false }, // good
-    { name: "Bob",   role: { team: "minion" },    alignment: null, isDead: false }, // evil
-    { name: "Carol", role: { team: "outsider" },  alignment: null, isDead: false }, // good
-    { name: "Dave",  role: { team: "demon" },     alignment: null, isDead: false }, // evil
-    { name: "Eve",   role: { team: "townsfolk" }, alignment: null, isDead: false }  // good
+    {
+      name: "Alice",
+      role: { team: "townsfolk" },
+      alignment: null,
+      isDead: false
+    }, // good
+    { name: "Bob", role: { team: "minion" }, alignment: null, isDead: false }, // evil
+    {
+      name: "Carol",
+      role: { team: "outsider" },
+      alignment: null,
+      isDead: false
+    }, // good
+    { name: "Dave", role: { team: "demon" }, alignment: null, isDead: false }, // evil
+    { name: "Eve", role: { team: "townsfolk" }, alignment: null, isDead: false } // good
   ],
   snapshotWinners: [],
   winningTeam,
@@ -103,7 +118,7 @@ describe("VictoryReveal — startReveal", () => {
   it("Phase 2 begins after 1000ms — first token revealed", () => {
     const ctx = makeCtx(3);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1540); // 1000ms + 1 tick of 540ms
+    jest.advanceTimersByTime(1700); // 1000ms + 1 tick of 540ms
     expect(ctx.revealedIndices).toHaveLength(1);
   });
 
@@ -111,8 +126,8 @@ describe("VictoryReveal — startReveal", () => {
     const n = 4;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
-    // 1000ms Phase 1 + n * 540ms to reveal all
-    jest.advanceTimersByTime(1000 + n * 540);
+    // 1000ms Phase 1 + n * 700ms to reveal all
+    jest.advanceTimersByTime(1000 + n * 700);
     expect(ctx.revealedIndices).toHaveLength(n);
   });
 
@@ -120,7 +135,7 @@ describe("VictoryReveal — startReveal", () => {
     const n = 5;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1000 + n * 540);
+    jest.advanceTimersByTime(1000 + n * 700);
     ctx.revealedIndices.forEach(idx => {
       expect(idx).toBeGreaterThanOrEqual(0);
       expect(idx).toBeLessThan(n);
@@ -131,7 +146,7 @@ describe("VictoryReveal — startReveal", () => {
     const n = 5;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1000 + n * 540);
+    jest.advanceTimersByTime(1000 + n * 700);
     const unique = new Set(ctx.revealedIndices);
     expect(unique.size).toBe(n);
   });
@@ -140,7 +155,7 @@ describe("VictoryReveal — startReveal", () => {
     const ctx = makeCtx(3);
     // First call — advance exactly 1 tick into Phase 2 (1000ms + 1×450ms)
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1540); // 1000ms Phase1 + 540ms = 1 token revealed
+    jest.advanceTimersByTime(1700); // 1000ms Phase1 + 540ms = 1 token revealed
     expect(ctx.revealedIndices).toHaveLength(1);
 
     // Second call — should reset
@@ -159,6 +174,35 @@ describe("VictoryReveal — reveal order (featured players)", () => {
   beforeEach(() => jest.useFakeTimers());
   afterEach(() => jest.useRealTimers());
 
+  it("uses revealOrder from the snapshot when provided", () => {
+    const ctx = makeMixedCtx("evil");
+    const fixedOrder = [4, 2, 0, 1, 3]; // deterministic
+    ctx.session = {
+      isSpectator: true,
+      victoryRevealSnapshot: { revealOrder: fixedOrder }
+    };
+    startReveal.call(ctx);
+    expect(ctx.revealOrder).toEqual(fixedOrder);
+  });
+
+  it("does not mutate the snapshot revealOrder array", () => {
+    const ctx = makeMixedCtx("evil");
+    const fixedOrder = [4, 2, 0, 1, 3];
+    ctx.session = {
+      isSpectator: true,
+      victoryRevealSnapshot: { revealOrder: fixedOrder }
+    };
+    startReveal.call(ctx);
+    expect(fixedOrder).toEqual([4, 2, 0, 1, 3]); // original unchanged
+  });
+
+  it("falls back to local generation when snapshot has no revealOrder", () => {
+    const ctx = makeMixedCtx("evil");
+    // session.victoryRevealSnapshot is absent in default makeMixedCtx
+    startReveal.call(ctx);
+    expect(ctx.revealOrder).toHaveLength(ctx.snapshotPlayers.length);
+  });
+
   it("evil victory: evil player is revealed very last", () => {
     const ctx = makeMixedCtx("evil");
     startReveal.call(ctx);
@@ -170,7 +214,9 @@ describe("VictoryReveal — reveal order (featured players)", () => {
     const ctx = makeMixedCtx("evil");
     startReveal.call(ctx);
     const secondLast = ctx.revealOrder[ctx.revealOrder.length - 2];
-    expect(ctx.effectiveAlignment(ctx.snapshotPlayers[secondLast])).toBe("good");
+    expect(ctx.effectiveAlignment(ctx.snapshotPlayers[secondLast])).toBe(
+      "good"
+    );
   });
 
   it("good victory: good player is revealed very last", () => {
@@ -184,7 +230,9 @@ describe("VictoryReveal — reveal order (featured players)", () => {
     const ctx = makeMixedCtx("good");
     startReveal.call(ctx);
     const secondLast = ctx.revealOrder[ctx.revealOrder.length - 2];
-    expect(ctx.effectiveAlignment(ctx.snapshotPlayers[secondLast])).toBe("evil");
+    expect(ctx.effectiveAlignment(ctx.snapshotPlayers[secondLast])).toBe(
+      "evil"
+    );
   });
 
   it("reveal order still contains all player indices", () => {

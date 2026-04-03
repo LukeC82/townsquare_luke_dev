@@ -113,46 +113,48 @@ export default {
       clearInterval(this.phase2Interval);
       this.revealedIndices = [];
       this.revealIdx = 0;
-      // Randomise the reveal order for each presentation
       const n = this.snapshotPlayers.length;
-      this.revealOrder = Array.from({ length: n }, (_, i) => i).sort(
-        () => Math.random() - 0.5
-      );
-      // Reserve the final two slots: losing-team player second-to-last,
-      // winning-team player very last, for maximum dramatic effect.
-      // Prefer living (non-shrouded) players; fall back to dead if needed.
-      const featuredPos = alignment => {
-        const living = this.revealOrder.findIndex(
-          i =>
-            !this.snapshotPlayers[i].isDead &&
-            this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
+      // Use the ST-generated order from the snapshot so all clients reveal
+      // in the same sequence. Fall back to local generation if unavailable.
+      const snapshotOrder =
+        this.session.victoryRevealSnapshot &&
+        this.session.victoryRevealSnapshot.revealOrder;
+      if (snapshotOrder && snapshotOrder.length === n) {
+        this.revealOrder = [...snapshotOrder];
+      } else {
+        this.revealOrder = Array.from({ length: n }, (_, i) => i).sort(
+          () => Math.random() - 0.5
         );
-        if (living !== -1) return living;
-        return this.revealOrder.findIndex(
-          i => this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
-        );
-      };
-      const goodPos = featuredPos("good");
-      const evilPos = featuredPos("evil");
-      // Splice out chosen players; remove the higher index first so the lower
-      // index remains valid after the first splice.
-      const candidates = [
-        { key: "good", pos: goodPos },
-        { key: "evil", pos: evilPos }
-      ]
-        .filter(p => p.pos !== -1)
-        .sort((a, b) => b.pos - a.pos);
-      const extracted = {};
-      for (const { key, pos } of candidates) {
-        extracted[key] = this.revealOrder.splice(pos, 1)[0];
-      }
-      // Append: losing team second-to-last, winning team very last
-      const losingTeam = this.winningTeam === "evil" ? "good" : "evil";
-      if (extracted[losingTeam] !== undefined) {
-        this.revealOrder.push(extracted[losingTeam]);
-      }
-      if (extracted[this.winningTeam] !== undefined) {
-        this.revealOrder.push(extracted[this.winningTeam]);
+        const featuredPos = alignment => {
+          const living = this.revealOrder.findIndex(
+            i =>
+              !this.snapshotPlayers[i].isDead &&
+              this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
+          );
+          if (living !== -1) return living;
+          return this.revealOrder.findIndex(
+            i => this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
+          );
+        };
+        const goodPos = featuredPos("good");
+        const evilPos = featuredPos("evil");
+        const candidates = [
+          { key: "good", pos: goodPos },
+          { key: "evil", pos: evilPos }
+        ]
+          .filter(p => p.pos !== -1)
+          .sort((a, b) => b.pos - a.pos);
+        const extracted = {};
+        for (const { key, pos } of candidates) {
+          extracted[key] = this.revealOrder.splice(pos, 1)[0];
+        }
+        const losingTeam = this.winningTeam === "evil" ? "good" : "evil";
+        if (extracted[losingTeam] !== undefined) {
+          this.revealOrder.push(extracted[losingTeam]);
+        }
+        if (extracted[this.winningTeam] !== undefined) {
+          this.revealOrder.push(extracted[this.winningTeam]);
+        }
       }
 
       // Phase 1 — blank for 1s
