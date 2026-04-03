@@ -32,6 +32,11 @@ describe("session — initial state", () => {
     expect(s.voteHistory).toEqual([]);
     expect(s.nomination).toBe(false);
     expect(s.lockedVote).toBe(0);
+    // Victory Reveal
+    expect(s.victoryModalTeam).toBeNull();
+    expect(s.victoryRevealActive).toBe(false);
+    expect(s.victoryRevealSnapshot).toBeNull();
+    expect(s.revealCount).toBe(0);
   });
 });
 
@@ -73,6 +78,59 @@ describe("session — victory mutations", () => {
     const store = createStore();
     store.commit("session/setVictoryCount", 7);
     expect(store.state.session.victoryCount).toBe(7);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+// Victory Reveal
+// ─────────────────────────────────────────────────────────────
+describe("session — victoryReveal mutations", () => {
+  const snapshot = {
+    players: [{ name: "Alice", role: { team: "townsfolk" } }],
+    winners: [0],
+    winningTeam: "good"
+  };
+
+  it("setVictoryReveal sets snapshot and activates reveal", () => {
+    const store = createStore();
+    store.commit("session/setVictoryReveal", snapshot);
+    expect(store.state.session.victoryRevealActive).toBe(true);
+    expect(store.state.session.victoryRevealSnapshot).toEqual(snapshot);
+  });
+
+  it("setVictoryReveal increments revealCount each call", () => {
+    const store = createStore();
+    store.commit("session/setVictoryReveal", snapshot);
+    expect(store.state.session.revealCount).toBe(1);
+    store.commit("session/setVictoryReveal", snapshot);
+    expect(store.state.session.revealCount).toBe(2);
+  });
+
+  it("clearVictoryReveal resets active and snapshot", () => {
+    const store = createStore();
+    store.commit("session/setVictoryReveal", snapshot);
+    store.commit("session/clearVictoryReveal");
+    expect(store.state.session.victoryRevealActive).toBe(false);
+    expect(store.state.session.victoryRevealSnapshot).toBeNull();
+  });
+
+  it("clearVictoryReveal does not reset revealCount", () => {
+    const store = createStore();
+    store.commit("session/setVictoryReveal", snapshot);
+    store.commit("session/clearVictoryReveal");
+    expect(store.state.session.revealCount).toBe(1);
+  });
+
+  it("setVictoryModalTeam sets the team", () => {
+    const store = createStore();
+    store.commit("session/setVictoryModalTeam", "evil");
+    expect(store.state.session.victoryModalTeam).toBe("evil");
+  });
+
+  it("setVictoryModalTeam can be cleared to null", () => {
+    const store = createStore({ victoryModalTeam: "good" });
+    store.commit("session/setVictoryModalTeam", null);
+    expect(store.state.session.victoryModalTeam).toBeNull();
   });
 });
 

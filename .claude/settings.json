@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Read(//mnt/c/Users/Documents/**)"
+      "Read(//mnt/c/Users/Documents/**)",
+      "Bash(npm run:*)"
     ]
   }
 }

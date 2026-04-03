@@ -3,14 +3,14 @@
     <span
       class="victory-btn good"
       v-if="!session.isSpectator && session.sessionId"
-      @click="declareVictory('good')"
+      @click="openVictoryModal('good')"
       title="Declare Good Victory"
       >Good Wins</span
     >
     <span
       class="victory-btn evil"
       v-if="!session.isSpectator && session.sessionId"
-      @click="declareVictory('evil')"
+      @click="openVictoryModal('evil')"
       title="Declare Evil Victory"
       >Evil Wins</span
     >
@@ -348,13 +348,8 @@ export default {
         this.$store.commit("session/setSessionId", sessionId);
       }
     },
-    declareVictory(team) {
-      const label = team === "good" ? "GOOD" : "EVIL";
-      if (
-        confirm(`Are you sure you want to end the game in ${label} Victory?`)
-      ) {
-        this.$store.commit("session/declareVictory", team);
-      }
+    openVictoryModal(team) {
+      this.$store.commit("session/setVictoryModalTeam", team);
     },
     leaveSession() {
       if (confirm("Are you sure you want to leave the active live game?")) {

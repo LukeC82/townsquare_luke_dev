@@ -39,7 +39,11 @@ const state = () => ({
   pointVoteEnded: false,
   gameEnded: false,
   winningTeam: null,
-  victoryCount: 0
+  victoryCount: 0,
+  victoryModalTeam: null,
+  victoryRevealActive: false,
+  victoryRevealSnapshot: null,
+  revealCount: 0
 });
 
 const getters = {
@@ -197,6 +201,16 @@ const mutations = {
   clearVictory(state) {
     state.gameEnded = false;
     state.winningTeam = null;
+  },
+  setVictoryModalTeam: set("victoryModalTeam"),
+  setVictoryReveal(state, snapshot) {
+    state.victoryRevealSnapshot = snapshot;
+    state.victoryRevealActive = true;
+    state.revealCount++;
+  },
+  clearVictoryReveal(state) {
+    state.victoryRevealActive = false;
+    state.victoryRevealSnapshot = null;
   },
   setPointVoteActive(state, val) {
     state.pointVoteActive = val;

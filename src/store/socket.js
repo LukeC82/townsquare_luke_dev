@@ -1,7 +1,7 @@
 class LiveSession {
   constructor(store) {
-    //this._wss = "wss://live.axistownsquare.com:8080/";
-    this._wss = "ws://localhost:8081/"; // uncomment if using local server with NODE_ENV=development
+    this._wss = "wss://live.axistownsquare.com:8080/";
+    //this._wss = "ws://localhost:8081/"; // uncomment if using local server with NODE_ENV=development
     this._socket = null;
     this._isSpectator = true;
     this._gamestate = [];
@@ -202,6 +202,11 @@ class LiveSession {
         if (params) this._store.commit("session/declareVictory", params);
         else this._store.commit("session/clearVictory");
         break;
+      case "victoryReveal":
+        if (!this._isSpectator) return;
+        if (params) this._store.commit("session/setVictoryReveal", params);
+        else this._store.commit("session/clearVictoryReveal");
+        break;
       case "isVoteHistoryAllowed":
         if (!this._isSpectator) return;
         this._store.commit("session/setVoteHistoryAllowed", params);
@@ -362,6 +367,8 @@ class LiveSession {
           gameEnded: session.gameEnded,
           winningTeam: session.winningTeam,
           victoryCount: session.victoryCount,
+          victoryRevealActive: session.victoryRevealActive,
+          victoryRevealSnapshot: session.victoryRevealSnapshot,
           ...(session.nomination ? { votes: session.votes } : {})
         });
       } else {
@@ -383,6 +390,8 @@ class LiveSession {
           gameEnded: session.gameEnded,
           winningTeam: session.winningTeam,
           victoryCount: session.victoryCount,
+          victoryRevealActive: session.victoryRevealActive,
+          victoryRevealSnapshot: session.victoryRevealSnapshot,
           ...(session.nomination ? { votes: session.votes } : {})
         });
       }
@@ -415,7 +424,9 @@ class LiveSession {
       pointVoteEnded,
       gameEnded,
       winningTeam,
-      victoryCount
+      victoryCount,
+      victoryRevealActive,
+      victoryRevealSnapshot
     } = data;
     const players = this._store.state.players.players;
     // adjust number of players
@@ -492,6 +503,11 @@ class LiveSession {
         this._store.commit("session/declareVictory", winningTeam);
       } else {
         this._store.commit("session/clearVictory");
+      }
+      if (victoryRevealActive && victoryRevealSnapshot) {
+        this._store.commit("session/setVictoryReveal", victoryRevealSnapshot);
+      } else {
+        this._store.commit("session/clearVictoryReveal");
       }
     }
   }
@@ -897,6 +913,21 @@ class LiveSession {
   }
 
   /**
+   * Broadcast the victory reveal snapshot to all players. ST only.
+   */
+  sendVictoryReveal() {
+    if (this._isSpectator) return;
+    const {
+      victoryRevealActive,
+      victoryRevealSnapshot
+    } = this._store.state.session;
+    this._send(
+      "victoryReveal",
+      victoryRevealActive ? victoryRevealSnapshot : null
+    );
+  }
+
+  /**
    * Send the isNight status. ST only
    */
   setIsNight() {
@@ -1179,6 +1210,10 @@ export default store => {
         break;
       case "session/declareVictory":
         session.sendGameEnded();
+        break;
+      case "session/setVictoryReveal":
+      case "session/clearVictoryReveal":
+        session.sendVictoryReveal();
         break;
       case "session/setPointVoteEnded":
         clearInterval(session._pointVoteSyncTimer);

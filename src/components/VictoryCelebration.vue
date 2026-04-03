@@ -17,7 +17,13 @@
               : "Evil has conquered the town!"
           }}
         </div>
-        <div class="victory-dismiss">Click anywhere to dismiss</div>
+        <div class="victory-dismiss">
+          {{
+            !session.isSpectator
+              ? "Click anywhere to prepare the grimoire reveal"
+              : "Click anywhere to dismiss"
+          }}
+        </div>
       </div>
       <span
         v-for="i in 40"
@@ -39,12 +45,12 @@ export default {
       // ── Audio config per team — adjust these to taste ──────────────
       audioConfig: {
         good: {
-          volume: 0.2, // 0.0 (silent) → 1.0 (full)
+          volume: 0.08, // 0.0 (silent) → 1.0 (full)
           startTime: 1.6, // seconds into the track to begin playback
           duration: 10000 // ms to play before auto-stopping (null = play to end)
         },
         evil: {
-          volume: 0.2,
+          volume: 0.08,
           startTime: 0.5,
           duration: 10000
         }
@@ -59,6 +65,14 @@ export default {
     this.preloaded = {};
     this.preloadAudio();
   },
+  beforeDestroy() {
+    clearTimeout(this.dismissTimer);
+    clearTimeout(this.durationTimer);
+    if (this.audioInstance) {
+      this.audioInstance.pause();
+      this.audioInstance = null;
+    }
+  },
   computed: {
     ...mapState(["session", "grimoire"])
   },
@@ -68,6 +82,9 @@ export default {
     },
     "session.victoryCount"(val) {
       if (val > 0) this.onVictoryDeclared();
+    },
+    "session.victoryRevealActive"(val) {
+      if (val && !this.dismissed) this.dismiss();
     }
   },
   methods: {
@@ -89,9 +106,12 @@ export default {
       this.dismissed = true;
       clearTimeout(this.dismissTimer);
       this.fadeOutSound();
-      // ST clears local Vuex so new joiners don't inherit a stale victory state
+      // ST clears local Vuex so new joiners don't inherit a stale victory state,
+      // then re-opens the victory modal so they can adjust alignment and reveal.
       if (!this.session.isSpectator) {
+        const team = this.session.winningTeam;
         this.$store.commit("session/clearVictory");
+        this.$store.commit("session/setVictoryModalTeam", team);
       }
     },
     playSound() {
