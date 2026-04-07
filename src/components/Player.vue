@@ -14,8 +14,14 @@
           'hidden-voting': session.isHiddenVoting,
           'hand-raised': player.handRaised,
           'point-vote-leader': isPointVoteLeader,
-          'glow-good': session.isSpectator && player.id === session.playerId && selfAlignment === 'good',
-          'glow-evil': session.isSpectator && player.id === session.playerId && selfAlignment === 'evil'
+          'glow-good':
+            session.isSpectator &&
+            player.id === session.playerId &&
+            selfAlignment === 'good',
+          'glow-evil':
+            session.isSpectator &&
+            player.id === session.playerId &&
+            selfAlignment === 'evil'
         },
         player.role.team
       ]"
@@ -45,7 +51,11 @@
         }}</span>
       </div>
 
-      <div class="emote" v-if="!session.isSpectator || player.id === session.playerId" @click="toggleHandRaised()">
+      <div
+        class="emote"
+        v-if="!session.isSpectator || player.id === session.playerId"
+        @click="toggleHandRaised()"
+      >
         <em>
           <font-awesome-icon icon="hand-paper" size="xs" />
         </em>
@@ -414,9 +424,6 @@ export default {
       if (this.grimoire.isPublic) {
         if (!this.player.isDead) {
           this.updatePlayer("isDead", true);
-          if (this.player.isMarked) {
-            this.updatePlayer("isMarked", false);
-          }
         } else if (this.player.isVoteless) {
           this.updatePlayer("isVoteless", false);
           this.updatePlayer("isDead", false);
@@ -568,7 +575,7 @@ export default {
     transform: rotateX(0deg);
     transform-origin: top center;
     transition: transform 200ms ease-in-out;
-    z-index: 2;
+    z-index: 4;
     filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
 
     &:before {
@@ -620,7 +627,7 @@ export default {
     transform-origin: top left;
     cursor: pointer;
     transition: transform 200ms ease-in-out;
-    z-index: 4;
+    z-index: 6;
     pointer-events: none;
     filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
 
@@ -782,6 +789,7 @@ export default {
   left: 0;
   top: 0;
   width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   pointer-events: none;
   mix-blend-mode: color;
@@ -789,12 +797,6 @@ export default {
   transition: background-color 400ms ease, transform 200ms ease-in-out;
   transform: perspective(400px) rotateY(0deg);
   backface-visibility: hidden;
-
-  &:before {
-    content: " ";
-    display: block;
-    padding-top: 100%;
-  }
 
   &.good {
     background: rgba(40, 110, 255, 0.85);
