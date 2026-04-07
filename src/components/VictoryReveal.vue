@@ -244,7 +244,8 @@ export default {
     },
     trueAlignment(player) {
       if (!player.trueRole || !player.trueRole.team) return null;
-      if (["townsfolk", "outsider"].includes(player.trueRole.team)) return "good";
+      if (["townsfolk", "outsider"].includes(player.trueRole.team))
+        return "good";
       if (["minion", "demon"].includes(player.trueRole.team)) return "evil";
       return null;
     },

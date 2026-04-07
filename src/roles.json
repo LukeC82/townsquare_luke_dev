@@ -194,7 +194,7 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Drunk"],
+    "remindersGlobal": ["Is the Drunk"],
     "setup": true,
     "ability": "You do not know you are the Drunk. You think you are a Townsfolk character, but you are not."
   },
@@ -1733,8 +1733,8 @@
     "firstNightReminder": "Show the Grimoire to the Widow for as long as they need. The Widow points to a player. That player is poisoned. Wake a good player. Show the 'These characters are in play' card, then the Widow character token.",
     "otherNight": 0,
     "otherNightReminder": "",
-    "reminders": ["Poisoned"],
-    "remindersGlobal": ["Knows"],
+    "reminders": ["Poisoned", "Knows"],
+    "remindersGlobal": [],
     "setup": false,
     "ability": "On your 1st night, look at the Grimoire and choose a player: they are poisoned. 1 good player knows a Widow is in play."
   },
@@ -2309,7 +2309,7 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Bad Omen, False, ~Evil"],
+    "remindersGlobal": ["Is the Bad Omen"],
     "setup": false,
     "ability": "You do not know you are a Bad Omen. You think you are a Townsfolk, but you recieve false information. You might register as evil, even if dead."
   },
@@ -2375,7 +2375,7 @@
     "otherNight": 24,
     "otherNightReminder": "A player might die for each living Hannibal. Place the \"DEAD\" reminder token(s) next to the chosen player(s). They die. If a Hannibal dies, that night wake the player and inform them that they are a good Hannibal.",
     "reminders": [],
-    "remindersGlobal": ["Dead","EVIL Hannibal","GOOD Hannibal"],
+    "remindersGlobal": ["Dead","Is the Hannibal"],
     "setup": true,
     "ability": "You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player may die. The 1st Hannibal to die, becomes good. [+ Hannibal]"
   },

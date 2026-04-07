@@ -15,14 +15,14 @@ describe("persona.json integrity", () => {
 
   test("every persona reminder exists in roles.json (reminders or remindersGlobal)", () => {
     const missing = personas
-      .map((p) => p.reminder)
-      .filter((r) => !allReminders.has(r));
+      .map(p => p.reminder)
+      .filter(r => !allReminders.has(r));
 
     if (missing.length > 0) {
       // eslint-disable-next-line no-console
       console.warn(
         "[persona.json] The following reminders are not found in any role in roles.json:\n" +
-          missing.map((r) => `  - "${r}"`).join("\n") +
+          missing.map(r => `  - "${r}"`).join("\n") +
           "\nUpdate persona.json or roles.json to keep them in sync."
       );
     }
