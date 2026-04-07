@@ -35,6 +35,14 @@
               @click.stop="cycleAlignment(i)"
             ></div>
             <div class="card-shroud" v-if="player.isDead"></div>
+            <div class="true-token-wrap" v-if="trueRoleFor(player)">
+              <Token :role="trueRoleFor(player)" />
+              <div
+                class="true-alignment-overlay"
+                :class="player.alignment"
+                v-if="player.alignment"
+              ></div>
+            </div>
           </div>
           <div class="card-name">{{ player.name || "(empty)" }}</div>
           <div class="card-team" v-if="player.role && player.role.team">
@@ -63,6 +71,7 @@
 <script>
 import { mapState } from "vuex";
 import Token from "./Token.vue";
+import personas from "../persona.json";
 
 export default {
   components: { Token },
@@ -153,6 +162,24 @@ export default {
       }
       this.$set(this.winners, i, isWinner);
     },
+    trueRoleFor(player) {
+      if (!player.reminders || !player.reminders.length) return null;
+      const match = player.reminders.find(r =>
+        personas.some(p => p.reminder === r.name)
+      );
+      if (!match) return null;
+      const roleData =
+        this.$store.state.roles.get(match.role) ||
+        this.$store.getters.rolesJSONbyId.get(match.role);
+      if (!roleData) return null;
+      return {
+        id: roleData.id,
+        name: roleData.name,
+        team: roleData.team,
+        image: roleData.image,
+        imageAlt: roleData.imageAlt
+      };
+    },
     revealGrimoire() {
       if (this.selectedCount === 0) return;
       const team = this.team;
@@ -170,7 +197,7 @@ export default {
             : {},
         alignment: player.alignment,
         isDead: player.isDead,
-        pronouns: player.pronouns
+        trueRole: this.trueRoleFor(player)
       }));
 
       // Generate the reveal order here so every client uses the same sequence.
@@ -367,10 +394,51 @@ export default {
   position: relative;
   width: 89px;
   height: 89px;
+  overflow: visible;
 
   >>> .token {
     height: 100%;
     cursor: default;
+  }
+}
+
+.true-token-wrap {
+  position: absolute;
+  left: -10%;
+  top: 45%;
+  width: 70%;
+  height: 70%;
+  z-index: 7;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  animation: true-token-appear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  >>> .token {
+    height: 100%;
+    cursor: default;
+  }
+
+  .true-alignment-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: color;
+    z-index: 1;
+
+    &.good {
+      background: rgba(40, 110, 255, 0.85);
+    }
+    &.evil {
+      background: rgba(220, 40, 40, 0.85);
+    }
+  }
+}
+
+@keyframes true-token-appear {
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

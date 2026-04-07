@@ -1,5 +1,6 @@
 node_modules
 dist
+.claude/settings.json
 
 # Local .terraform directories
 **/*.terraform

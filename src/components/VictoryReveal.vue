@@ -41,6 +41,17 @@
               class="token-shroud"
               v-if="isRevealed(i) && player.isDead"
             ></div>
+            <div
+              class="true-token-wrap"
+              v-if="player.trueRole && isTrueRevealed(i)"
+            >
+              <Token :role="player.trueRole" />
+              <div
+                class="true-alignment-overlay"
+                :class="trueAlignment(player)"
+                v-if="trueAlignment(player)"
+              ></div>
+            </div>
           </div>
           <div class="reveal-name" v-if="isRevealed(i)">
             {{ player.name }}
@@ -90,29 +101,64 @@ export default {
       dismissed: false,
       revealedIndices: [],
       revealOrder: [],
-      revealIdx: 0
+      revealIdx: 0,
+      revealedTrueIndices: [],
+      trueRevealOrder: [],
+      trueRevealIdx: 0
     };
   },
   created() {
     this.phase1Timer = null;
     this.phase2Interval = null;
+    this.trueRevealInterval = null;
   },
   beforeDestroy() {
     clearTimeout(this.phase1Timer);
     clearInterval(this.phase2Interval);
+    clearInterval(this.trueRevealInterval);
   },
   watch: {
+    allRevealed(val) {
+      if (val) this.startTrueReveal();
+    },
     "session.revealCount"(val) {
       if (val > 0) this.startReveal();
     }
   },
   methods: {
+    isTrueRevealed(i) {
+      return this.revealedTrueIndices.includes(i);
+    },
+    startTrueReveal() {
+      const personaIndices = this.snapshotPlayers
+        .map((p, i) => (p.trueRole ? i : -1))
+        .filter(i => i !== -1)
+        .sort(() => Math.random() - 0.5);
+      if (!personaIndices.length) return;
+      this.trueRevealOrder = personaIndices;
+      this.trueRevealIdx = 0;
+      this.trueRevealInterval = setInterval(() => {
+        if (this.trueRevealIdx < this.trueRevealOrder.length) {
+          this.revealedTrueIndices = [
+            ...this.revealedTrueIndices,
+            this.trueRevealOrder[this.trueRevealIdx]
+          ];
+          this.trueRevealIdx++;
+        } else {
+          clearInterval(this.trueRevealInterval);
+        }
+      }, 700);
+    },
     startReveal() {
       this.dismissed = false;
       clearTimeout(this.phase1Timer);
       clearInterval(this.phase2Interval);
+      clearInterval(this.trueRevealInterval);
       this.revealedIndices = [];
       this.revealIdx = 0;
+      this.revealedTrueIndices = [];
+      this.trueRevealOrder = [];
+      this.trueRevealIdx = 0;
       const n = this.snapshotPlayers.length;
       // Use the ST-generated order from the snapshot so all clients reveal
       // in the same sequence. Fall back to local generation if unavailable.
@@ -159,7 +205,7 @@ export default {
 
       // Phase 1 — blank for 1s
       this.phase1Timer = setTimeout(() => {
-        // Phase 2 — reveal one token every 450ms in random order
+        // Phase 2 — reveal one token every 700ms in random order
         this.phase2Interval = setInterval(() => {
           if (this.revealIdx < this.revealOrder.length) {
             this.revealedIndices = [
@@ -177,6 +223,7 @@ export default {
       this.dismissed = true;
       clearTimeout(this.phase1Timer);
       clearInterval(this.phase2Interval);
+      clearInterval(this.trueRevealInterval);
       // ST clears reveal from Vuex so new joiners don't inherit a stale reveal state
       if (!this.session.isSpectator) {
         this.$store.commit("session/clearVictoryReveal");
@@ -195,6 +242,12 @@ export default {
       if (["minion", "demon"].includes(player.role.team)) return "evil";
       return null;
     },
+    trueAlignment(player) {
+      if (!player.trueRole || !player.trueRole.team) return null;
+      if (["townsfolk", "outsider"].includes(player.trueRole.team)) return "good";
+      if (["minion", "demon"].includes(player.trueRole.team)) return "evil";
+      return null;
+    },
     particleStyle(i) {
       const angle = (i / 40) * 360;
       const delay = (i % 8) * 0.15;
@@ -211,11 +264,11 @@ export default {
       if (n === 0) return {};
       const angle = ((2 * Math.PI) / n) * i - Math.PI / 2;
       // Radius scales with player count so all tokens stay on screen
-      const radius = Math.min(38, Math.max(22, n * 2.6));
+      const radius = Math.min(46, Math.max(26.5, n * 3.2));
       const x = Math.cos(angle) * radius;
       const y = Math.sin(angle) * radius;
       return {
-        transform: `translate(calc(-50% + ${x}vh), calc(-50% + ${y}vh))`
+        transform: `translate(calc(-50% + ${x}vh), calc(-70% + ${y}vh))`
       };
     }
   }
@@ -367,10 +420,52 @@ export default {
   position: relative;
   width: 12vh;
   height: 12vh;
+  overflow: visible;
 
   .token {
     height: 100%;
     cursor: default;
+  }
+}
+
+.true-token-wrap {
+  position: absolute;
+  left: 10%;
+  top: 30%;
+  width: 65%;
+  height: 65%;
+  z-index: 7;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  // Delay accounts for the token-pop flip animation (300ms) plus a beat
+  animation: true-token-appear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  .token {
+    height: 100%;
+    cursor: default;
+  }
+
+  .true-alignment-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: color;
+    z-index: 1;
+
+    &.good {
+      background: rgba(40, 110, 255, 0.85);
+    }
+    &.evil {
+      background: rgba(220, 40, 40, 0.85);
+    }
+  }
+}
+
+@keyframes true-token-appear {
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -380,6 +475,10 @@ export default {
 
 .reveal-player.winner .reveal-token-wrap .token {
   animation: winner-glow-pulse 2.5s ease-in-out infinite;
+}
+
+.reveal-player.winner .reveal-token-wrap .true-token-wrap .token {
+  animation: none;
 }
 
 // Phase 1: unrevealed token appears as a dimmed bare token disc

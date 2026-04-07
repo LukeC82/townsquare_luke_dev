@@ -4,7 +4,9 @@ const {
   startReveal,
   dismiss,
   isWinner,
-  playerPosition
+  playerPosition,
+  isTrueRevealed,
+  startTrueReveal
 } = VictoryReveal.methods;
 const { allRevealed } = VictoryReveal.computed;
 
@@ -33,7 +35,11 @@ const makeCtx = (
   winningTeam,
   session: { isSpectator },
   $store: { commit: jest.fn() },
-  effectiveAlignment: VictoryReveal.methods.effectiveAlignment
+  effectiveAlignment: VictoryReveal.methods.effectiveAlignment,
+  revealedTrueIndices: [],
+  trueRevealOrder: [],
+  trueRevealIdx: 0,
+  trueRevealInterval: null
 });
 
 // Players with explicit good/evil for reveal-order tests
@@ -65,7 +71,11 @@ const makeMixedCtx = (winningTeam = "evil") => ({
   winningTeam,
   session: { isSpectator: true },
   $store: { commit: jest.fn() },
-  effectiveAlignment: VictoryReveal.methods.effectiveAlignment
+  effectiveAlignment: VictoryReveal.methods.effectiveAlignment,
+  revealedTrueIndices: [],
+  trueRevealOrder: [],
+  trueRevealIdx: 0,
+  trueRevealInterval: null
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -118,11 +128,11 @@ describe("VictoryReveal — startReveal", () => {
   it("Phase 2 begins after 1000ms — first token revealed", () => {
     const ctx = makeCtx(3);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1700); // 1000ms + 1 tick of 540ms
+    jest.advanceTimersByTime(1700); // 1000ms Phase 1 + 1 tick of 700ms
     expect(ctx.revealedIndices).toHaveLength(1);
   });
 
-  it("all tokens revealed after Phase 1 + n × 450ms", () => {
+  it("all tokens revealed after Phase 1 + n × 700ms", () => {
     const n = 4;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
@@ -155,7 +165,7 @@ describe("VictoryReveal — startReveal", () => {
     const ctx = makeCtx(3);
     // First call — advance exactly 1 tick into Phase 2 (1000ms + 1×450ms)
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1700); // 1000ms Phase1 + 540ms = 1 token revealed
+    jest.advanceTimersByTime(1700); // 1000ms Phase 1 + 700ms = 1 token revealed
     expect(ctx.revealedIndices).toHaveLength(1);
 
     // Second call — should reset
@@ -346,6 +356,60 @@ describe("VictoryReveal — dismiss", () => {
     expect(ctx.$store.commit).toHaveBeenCalledWith(
       "session/clearVictoryReveal"
     );
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+// isTrueRevealed / startTrueReveal
+// ─────────────────────────────────────────────────────────────
+describe("VictoryReveal — true token reveal", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it("isTrueRevealed returns false before startTrueReveal runs", () => {
+    const ctx = makeCtx(3);
+    expect(isTrueRevealed.call(ctx, 0)).toBe(false);
+  });
+
+  it("startTrueReveal does nothing when no players have a trueRole", () => {
+    const ctx = makeCtx(3);
+    startTrueReveal.call(ctx);
+    jest.advanceTimersByTime(2000);
+    expect(ctx.revealedTrueIndices).toHaveLength(0);
+  });
+
+  it("startTrueReveal reveals only persona players, one per 700ms", () => {
+    const ctx = makeCtx(3);
+    ctx.snapshotPlayers[1].trueRole = { id: "philosopher" };
+    startTrueReveal.call(ctx);
+    expect(ctx.revealedTrueIndices).toHaveLength(0);
+    jest.advanceTimersByTime(700);
+    expect(ctx.revealedTrueIndices).toEqual([1]);
+  });
+
+  it("startTrueReveal reveals all persona players after n × 700ms", () => {
+    const ctx = makeCtx(4);
+    ctx.snapshotPlayers[0].trueRole = { id: "drunk" };
+    ctx.snapshotPlayers[2].trueRole = { id: "philosopher" };
+    startTrueReveal.call(ctx);
+    jest.advanceTimersByTime(2 * 700);
+    expect(ctx.revealedTrueIndices).toHaveLength(2);
+  });
+
+  it("startReveal resets revealedTrueIndices", () => {
+    const ctx = makeCtx(3);
+    ctx.revealedTrueIndices = [1];
+    startReveal.call(ctx);
+    expect(ctx.revealedTrueIndices).toHaveLength(0);
+  });
+
+  it("dismiss clears the trueRevealInterval", () => {
+    const ctx = makeCtx(3);
+    ctx.snapshotPlayers[0].trueRole = { id: "drunk" };
+    startTrueReveal.call(ctx);
+    dismiss.call(ctx);
+    jest.advanceTimersByTime(2000);
+    expect(ctx.revealedTrueIndices).toHaveLength(0);
   });
 });
 

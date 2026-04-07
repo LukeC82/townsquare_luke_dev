@@ -325,6 +325,8 @@ describe("VictoryModal — revealGrimoire", () => {
     makePlayer("Alice", "townsfolk"),
     makePlayer("Bob", "demon")
   ];
+  // Test players have no reminders, so trueRoleFor always returns null
+  const trueRoleFor = () => null;
 
   it("is a no-op when no winners are selected", () => {
     const mockCommit = jest.fn();
@@ -334,7 +336,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [false, false],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     expect(mockCommit).not.toHaveBeenCalled();
@@ -348,7 +351,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [true, false],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     const [mutName, payload] = mockCommit.mock.calls[0];
@@ -367,7 +371,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [false, true],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     const payload = mockCommit.mock.calls[0][1];
@@ -376,8 +381,8 @@ describe("VictoryModal — revealGrimoire", () => {
     expect(snap).toHaveProperty("role");
     expect(snap).toHaveProperty("alignment");
     expect(snap).toHaveProperty("isDead");
-    expect(snap).toHaveProperty("pronouns");
-    // Should NOT include reminders or socket id
+    // Should NOT include reminders, socket id, or raw player fields like pronouns
+    expect(snap).not.toHaveProperty("pronouns");
     expect(snap).not.toHaveProperty("reminders");
     expect(snap).not.toHaveProperty("id");
   });
@@ -390,7 +395,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [true, false],
       $store: { commit: jest.fn() },
-      close: mockClose
+      close: mockClose,
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     expect(mockClose).toHaveBeenCalled();
@@ -408,7 +414,8 @@ describe("VictoryModal — revealGrimoire", () => {
       ],
       winners: [false, true, true],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     expect(mockCommit.mock.calls[0][1].winners).toEqual([1, 2]);
@@ -422,7 +429,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [false, true],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     const { revealOrder } = mockCommit.mock.calls[0][1];
@@ -440,7 +448,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [false, true],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
@@ -456,7 +465,8 @@ describe("VictoryModal — revealGrimoire", () => {
       players,
       winners: [true, false],
       $store: { commit: mockCommit },
-      close: jest.fn()
+      close: jest.fn(),
+      trueRoleFor
     };
     revealGrimoire.call(ctx);
     const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
