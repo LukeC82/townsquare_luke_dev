@@ -65,7 +65,8 @@ export default {
     reminderLeaves: function() {
       return (
         (this.role.reminders || []).length +
-        (this.role.remindersGlobal || []).length
+        (this.role.remindersGlobal || []).length +
+        (this.role.remindersPersonaGlobal || []).length
       );
     },
     ...mapState(["grimoire"])

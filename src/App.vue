@@ -377,6 +377,19 @@ ul {
   }
 }
 
+/* Reminder token alignment overlay — shared by Player.vue and ReminderModal.vue */
+.reminder-alignment-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: color;
+  z-index: 2;
+  &.good {
+    background: rgba(40, 110, 255, 0.85);
+  }
+}
+
 /* video background */
 video#background {
   position: absolute;

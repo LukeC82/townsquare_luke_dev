@@ -259,6 +259,10 @@
           }"
         ></span>
         <span class="text">{{ reminder.name }}</span>
+        <div
+          v-if="reminder.name === 'GOOD Hannibal'"
+          class="reminder-alignment-overlay good"
+        ></div>
       </div>
     </template>
     <div class="reminder add" @click="$emit('trigger', ['openReminderModal'])">
