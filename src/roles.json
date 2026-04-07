@@ -194,7 +194,8 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Drunk"],
+    "remindersGlobal": [],
+    "remindersPersonaGlobal": ["Is the Drunk"],
     "setup": true,
     "ability": "You do not know you are the Drunk. You think you are a Townsfolk character, but you are not."
   },
@@ -714,7 +715,8 @@
     "firstNightReminder": "Show the Apprentice the 'You are' card, then a Townsfolk or Minion token. In the Grimoire, replace the Apprentice token with that character token, and put the Apprentice's 'Is the Apprentice' reminder by that character token.",
     "otherNight": 0,
     "otherNightReminder": "",
-    "reminders": ["Is the Apprentice"],
+    "reminders": [],
+    "remindersPersonaGlobal": ["Is the Apprentice"],
     "setup": false,
     "ability": "On your 1st night, you gain a Townsfolk ability (if good), or a Minion ability (if evil)."
   },
@@ -899,7 +901,8 @@
     "firstNightReminder": "The Philosopher either shows a 'no' head signal, or points to a good character on their sheet. If they chose a character: Swap the out-of-play character token with the Philosopher token and add the 'Is the Philosopher' reminder. If the character is in play, place the drunk marker by that player.",
     "otherNight": 4,
     "otherNightReminder": "If the Philosopher has not used their ability: the Philosopher either shows a 'no' head signal, or points to a good character on their sheet. If they chose a character: Swap the out-of-play character token with the Philosopher token and add the 'Is the Philosopher' reminder. If the character is in play, place the drunk marker by that player.",
-    "remindersGlobal": ["Drunk","Is the Philosopher"],
+    "remindersGlobal": ["Drunk"],
+    "remindersPersonaGlobal": ["Is the Philosopher"],
     "reminders": [],
     "setup": false,
     "ability": "Once per game, at night, choose a good character: gain that ability. If this character is in play, they are drunk."
@@ -1367,7 +1370,8 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Is the Alchemist"],
+    "remindersGlobal": [],
+    "remindersPersonaGlobal": ["Is the Alchemist"],
     "setup": false,
     "ability": "You have a not-in-play Minion ability."
   },
@@ -1733,8 +1737,8 @@
     "firstNightReminder": "Show the Grimoire to the Widow for as long as they need. The Widow points to a player. That player is poisoned. Wake a good player. Show the 'These characters are in play' card, then the Widow character token.",
     "otherNight": 0,
     "otherNightReminder": "",
-    "reminders": ["Poisoned"],
-    "remindersGlobal": ["Knows"],
+    "reminders": ["Poisoned", "Knows"],
+    "remindersGlobal": [],
     "setup": false,
     "ability": "On your 1st night, look at the Grimoire and choose a player: they are poisoned. 1 good player knows a Widow is in play."
   },
@@ -1815,7 +1819,8 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Is the Marionette"],
+    "remindersGlobal": [],
+    "remindersPersonaGlobal": ["Is the Marionette"],
     "setup": true,
     "ability": "You think you are a good character but you are not. The Demon knows who you are. [You neighbour the Demon]"
   },
@@ -1946,8 +1951,8 @@
     "otherNight": 35,
     "otherNightReminder": "Wake all Minions together, allow them to vote by pointing at who they want to babysit Lil' Monsta. Choose a player, that player dies.",
     "reminders": [],
-    "remindersGlobal": ["Is the Demon",
-        "Dead"],
+    "remindersGlobal": ["Dead"],
+    "remindersPersonaGlobal": ["Is the Demon"],
     "setup": true,
     "ability": "Each night, Minions choose who babysits Lil' Monsta's token & \"is the Demon\". A player dies each night*. [+1 Minion]"
   },
@@ -2164,8 +2169,9 @@
     "firstNightReminder": "",
     "otherNight": 40,
     "otherNightReminder": "If killed by the Demon and has their ability, Wake the Blacksmith and show them the \u2019You are\u2019 card, then show them their not-in-play Townsfolk character ability they have gained.",
-    "remindersGlobal": ["Is the Blacksmith"],
-    "reminders": ["Ability used"],
+    "remindersGlobal": ["Ability used"],
+    "remindersPersonaGlobal": ["Is the Blacksmith"],
+    "reminders": [],
     "setup": false,
     "ability": "The first time the Demon kills you, you live & gain a not\u2212in\u2212play Townsfolk ability."
   },
@@ -2309,7 +2315,8 @@
     "otherNight": 0,
     "otherNightReminder": "",
     "reminders": [],
-    "remindersGlobal": ["Bad Omen, False, ~Evil"],
+    "remindersGlobal": [],
+    "remindersPersonaGlobal": ["Bad Omen, False, ~Evil"],
     "setup": false,
     "ability": "You do not know you are a Bad Omen. You think you are a Townsfolk, but you recieve false information. You might register as evil, even if dead."
   },
@@ -2375,7 +2382,8 @@
     "otherNight": 24,
     "otherNightReminder": "A player might die for each living Hannibal. Place the \"DEAD\" reminder token(s) next to the chosen player(s). They die. If a Hannibal dies, that night wake the player and inform them that they are a good Hannibal.",
     "reminders": [],
-    "remindersGlobal": ["Dead","EVIL Hannibal","GOOD Hannibal"],
+    "remindersGlobal": ["Dead"],
+    "remindersPersonaGlobal": ["GOOD Hannibal","EVIL Hannibal"],
     "setup": true,
     "ability": "You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player may die. The 1st Hannibal to die, becomes good. [+ Hannibal]"
   },
@@ -2596,7 +2604,8 @@
     "firstNightReminder": "",
     "otherNight": 0,
     "otherNightReminder": "",
-    "remindersGlobal": ["Is Broken Toy"],
+    "remindersGlobal": [],
+    "remindersPersonaGlobal": ["Is Broken Toy"],
     "reminders": [],
     "setup": false,
     "ability": "You think you are another Outsider. You may die at any time. You might register as evil & as a Minion or Demon, even if dead."

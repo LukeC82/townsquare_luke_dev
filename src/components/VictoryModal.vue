@@ -35,12 +35,12 @@
               @click.stop="cycleAlignment(i)"
             ></div>
             <div class="card-shroud" v-if="player.isDead"></div>
-            <div class="true-token-wrap" v-if="trueRoleFor(player)">
-              <Token :role="trueRoleFor(player)" />
+            <div class="true-token-wrap" v-if="playerTrueRoles[i]">
+              <Token :role="playerTrueRoles[i]" />
               <div
                 class="true-alignment-overlay"
-                :class="player.alignment"
-                v-if="player.alignment"
+                :class="playerTrueRoles[i].alignment"
+                v-if="playerTrueRoles[i].alignment"
               ></div>
             </div>
           </div>
@@ -71,7 +71,6 @@
 <script>
 import { mapState } from "vuex";
 import Token from "./Token.vue";
-import personas from "../persona.json";
 
 export default {
   components: { Token },
@@ -83,6 +82,9 @@ export default {
     },
     selectedCount() {
       return this.winners.filter(Boolean).length;
+    },
+    playerTrueRoles() {
+      return this.players.map(p => this.trueRoleFor(p));
     }
   },
   data() {
@@ -164,26 +166,39 @@ export default {
     },
     trueRoleFor(player) {
       if (!player.reminders || !player.reminders.length) return null;
-      const match = player.reminders.find(r =>
-        personas.some(p => p.reminder === r.name)
-      );
+      const match = player.reminders.find(r => {
+        const roleData =
+          this.$store.state.roles.get(r.role) ||
+          this.$store.getters.rolesJSONbyId.get(r.role);
+        return (
+          roleData &&
+          Array.isArray(roleData.remindersPersonaGlobal) &&
+          roleData.remindersPersonaGlobal.includes(r.name)
+        );
+      });
       if (!match) return null;
       const roleData =
         this.$store.state.roles.get(match.role) ||
         this.$store.getters.rolesJSONbyId.get(match.role);
       if (!roleData) return null;
+      let alignment = null;
+      if (["townsfolk", "outsider"].includes(roleData.team)) alignment = "good";
+      else if (["minion", "demon"].includes(roleData.team)) alignment = "evil";
+      if (match.name.startsWith("GOOD ")) alignment = "good";
+      else if (match.name.startsWith("EVIL ")) alignment = "evil";
       return {
         id: roleData.id,
         name: roleData.name,
         team: roleData.team,
         image: roleData.image,
-        imageAlt: roleData.imageAlt
+        imageAlt: roleData.imageAlt,
+        alignment
       };
     },
     revealGrimoire() {
       if (this.selectedCount === 0) return;
       const team = this.team;
-      const snapshotPlayers = this.players.map(player => ({
+      const snapshotPlayers = this.players.map((player, i) => ({
         name: player.name,
         role:
           player.role && player.role.id
@@ -197,17 +212,10 @@ export default {
             : {},
         alignment: player.alignment,
         isDead: player.isDead,
-        trueRole: this.trueRoleFor(player)
+        trueRole: this.playerTrueRoles[i]
       }));
 
       // Generate the reveal order here so every client uses the same sequence.
-      const effectiveAlignment = p => {
-        if (p.alignment) return p.alignment;
-        if (!p.role || !p.role.team) return null;
-        if (["townsfolk", "outsider"].includes(p.role.team)) return "good";
-        if (["minion", "demon"].includes(p.role.team)) return "evil";
-        return null;
-      };
       const n = snapshotPlayers.length;
       const order = Array.from({ length: n }, (_, i) => i).sort(
         () => Math.random() - 0.5
@@ -216,11 +224,11 @@ export default {
         const living = order.findIndex(
           i =>
             !snapshotPlayers[i].isDead &&
-            effectiveAlignment(snapshotPlayers[i]) === alignment
+            this.effectiveAlignment(snapshotPlayers[i]) === alignment
         );
         if (living !== -1) return living;
         return order.findIndex(
-          i => effectiveAlignment(snapshotPlayers[i]) === alignment
+          i => this.effectiveAlignment(snapshotPlayers[i]) === alignment
         );
       };
       const goodPos = featuredPos("good");
@@ -262,6 +270,13 @@ export default {
       return {
         transform: `translate(calc(-50% + ${x}vh), calc(-50% + ${y}vh))`
       };
+    },
+    effectiveAlignment(player) {
+      if (player.alignment) return player.alignment;
+      if (!player.role || !player.role.team) return null;
+      if (["townsfolk", "outsider"].includes(player.role.team)) return "good";
+      if (["minion", "demon"].includes(player.role.team)) return "evil";
+      return null;
     }
   }
 };

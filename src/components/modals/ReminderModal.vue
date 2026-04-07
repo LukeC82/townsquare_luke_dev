@@ -25,6 +25,10 @@
           }"
         ></span>
         <span class="text">{{ reminder.name }}</span>
+        <div
+          v-if="reminder.name === 'GOOD Hannibal'"
+          class="reminder-alignment-overlay good"
+        ></div>
       </li>
     </ul>
   </Modal>
@@ -67,6 +71,13 @@ export default {
           reminders = [
             ...reminders,
             ...role.remindersGlobal.map(mapReminder(role))
+          ];
+        }
+        // add global persona reminders (used for victory reveal)
+        if (role.remindersPersonaGlobal && role.remindersPersonaGlobal.length) {
+          reminders = [
+            ...reminders,
+            ...role.remindersPersonaGlobal.map(mapReminder(role))
           ];
         }
       });

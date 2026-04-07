@@ -86,6 +86,7 @@ const customRole = {
   otherNightReminder: "",
   reminders: [],
   remindersGlobal: [],
+  remindersPersonaGlobal: [],
   setup: false,
   team: "townsfolk",
   isCustom: true

@@ -19,6 +19,7 @@
       </div>
 
       <div class="reveal-town">
+        <div class="button demon reveal-close-btn" @click="dismiss">Close</div>
         <div
           v-for="(player, i) in snapshotPlayers"
           :key="i"
@@ -137,6 +138,7 @@ export default {
       if (!personaIndices.length) return;
       this.trueRevealOrder = personaIndices;
       this.trueRevealIdx = 0;
+      const TRUE_REVEAL_INTERVAL_MS = 450;
       this.trueRevealInterval = setInterval(() => {
         if (this.trueRevealIdx < this.trueRevealOrder.length) {
           this.revealedTrueIndices = [
@@ -147,7 +149,7 @@ export default {
         } else {
           clearInterval(this.trueRevealInterval);
         }
-      }, 700);
+      }, TRUE_REVEAL_INTERVAL_MS);
     },
     startReveal() {
       this.dismissed = false;
@@ -203,9 +205,10 @@ export default {
         }
       }
 
+      const MAIN_REVEAL_INTERVAL_MS = 650;
       // Phase 1 — blank for 1s
       this.phase1Timer = setTimeout(() => {
-        // Phase 2 — reveal one token every 700ms in random order
+        // Phase 2 — reveal one token per interval in reveal order
         this.phase2Interval = setInterval(() => {
           if (this.revealIdx < this.revealOrder.length) {
             this.revealedIndices = [
@@ -216,7 +219,7 @@ export default {
           } else {
             clearInterval(this.phase2Interval);
           }
-        }, 700);
+        }, MAIN_REVEAL_INTERVAL_MS);
       }, 1000);
     },
     dismiss() {
@@ -243,8 +246,10 @@ export default {
       return null;
     },
     trueAlignment(player) {
-      if (!player.trueRole || !player.trueRole.team) return null;
-      if (["townsfolk", "outsider"].includes(player.trueRole.team)) return "good";
+      if (!player.trueRole) return null;
+      if (player.trueRole.alignment) return player.trueRole.alignment;
+      if (["townsfolk", "outsider"].includes(player.trueRole.team))
+        return "good";
       if (["minion", "demon"].includes(player.trueRole.team)) return "evil";
       return null;
     },
@@ -402,6 +407,18 @@ export default {
   flex: 1;
   width: 100%;
   z-index: 2;
+}
+
+.reveal-close-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-size: 1rem;
+  width: auto;
+  padding: 0 6px;
+  margin: 0;
 }
 
 .reveal-player {

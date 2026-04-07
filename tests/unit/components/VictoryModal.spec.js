@@ -327,33 +327,46 @@ describe("VictoryModal — revealGrimoire", () => {
   ];
   // Test players have no reminders, so trueRoleFor always returns null
   const trueRoleFor = () => null;
+  // playerTrueRoles is a computed derived from trueRoleFor — mirror that here
+  const makeCtx = overrides => ({
+    trueRoleFor,
+    get playerTrueRoles() {
+      return this.players.map(p => this.trueRoleFor(p));
+    },
+    effectiveAlignment(p) {
+      if (p.alignment) return p.alignment;
+      if (!p.role || !p.role.team) return null;
+      if (["townsfolk", "outsider"].includes(p.role.team)) return "good";
+      if (["minion", "demon"].includes(p.role.team)) return "evil";
+      return null;
+    },
+    ...overrides
+  });
 
   it("is a no-op when no winners are selected", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 0,
       team: "good",
       players,
       winners: [false, false],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     expect(mockCommit).not.toHaveBeenCalled();
   });
 
   it("commits setVictoryReveal with the correct snapshot", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 1,
       team: "good",
       players,
       winners: [true, false],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     const [mutName, payload] = mockCommit.mock.calls[0];
     expect(mutName).toBe("session/setVictoryReveal");
@@ -365,15 +378,14 @@ describe("VictoryModal — revealGrimoire", () => {
 
   it("snapshot player includes only the required fields", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 1,
       team: "evil",
       players,
       winners: [false, true],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     const payload = mockCommit.mock.calls[0][1];
     const snap = payload.players[1]; // Bob the demon
@@ -389,22 +401,21 @@ describe("VictoryModal — revealGrimoire", () => {
 
   it("calls close after committing", () => {
     const mockClose = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 1,
       team: "good",
       players,
       winners: [true, false],
       $store: { commit: jest.fn() },
-      close: mockClose,
-      trueRoleFor
-    };
+      close: mockClose
+    });
     revealGrimoire.call(ctx);
     expect(mockClose).toHaveBeenCalled();
   });
 
   it("builds winners array from selected indices only", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 2,
       team: "evil",
       players: [
@@ -414,24 +425,22 @@ describe("VictoryModal — revealGrimoire", () => {
       ],
       winners: [false, true, true],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     expect(mockCommit.mock.calls[0][1].winners).toEqual([1, 2]);
   });
 
   it("snapshot includes a revealOrder covering all player indices", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 1,
       team: "evil",
       players,
       winners: [false, true],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     const { revealOrder } = mockCommit.mock.calls[0][1];
     expect(revealOrder).toHaveLength(players.length);
@@ -442,15 +451,14 @@ describe("VictoryModal — revealGrimoire", () => {
 
   it("evil victory: revealOrder places an evil player last", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 1,
       team: "evil",
       players,
       winners: [false, true],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
     const last = snap[revealOrder[revealOrder.length - 1]];
@@ -459,15 +467,14 @@ describe("VictoryModal — revealGrimoire", () => {
 
   it("good victory: revealOrder places a good player last", () => {
     const mockCommit = jest.fn();
-    const ctx = {
+    const ctx = makeCtx({
       selectedCount: 1,
       team: "good",
       players,
       winners: [true, false],
       $store: { commit: mockCommit },
-      close: jest.fn(),
-      trueRoleFor
-    };
+      close: jest.fn()
+    });
     revealGrimoire.call(ctx);
     const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
     const last = snap[revealOrder[revealOrder.length - 1]];
