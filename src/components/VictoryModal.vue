@@ -220,33 +220,74 @@ export default {
       const order = Array.from({ length: n }, (_, i) => i).sort(
         () => Math.random() - 0.5
       );
-      const featuredPos = alignment => {
-        const living = order.findIndex(
-          i =>
-            !snapshotPlayers[i].isDead &&
-            this.effectiveAlignment(snapshotPlayers[i]) === alignment
-        );
-        if (living !== -1) return living;
-        return order.findIndex(
-          i => this.effectiveAlignment(snapshotPlayers[i]) === alignment
-        );
-      };
-      const goodPos = featuredPos("good");
-      const evilPos = featuredPos("evil");
-      const candidates = [
-        { key: "good", pos: goodPos },
-        { key: "evil", pos: evilPos }
-      ]
-        .filter(p => p.pos !== -1)
-        .sort((a, b) => b.pos - a.pos);
-      const extracted = {};
-      for (const { key, pos } of candidates) {
-        extracted[key] = order.splice(pos, 1)[0];
+      // Good-victory cinematic override:
+      // If good wins AND there is a dead evil-aligned demon AND 2+ players are alive
+      // AND at least 1 alive good player exists → feature the dead demon then a
+      // living good player as the final two reveals (demon penultimate, good last).
+      const livingCount = snapshotPlayers.filter(p => !p.isDead).length;
+      const deadDemonIdx = order.findIndex(
+        i =>
+          snapshotPlayers[i].isDead &&
+          snapshotPlayers[i].role.team === "demon" &&
+          this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+      );
+      const livingGoodIdx =
+        team === "good"
+          ? order.findIndex(
+              i =>
+                !snapshotPlayers[i].isDead &&
+                this.effectiveAlignment(snapshotPlayers[i]) === "good"
+            )
+          : -1;
+      const useCinematic =
+        team === "good" &&
+        deadDemonIdx !== -1 &&
+        livingCount >= 2 &&
+        livingGoodIdx !== -1;
+
+      if (useCinematic) {
+        // Extract in reverse-index order so splicing doesn't shift the other
+        const first = Math.max(deadDemonIdx, livingGoodIdx);
+        const second = Math.min(deadDemonIdx, livingGoodIdx);
+        const firstPlayer = order.splice(first, 1)[0];
+        const secondPlayer = order.splice(second, 1)[0];
+        // dead demon goes penultimate, living good player goes last
+        const penultimate = snapshotPlayers[firstPlayer].isDead
+          ? firstPlayer
+          : secondPlayer;
+        const last = snapshotPlayers[firstPlayer].isDead
+          ? secondPlayer
+          : firstPlayer;
+        order.push(penultimate, last);
+      } else {
+        const featuredPos = alignment => {
+          const living = order.findIndex(
+            i =>
+              !snapshotPlayers[i].isDead &&
+              this.effectiveAlignment(snapshotPlayers[i]) === alignment
+          );
+          if (living !== -1) return living;
+          return order.findIndex(
+            i => this.effectiveAlignment(snapshotPlayers[i]) === alignment
+          );
+        };
+        const goodPos = featuredPos("good");
+        const evilPos = featuredPos("evil");
+        const candidates = [
+          { key: "good", pos: goodPos },
+          { key: "evil", pos: evilPos }
+        ]
+          .filter(p => p.pos !== -1)
+          .sort((a, b) => b.pos - a.pos);
+        const extracted = {};
+        for (const { key, pos } of candidates) {
+          extracted[key] = order.splice(pos, 1)[0];
+        }
+        const losingTeam = team === "evil" ? "good" : "evil";
+        if (extracted[losingTeam] !== undefined)
+          order.push(extracted[losingTeam]);
+        if (extracted[team] !== undefined) order.push(extracted[team]);
       }
-      const losingTeam = team === "evil" ? "good" : "evil";
-      if (extracted[losingTeam] !== undefined)
-        order.push(extracted[losingTeam]);
-      if (extracted[team] !== undefined) order.push(extracted[team]);
 
       const snapshot = {
         players: snapshotPlayers,
