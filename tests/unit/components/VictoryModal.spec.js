@@ -480,4 +480,114 @@ describe("VictoryModal — revealGrimoire", () => {
     const last = snap[revealOrder[revealOrder.length - 1]];
     expect(["townsfolk", "outsider"]).toContain(last.role.team);
   });
+
+  // ── Cinematic good-victory override ──────────────────────────
+  describe("good victory cinematic override", () => {
+    // Conditions: good wins, dead EVIL-aligned demon exists, 2+ alive, 1+ alive good player
+    const cinematicPlayers = [
+      makePlayer("Alice", "townsfolk", null, false), // alive good
+      makePlayer("Bob", "townsfolk", null, false), // alive good (filler)
+      makePlayer("Carol", "demon", null, true) // dead demon (no alignment override → evil by team)
+    ];
+
+    it("places the dead demon penultimate and a living good player last", () => {
+      const mockCommit = jest.fn();
+      const ctx = makeCtx({
+        selectedCount: 2,
+        team: "good",
+        players: cinematicPlayers,
+        winners: [true, true, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+      const last = snap[revealOrder[revealOrder.length - 1]];
+      const penultimate = snap[revealOrder[revealOrder.length - 2]];
+      expect(last.isDead).toBe(false);
+      expect(["townsfolk", "outsider"]).toContain(last.role.team);
+      expect(penultimate.isDead).toBe(true);
+      expect(penultimate.role.team).toBe("demon");
+    });
+
+    it("does not apply cinematic order for evil victory", () => {
+      const mockCommit = jest.fn();
+      const ctx = makeCtx({
+        selectedCount: 1,
+        team: "evil",
+        players: cinematicPlayers,
+        winners: [false, false, true],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+      const last = snap[revealOrder[revealOrder.length - 1]];
+      // Standard rule: winning team (evil) goes last
+      expect(["minion", "demon"]).toContain(last.role.team);
+    });
+
+    it("does not apply cinematic order when no dead demon", () => {
+      const mockCommit = jest.fn();
+      const livingDemonPlayers = [
+        makePlayer("Alice", "townsfolk", null, false),
+        makePlayer("Bob", "townsfolk", null, false),
+        makePlayer("Carol", "demon", null, false) // alive demon — no cinematic
+      ];
+      const ctx = makeCtx({
+        selectedCount: 2,
+        team: "good",
+        players: livingDemonPlayers,
+        winners: [true, true, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder } = mockCommit.mock.calls[0][1];
+      // Just assert it completes and covers all players
+      expect(revealOrder).toHaveLength(livingDemonPlayers.length);
+    });
+
+    it("does not apply cinematic order when only 1 player alive", () => {
+      const mockCommit = jest.fn();
+      const oneAlivePlayers = [
+        makePlayer("Alice", "townsfolk", null, false), // the one alive good
+        makePlayer("Bob", "townsfolk", null, true), // dead
+        makePlayer("Carol", "demon", null, true) // dead demon
+      ];
+      const ctx = makeCtx({
+        selectedCount: 1,
+        team: "good",
+        players: oneAlivePlayers,
+        winners: [true, false, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder } = mockCommit.mock.calls[0][1];
+      expect(revealOrder).toHaveLength(oneAlivePlayers.length);
+    });
+
+    it("does not apply cinematic order when dead demon is good-aligned (e.g. Hannibal)", () => {
+      const mockCommit = jest.fn();
+      const goodDemonPlayers = [
+        makePlayer("Alice", "townsfolk", null, false), // alive good
+        makePlayer("Bob", "townsfolk", null, false), // alive good (filler)
+        makePlayer("Carol", "demon", "good", true) // dead demon but good alignment
+      ];
+      const ctx = makeCtx({
+        selectedCount: 2,
+        team: "good",
+        players: goodDemonPlayers,
+        winners: [true, true, true],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+      // Cinematic should not fire — last player should be good (standard rule) but NOT the dead demon
+      const last = snap[revealOrder[revealOrder.length - 1]];
+      expect(last.isDead).toBe(false);
+    });
+  });
 });

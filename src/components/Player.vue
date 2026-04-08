@@ -798,7 +798,7 @@ export default {
   pointer-events: none;
   mix-blend-mode: color;
   z-index: 3;
-  transition: background-color 400ms ease, transform 200ms ease-in-out;
+  transition: transform 200ms ease-in-out;
   transform: perspective(400px) rotateY(0deg);
   backface-visibility: hidden;
 

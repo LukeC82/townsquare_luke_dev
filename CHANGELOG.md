@@ -3,6 +3,11 @@
 - Add a set of emotes that come from a players seated position
 -- probably disable emotes during an active votes/other important activites
 
+### Version 3.0.1
+- Added reveal for the true character tokens, such as Drunk, Marionette, etc.
+- Removed the Exit Presentation button and other minor fixes.
+- Added a special Good win reveal, so the dead Demon is revealed second to last.
+
 ### Version 3.0.0
 - Added a Storyteller Victory reveal screen & grimoire reveal!
 - Victory Screen System — Full Implementation

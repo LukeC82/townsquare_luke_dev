@@ -6,7 +6,6 @@
           {{ winningTeam === "good" ? "Good Wins!" : "Evil Wins!" }}
         </span>
         <span class="reveal-phase" v-if="!allRevealed">Revealing...</span>
-        <span class="exit-btn" @click="dismiss">Exit Presentation</span>
       </div>
 
       <div class="reveal-particle-layer" aria-hidden="true">
@@ -99,7 +98,7 @@ export default {
   },
   data() {
     return {
-      dismissed: false,
+      dismissed: true,
       revealedIndices: [],
       revealOrder: [],
       revealIdx: 0,
@@ -345,25 +344,6 @@ export default {
   animation: phase-blink 1.2s ease-in-out infinite;
 }
 
-.exit-btn {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 4px 14px;
-  border-radius: 12px;
-  transition: color 200ms, border-color 200ms, background 200ms;
-  &:hover {
-    color: rgba(255, 255, 255, 0.9);
-    border-color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.08);
-  }
-}
-
 .reveal-particle-layer {
   position: absolute;
   inset: 0;
@@ -415,7 +395,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-  font-size: 1rem;
+  font-size: 1.1rem;
   width: auto;
   padding: 0 6px;
   margin: 0;
