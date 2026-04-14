@@ -6,7 +6,8 @@ const {
   isWinner,
   playerPosition,
   isTrueRevealed,
-  startTrueReveal
+  startTrueReveal,
+  triggerFinalPair
 } = VictoryReveal.methods;
 const { allRevealed } = VictoryReveal.computed;
 
@@ -39,7 +40,18 @@ const makeCtx = (
   revealedTrueIndices: [],
   trueRevealOrder: [],
   trueRevealIdx: 0,
-  trueRevealInterval: null
+  trueRevealInterval: null,
+  extrasVisible: false,
+  bluffsTimer: null,
+  snapshotExtras: { bluffs: [], fabled: [] },
+  scheduleExtras: VictoryReveal.methods.scheduleExtras,
+  finalPairIndices: [],
+  finalPairShaking: false,
+  finalPairRevealed: false,
+  finalShakeTimer: null,
+  finalRevealTimer: null,
+  triggerFinalPair: VictoryReveal.methods.triggerFinalPair,
+  startTrueReveal: VictoryReveal.methods.startTrueReveal
 });
 
 // Players with explicit good/evil for reveal-order tests
@@ -75,7 +87,17 @@ const makeMixedCtx = (winningTeam = "evil") => ({
   revealedTrueIndices: [],
   trueRevealOrder: [],
   trueRevealIdx: 0,
-  trueRevealInterval: null
+  trueRevealInterval: null,
+  extrasVisible: false,
+  bluffsTimer: null,
+  snapshotExtras: { bluffs: [], fabled: [] },
+  scheduleExtras: VictoryReveal.methods.scheduleExtras,
+  finalPairIndices: [],
+  finalPairShaking: false,
+  finalPairRevealed: false,
+  finalShakeTimer: null,
+  finalRevealTimer: null,
+  triggerFinalPair: VictoryReveal.methods.triggerFinalPair
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -433,6 +455,127 @@ describe("VictoryReveal — isWinner", () => {
   it("returns false when snapshotWinners is empty", () => {
     const ctx = { snapshotWinners: [] };
     expect(isWinner.call(ctx, 0)).toBe(false);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+// Final 3 — allRevealed with finalPairIndices
+// ─────────────────────────────────────────────────────────────
+describe("VictoryReveal — allRevealed with Final 3", () => {
+  it("is true when n-2 players revealed and 2 are in finalPairIndices", () => {
+    const ctx = {
+      revealedIndices: [0, 1, 2],
+      snapshotPlayers: [{}, {}, {}, {}, {}], // 5 players
+      finalPairIndices: [3, 4]
+    };
+    expect(VictoryReveal.computed.allRevealed.call(ctx)).toBe(true);
+  });
+
+  it("is false when fewer than n-2 revealed with finalPairIndices", () => {
+    const ctx = {
+      revealedIndices: [0, 1],
+      snapshotPlayers: [{}, {}, {}, {}, {}],
+      finalPairIndices: [3, 4]
+    };
+    expect(VictoryReveal.computed.allRevealed.call(ctx)).toBe(false);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+// Final 3 — startReveal with snapshot finalPair
+// ─────────────────────────────────────────────────────────────
+describe("VictoryReveal — Final 3 startReveal", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it("populates finalPairIndices from snapshot.finalPair", () => {
+    const ctx = makeCtx(5);
+    ctx.session = {
+      isSpectator: true,
+      victoryRevealSnapshot: {
+        finalThree: true,
+        finalPair: [2, 4],
+        revealOrder: [0, 1, 3]
+      }
+    };
+    startReveal.call(ctx);
+    expect(ctx.finalPairIndices).toEqual([2, 4]);
+  });
+
+  it("revealOrder has n-2 entries when finalThree is active", () => {
+    const ctx = makeCtx(5);
+    ctx.session = {
+      isSpectator: true,
+      victoryRevealSnapshot: {
+        finalThree: true,
+        finalPair: [2, 4],
+        revealOrder: [0, 1, 3]
+      }
+    };
+    startReveal.call(ctx);
+    expect(ctx.revealOrder).toHaveLength(3);
+    expect(ctx.revealOrder).toEqual([0, 1, 3]);
+  });
+
+  it("finalPairIndices is empty when snapshot has no finalThree", () => {
+    const ctx = makeCtx(5);
+    ctx.session = { isSpectator: true, victoryRevealSnapshot: null };
+    startReveal.call(ctx);
+    expect(ctx.finalPairIndices).toEqual([]);
+  });
+
+  it("resets finalPairShaking and finalPairRevealed on re-trigger", () => {
+    const ctx = makeCtx(5);
+    ctx.finalPairShaking = true;
+    ctx.finalPairRevealed = true;
+    ctx.session = { isSpectator: true };
+    startReveal.call(ctx);
+    expect(ctx.finalPairShaking).toBe(false);
+    expect(ctx.finalPairRevealed).toBe(false);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+// Final 3 — triggerFinalPair
+// ─────────────────────────────────────────────────────────────
+describe("VictoryReveal — triggerFinalPair", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it("does nothing when finalPairIndices is empty", () => {
+    const ctx = makeCtx(3);
+    triggerFinalPair.call(ctx);
+    jest.advanceTimersByTime(3000);
+    expect(ctx.finalPairShaking).toBe(false);
+    expect(ctx.finalPairRevealed).toBe(false);
+  });
+
+  it("sets finalPairShaking after 1000ms", () => {
+    const ctx = makeCtx(5);
+    ctx.finalPairIndices = [3, 4];
+    triggerFinalPair.call(ctx);
+    jest.advanceTimersByTime(1000);
+    expect(ctx.finalPairShaking).toBe(true);
+    expect(ctx.finalPairRevealed).toBe(false);
+  });
+
+  it("sets finalPairRevealed and clears shake after 2000ms total", () => {
+    const ctx = makeCtx(5);
+    ctx.finalPairIndices = [3, 4];
+    triggerFinalPair.call(ctx);
+    jest.advanceTimersByTime(2000);
+    expect(ctx.finalPairShaking).toBe(false);
+    expect(ctx.finalPairRevealed).toBe(true);
+  });
+
+  it("dismiss cancels pending finalShakeTimer and finalRevealTimer", () => {
+    const ctx = makeCtx(5);
+    ctx.finalPairIndices = [3, 4];
+    triggerFinalPair.call(ctx);
+    jest.advanceTimersByTime(1000); // shake starts
+    dismiss.call(ctx);
+    jest.advanceTimersByTime(1000); // reveal should NOT fire
+    expect(ctx.finalPairRevealed).toBe(false);
   });
 });
 

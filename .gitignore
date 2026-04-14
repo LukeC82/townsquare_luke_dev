@@ -47,6 +47,9 @@ override.tf.json
 .idea/
 
 .DS_Store
+
+# VS Code — personal workspace config (contains machine-specific paths)
+.vscode/
 .claude/settings.local.json
 /bin
 *.project
