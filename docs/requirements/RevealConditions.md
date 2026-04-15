@@ -90,13 +90,13 @@ All other players fill the front of `revealOrder` in random order (dead before a
 
 **Priority:** 1 (evil wins)
 
-**Trigger:** Winning team is **evil** AND exactly **2 players alive** AND an alive demon exists (any alignment — no effective-alignment check is applied here).
+**Trigger:** Winning team is **evil** AND exactly **2 players alive** AND the two alive players have **different effective alignments** (one evil, one good).
 
-**Effect:** The alive demon and the other alive player → `finalPair`. All remaining players in the body in random order (dead before alive). `finalThree = true`.
+**Effect:** The alive evil player and the alive good player → `finalPair`. All remaining players in the body in random order (dead before alive). `finalThree = true`.
 
-All evil players are revealed with the **shockwave-animation** visual effect (including the demon in the simultaneous reveal).
+All evil players are revealed with the **shockwave-animation** visual effect (including the evil player in the simultaneous reveal).
 
-**Fallthrough:** If no alive demon exists, skip to Rule 2.
+**Fallthrough:** If both alive players share the same alignment (e.g. both evil), skip to Rule 2.
 
 ---
 
@@ -186,7 +186,7 @@ Good win:
   Rule 2   → standard tail
 
 Evil win:
-  Rule 1b          → finalPair (demon [any alignment] + other alive) — exactly 2 alive
+  Rule 1b          → finalPair (alive evil + alive good) — exactly 2 alive, different alignments
   Overwhelming     → ALL alive in finalPair — >2 alive, all alive are evil
   Rule 1c          → finalPair (evil demon + alive good) OR demon last — >2 alive, alive evil demon, alive good/traveler present
   Rule 1d          → finalPair (evil + evil/good) if possible — >2 alive, dead demon, alive good/traveler present

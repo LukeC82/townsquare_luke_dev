@@ -271,25 +271,25 @@ export default {
       } else if (team === "evil") {
         if (livingCount === 2) {
           // ── Rule 1b · Evil Win, 2 Alive ─────────────────────────────────
-          // Simultaneous pair: alive demon + any other alive player.
-          const aliveDemonPos = order.findIndex(
+          // Different alignments → finalPair for dramatic simultaneous reveal.
+          const aliveEvilPos = order.findIndex(
             i =>
               !snapshotPlayers[i].isDead &&
-              snapshotPlayers[i].role.team === "demon"
+              this.effectiveAlignment(snapshotPlayers[i]) === "evil"
           );
-          if (aliveDemonPos !== -1) {
-            const otherAlivePos = order.findIndex(
-              (i, pos) => pos !== aliveDemonPos && !snapshotPlayers[i].isDead
-            );
-            if (otherAlivePos !== -1) {
-              finalThree = true;
-              tailOrdered = true;
-              const hi = Math.max(aliveDemonPos, otherAlivePos);
-              const lo = Math.min(aliveDemonPos, otherAlivePos);
-              finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
-            }
+          const aliveGoodPos = order.findIndex(
+            i =>
+              !snapshotPlayers[i].isDead &&
+              this.effectiveAlignment(snapshotPlayers[i]) === "good"
+          );
+          if (aliveEvilPos !== -1 && aliveGoodPos !== -1) {
+            finalThree = true;
+            tailOrdered = true;
+            const hi = Math.max(aliveEvilPos, aliveGoodPos);
+            const lo = Math.min(aliveEvilPos, aliveGoodPos);
+            finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
           }
-          // else: no alive demon → fall through to Rule 2
+          // else: same alignment (both evil or edge case) → fall through to Rule 2
         } else if (livingCount > 2) {
           // ── Overwhelming Evil Victory ─────────────────────────────────
           // When every alive player is evil-aligned, reveal them all

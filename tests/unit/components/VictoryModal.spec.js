@@ -459,17 +459,17 @@ describe("VictoryModal — revealGrimoire", () => {
   });
 
   it("evil victory: revealOrder places an evil player last (Rule 2 fallback)", () => {
-    // 2 alive but no alive demon → Rule 1b fallthrough → Rule 2
+    // 2 alive, both evil (same alignment) → Rule 1b fallthrough → Rule 2
     const mockCommit = jest.fn();
     const ctx = makeCtx({
       selectedCount: 1,
       team: "evil",
       players: [
-        makePlayer("Alice", "townsfolk"),
-        makePlayer("Bob", "minion"),
-        makePlayer("Carol", "demon", null, true) // dead demon, no Rule 1b
+        makePlayer("Alice", "minion", null, false), // alive evil
+        makePlayer("Bob", "minion", null, false), // alive evil
+        makePlayer("Carol", "demon", null, true) // dead demon
       ],
-      winners: [false, true, false],
+      winners: [true, true, false],
       $store: { commit: mockCommit },
       close: jest.fn()
     });
@@ -750,18 +750,18 @@ describe("VictoryModal — revealGrimoire", () => {
 
   // ── Rule 1b — Final 3, Evil Victory (exactly 2 alive) ───────
   describe("Final 3 special reveal", () => {
-    it("sets finalThree=true for evil win when exactly 2 alive including a demon", () => {
+    it("sets finalThree=true for evil win when exactly 2 alive of different alignments", () => {
       const mockCommit = jest.fn();
       const players = [
-        makePlayer("Alice", "townsfolk", null, true), // dead
+        makePlayer("Alice", "townsfolk", null, true), // dead good
         makePlayer("Bob", "minion", null, false), // alive evil
-        makePlayer("Carol", "demon", null, false) // alive demon
+        makePlayer("Carol", "townsfolk", null, false) // alive good
       ];
       const ctx = makeCtx({
         selectedCount: 1,
         team: "evil",
         players,
-        winners: [false, true, true],
+        winners: [false, true, false],
         $store: { commit: mockCommit },
         close: jest.fn()
       });
@@ -770,26 +770,28 @@ describe("VictoryModal — revealGrimoire", () => {
       expect(payload.finalThree).toBe(true);
     });
 
-    it("finalPair contains the alive demon for evil win", () => {
+    it("finalPair contains one alive evil and one alive good for evil win", () => {
       const mockCommit = jest.fn();
       const players = [
-        makePlayer("Alice", "townsfolk", null, true), // dead
-        makePlayer("Bob", "minion", null, false), // alive evil
-        makePlayer("Carol", "demon", null, false) // alive demon idx 2
+        makePlayer("Alice", "townsfolk", null, true), // dead good
+        makePlayer("Bob", "minion", null, false), // alive evil idx 1
+        makePlayer("Carol", "townsfolk", null, false) // alive good idx 2
       ];
       const ctx = makeCtx({
         selectedCount: 1,
         team: "evil",
         players,
-        winners: [false, true, true],
+        winners: [false, true, false],
         $store: { commit: mockCommit },
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
       const { finalPair, players: snap } = mockCommit.mock.calls[0][1];
       const pairPlayers = finalPair.map(i => snap[i]);
-      const hasDemon = pairPlayers.some(p => p.role.team === "demon");
-      expect(hasDemon).toBe(true);
+      const hasEvil = pairPlayers.some(p => ["minion", "demon"].includes(p.role.team));
+      const hasGood = pairPlayers.some(p => ["townsfolk", "outsider"].includes(p.role.team));
+      expect(hasEvil).toBe(true);
+      expect(hasGood).toBe(true);
       expect(pairPlayers.every(p => !p.isDead)).toBe(true);
     });
 
