@@ -71,6 +71,13 @@ Commit messages should be verbose enough to allow someone else to follow your ch
 
 ### Local development commands:
 
+## Visual Studio Only (fast Dev)
+From the top directory, click dev.sh
+Menu > Terminal > Run Task > Dev: Start (Build + Link + Serve)
+This will commence the build for the app, open the server index, and open a browser tab for the Townsquare.
+
+## Alternatively, manual launch of a Dev session:
+
 ## 1. Go to socket.js and change to local host.
 
 ## 2. Execute this command from the server directory:

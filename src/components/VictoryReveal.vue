@@ -43,10 +43,7 @@
               :class="effectiveAlignment(player)"
               v-if="isRevealed(i) && effectiveAlignment(player)"
             ></div>
-            <div
-              class="token-shroud"
-              v-if="player.isDead"
-            ></div>
+            <div class="token-shroud" v-if="player.isDead"></div>
             <div
               class="true-token-wrap"
               v-if="player.trueRole && isTrueRevealed(i)"
@@ -104,6 +101,14 @@
 <script>
 import { mapState } from "vuex";
 import Token from "./Token.vue";
+import { effectiveAlignment } from "@/utils/alignment";
+
+const PHASE1_DELAY_MS = 1000;
+const MAIN_REVEAL_INTERVAL_MS = 650;
+const TRUE_REVEAL_INTERVAL_MS = 450;
+const FINAL_PAIR_PAUSE_MS = 1000;
+const FINAL_PAIR_SHAKE_MS = 1000;
+const EXTRAS_DELAY_MS = 1200;
 
 export default {
   components: { Token },
@@ -199,7 +204,6 @@ export default {
       }
       this.trueRevealOrder = personaIndices;
       this.trueRevealIdx = 0;
-      const TRUE_REVEAL_INTERVAL_MS = 450;
       this.trueRevealInterval = setInterval(() => {
         if (this.trueRevealIdx < this.trueRevealOrder.length) {
           this.revealedTrueIndices = [
@@ -222,13 +226,13 @@ export default {
       clearTimeout(this.bluffsTimer);
       this.bluffsTimer = setTimeout(() => {
         this.extrasVisible = true;
-      }, 1200);
+      }, EXTRAS_DELAY_MS);
     },
     triggerFinalPair() {
       if (!this.finalPairIndices.length) return;
       clearTimeout(this.finalShakeTimer);
       clearTimeout(this.finalRevealTimer);
-      // 1 second dramatic pause, then 1 second shake, then simultaneous reveal.
+      // Dramatic pause → shake → simultaneous reveal.
       // True reveal (persona tokens) and extras run AFTER the final pair pops.
       this.finalShakeTimer = setTimeout(() => {
         this.finalPairShaking = true;
@@ -236,8 +240,8 @@ export default {
           this.finalPairShaking = false;
           this.finalPairRevealed = true;
           this.startTrueReveal();
-        }, 1000);
-      }, 1000);
+        }, FINAL_PAIR_SHAKE_MS);
+      }, FINAL_PAIR_PAUSE_MS);
     },
     startReveal() {
       this.dismissed = false;
@@ -268,21 +272,17 @@ export default {
       if (snapshotOrder && snapshotOrder.length === expectedLen) {
         this.revealOrder = [...snapshotOrder];
       } else {
-        // Local fallback — generate order excluding final pair
+        // Local fallback — generate order excluding final pair (alive-only tail reps,
+        // matching the Rule 2 logic used by buildRevealOrder in VictoryModal).
         this.revealOrder = Array.from({ length: n }, (_, i) => i)
           .filter(i => !snapFinalPair.includes(i))
           .sort(() => Math.random() - 0.5);
-        const featuredPos = alignment => {
-          const living = this.revealOrder.findIndex(
+        const featuredPos = alignment =>
+          this.revealOrder.findIndex(
             i =>
               !this.snapshotPlayers[i].isDead &&
               this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
           );
-          if (living !== -1) return living;
-          return this.revealOrder.findIndex(
-            i => this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
-          );
-        };
         const goodPos = featuredPos("good");
         const evilPos = featuredPos("evil");
         const candidates = [
@@ -304,8 +304,7 @@ export default {
         }
       }
 
-      const MAIN_REVEAL_INTERVAL_MS = 650;
-      // Phase 1 — blank for 1s
+      // Phase 1 — blank pause
       this.phase1Timer = setTimeout(() => {
         // Phase 2 — reveal one token per interval in reveal order
         this.phase2Interval = setInterval(() => {
@@ -319,7 +318,7 @@ export default {
             clearInterval(this.phase2Interval);
           }
         }, MAIN_REVEAL_INTERVAL_MS);
-      }, 1000);
+      }, PHASE1_DELAY_MS);
     },
     dismiss() {
       this.dismissed = true;
@@ -343,13 +342,7 @@ export default {
     isWinner(i) {
       return this.snapshotWinners.includes(i);
     },
-    effectiveAlignment(player) {
-      if (player.alignment) return player.alignment;
-      if (!player.role || !player.role.team) return null;
-      if (["townsfolk", "outsider"].includes(player.role.team)) return "good";
-      if (["minion", "demon"].includes(player.role.team)) return "evil";
-      return null;
-    },
+    effectiveAlignment,
     trueAlignment(player) {
       if (!player.trueRole) return null;
       if (player.trueRole.alignment) return player.trueRole.alignment;
@@ -845,8 +838,7 @@ export default {
 // pulse takes over seamlessly. The burst ends at the same value that
 // winner-glow-pulse starts at (0%/100%), so there is no seam on the handoff.
 .reveal-player.final-pair-revealed.winner .reveal-token-wrap > .token {
-  animation:
-    winner-glow-burst 1s ease-out forwards,
+  animation: winner-glow-burst 1s ease-out forwards,
     winner-glow-pulse 2.5s ease-in-out 1s infinite !important;
 }
 

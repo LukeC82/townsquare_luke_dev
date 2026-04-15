@@ -14,29 +14,16 @@ const { allRevealed } = VictoryReveal.computed;
 // ─────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────
-const makeCtx = (
-  playerCount = 5,
-  winners = [],
-  isSpectator = true,
-  winningTeam = "evil"
-) => ({
+
+// Shared state that every ctx object needs — extracted to avoid duplication
+// between makeCtx and makeMixedCtx.
+const BASE_CTX_PROPS = {
   dismissed: false,
   revealedIndices: [],
   revealOrder: [],
   revealIdx: 0,
   phase1Timer: null,
   phase2Interval: null,
-  snapshotPlayers: Array.from({ length: playerCount }, (_, i) => ({
-    name: `Player ${i}`,
-    role: { team: "townsfolk" },
-    alignment: null,
-    isDead: false
-  })),
-  snapshotWinners: winners,
-  winningTeam,
-  session: { isSpectator },
-  $store: { commit: jest.fn() },
-  effectiveAlignment: VictoryReveal.methods.effectiveAlignment,
   revealedTrueIndices: [],
   trueRevealOrder: [],
   trueRevealIdx: 0,
@@ -51,53 +38,46 @@ const makeCtx = (
   finalShakeTimer: null,
   finalRevealTimer: null,
   triggerFinalPair: VictoryReveal.methods.triggerFinalPair,
-  startTrueReveal: VictoryReveal.methods.startTrueReveal
+  startTrueReveal: VictoryReveal.methods.startTrueReveal,
+  effectiveAlignment: VictoryReveal.methods.effectiveAlignment
+};
+
+const makeCtx = (
+  playerCount = 5,
+  winners = [],
+  isSpectator = true,
+  winningTeam = "evil"
+) => ({
+  ...BASE_CTX_PROPS,
+  snapshotPlayers: Array.from({ length: playerCount }, (_, i) => ({
+    name: `Player ${i}`,
+    role: { team: "townsfolk" },
+    alignment: null,
+    isDead: false
+  })),
+  snapshotWinners: winners,
+  winningTeam,
+  session: { isSpectator },
+  $store: { commit: jest.fn() }
 });
 
-// Players with explicit good/evil for reveal-order tests
+// Fixed player set used by reveal-order tests (good/evil mix)
+const MIXED_PLAYERS = [
+  { name: "Alice", role: { team: "townsfolk" }, alignment: null, isDead: false }, // good
+  { name: "Bob",   role: { team: "minion"    }, alignment: null, isDead: false }, // evil
+  { name: "Carol", role: { team: "outsider"  }, alignment: null, isDead: false }, // good
+  { name: "Dave",  role: { team: "demon"     }, alignment: null, isDead: false }, // evil
+  { name: "Eve",   role: { team: "townsfolk" }, alignment: null, isDead: false }  // good
+];
+
 const makeMixedCtx = (winningTeam = "evil") => ({
-  dismissed: false,
-  revealedIndices: [],
-  revealOrder: [],
-  revealIdx: 0,
-  phase1Timer: null,
-  phase2Interval: null,
-  snapshotPlayers: [
-    {
-      name: "Alice",
-      role: { team: "townsfolk" },
-      alignment: null,
-      isDead: false
-    }, // good
-    { name: "Bob", role: { team: "minion" }, alignment: null, isDead: false }, // evil
-    {
-      name: "Carol",
-      role: { team: "outsider" },
-      alignment: null,
-      isDead: false
-    }, // good
-    { name: "Dave", role: { team: "demon" }, alignment: null, isDead: false }, // evil
-    { name: "Eve", role: { team: "townsfolk" }, alignment: null, isDead: false } // good
-  ],
+  ...BASE_CTX_PROPS,
+  // Fresh copies so mutations in one test don't affect others
+  snapshotPlayers: MIXED_PLAYERS.map(p => ({ ...p })),
   snapshotWinners: [],
   winningTeam,
   session: { isSpectator: true },
-  $store: { commit: jest.fn() },
-  effectiveAlignment: VictoryReveal.methods.effectiveAlignment,
-  revealedTrueIndices: [],
-  trueRevealOrder: [],
-  trueRevealIdx: 0,
-  trueRevealInterval: null,
-  extrasVisible: false,
-  bluffsTimer: null,
-  snapshotExtras: { bluffs: [], fabled: [] },
-  scheduleExtras: VictoryReveal.methods.scheduleExtras,
-  finalPairIndices: [],
-  finalPairShaking: false,
-  finalPairRevealed: false,
-  finalShakeTimer: null,
-  finalRevealTimer: null,
-  triggerFinalPair: VictoryReveal.methods.triggerFinalPair
+  $store: { commit: jest.fn() }
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -150,16 +130,15 @@ describe("VictoryReveal — startReveal", () => {
   it("Phase 2 begins after 1000ms — first token revealed", () => {
     const ctx = makeCtx(3);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1700); // 1000ms Phase 1 + 1 tick of 700ms
+    jest.advanceTimersByTime(1000 + 650); // Phase 1 + 1 × 650ms interval
     expect(ctx.revealedIndices).toHaveLength(1);
   });
 
-  it("all tokens revealed after Phase 1 + n × 700ms", () => {
+  it("all tokens revealed after Phase 1 + n × 650ms", () => {
     const n = 4;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
-    // 1000ms Phase 1 + n * 700ms to reveal all
-    jest.advanceTimersByTime(1000 + n * 700);
+    jest.advanceTimersByTime(1000 + n * 650);
     expect(ctx.revealedIndices).toHaveLength(n);
   });
 
@@ -167,7 +146,7 @@ describe("VictoryReveal — startReveal", () => {
     const n = 5;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1000 + n * 700);
+    jest.advanceTimersByTime(1000 + n * 650);
     ctx.revealedIndices.forEach(idx => {
       expect(idx).toBeGreaterThanOrEqual(0);
       expect(idx).toBeLessThan(n);
@@ -178,16 +157,15 @@ describe("VictoryReveal — startReveal", () => {
     const n = 5;
     const ctx = makeCtx(n);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1000 + n * 700);
+    jest.advanceTimersByTime(1000 + n * 650);
     const unique = new Set(ctx.revealedIndices);
     expect(unique.size).toBe(n);
   });
 
   it("re-calling startReveal resets and replays from Phase 1", () => {
     const ctx = makeCtx(3);
-    // First call — advance exactly 1 tick into Phase 2 (1000ms + 1×450ms)
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1700); // 1000ms Phase 1 + 700ms = 1 token revealed
+    jest.advanceTimersByTime(1000 + 650); // Phase 1 + 1 × 650ms = 1 token revealed
     expect(ctx.revealedIndices).toHaveLength(1);
 
     // Second call — should reset
@@ -289,13 +267,18 @@ describe("VictoryReveal — reveal order (featured players)", () => {
     expect(last).toBe(3); // Dave (living evil) should be chosen
   });
 
-  it("falls back to dead evil player when no living evil player exists", () => {
+  it("when no alive evil exists, no evil player occupies the tail (dead evil stays in body)", () => {
+    // Both evil players dead — alive-only Rule 2 skips the evil tail slot.
+    // Last position is the alive winning-team (evil) rep... but there is none,
+    // so only the alive losing-team (good) rep is appended last.
     const ctx = makeMixedCtx("evil");
-    ctx.snapshotPlayers[1].isDead = true;
-    ctx.snapshotPlayers[3].isDead = true;
+    ctx.snapshotPlayers[1].isDead = true; // Bob (evil) dead
+    ctx.snapshotPlayers[3].isDead = true; // Dave (evil) dead
     startReveal.call(ctx);
     const last = ctx.revealOrder[ctx.revealOrder.length - 1];
-    expect(ctx.effectiveAlignment(ctx.snapshotPlayers[last])).toBe("evil");
+    // Last must be an alive player (the good losing-team rep)
+    expect(ctx.snapshotPlayers[last].isDead).toBe(false);
+    expect(ctx.effectiveAlignment(ctx.snapshotPlayers[last])).toBe("good");
   });
 
   it("prefers a living good player over a dead one for the final slot (good victory)", () => {
@@ -359,7 +342,7 @@ describe("VictoryReveal — dismiss", () => {
   it("stops ongoing Phase 2 reveals when dismissed mid-reveal", () => {
     const ctx = makeCtx(5);
     startReveal.call(ctx);
-    jest.advanceTimersByTime(1450); // 1 token revealed
+    jest.advanceTimersByTime(1000 + 650); // Phase 1 + 1 token revealed
     const countBeforeDismiss = ctx.revealedIndices.length;
     dismiss.call(ctx);
     jest.advanceTimersByTime(2000); // no further reveals
@@ -400,21 +383,21 @@ describe("VictoryReveal — true token reveal", () => {
     expect(ctx.revealedTrueIndices).toHaveLength(0);
   });
 
-  it("startTrueReveal reveals only persona players, one per 700ms", () => {
+  it("startTrueReveal reveals only persona players, one per 450ms", () => {
     const ctx = makeCtx(3);
     ctx.snapshotPlayers[1].trueRole = { id: "philosopher" };
     startTrueReveal.call(ctx);
     expect(ctx.revealedTrueIndices).toHaveLength(0);
-    jest.advanceTimersByTime(700);
+    jest.advanceTimersByTime(450);
     expect(ctx.revealedTrueIndices).toEqual([1]);
   });
 
-  it("startTrueReveal reveals all persona players after n × 700ms", () => {
+  it("startTrueReveal reveals all persona players after n × 450ms", () => {
     const ctx = makeCtx(4);
     ctx.snapshotPlayers[0].trueRole = { id: "drunk" };
     ctx.snapshotPlayers[2].trueRole = { id: "philosopher" };
     startTrueReveal.call(ctx);
-    jest.advanceTimersByTime(2 * 700);
+    jest.advanceTimersByTime(2 * 450);
     expect(ctx.revealedTrueIndices).toHaveLength(2);
   });
 

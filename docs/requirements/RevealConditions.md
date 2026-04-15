@@ -31,6 +31,18 @@ Each `Player` has: `isDead`, `role.team` (`"townsfolk"`, `"outsider"`, `"minion"
 
 ---
 
+## Global Ordering — Dead Before Alive
+
+After all rule logic is applied, **dead players are always revealed before alive players** within the body (non-tail portion of `revealOrder`). This sort is applied globally across every rule.
+
+- The **body** is everything in `revealOrder` except the tail (the intentionally-ordered players placed at the end by the active rule).
+- Within the dead group and within the alive group, the original shuffle order is preserved (stable sort).
+- The tail is never touched by this sort — players in `finalPair` are separate and also unaffected.
+
+When a rule description below says "remaining players fill the body in random order", it means random within each dead/alive group.
+
+---
+
 ## Rules
 
 Rules are evaluated **in priority order** within each team. The first matching rule wins.
@@ -45,7 +57,7 @@ Rules are evaluated **in priority order** within each team. The first matching r
 
 **Trigger:** Winning team is **good** AND at least **1 alive evil** player exists AND at least **1 alive good** player exists.
 
-**Effect:** Pick one random alive evil player and one random alive good player → `finalPair`. All remaining players fill `revealOrder` in random order. `finalThree = true`.
+**Effect:** The first alive evil and first alive good player found in the shuffled order → `finalPair`. All remaining players fill the body in random order (dead before alive). `finalThree = true`.
 
 This applies to any game size — it fires for both 2-alive and 3+-alive good victories.
 
@@ -64,9 +76,9 @@ Evil players are revealed with the **shockwave-animation** visual effect.
 | Position | Player |
 |----------|--------|
 | Third-to-last | Dead, evil-aligned demon |
-| Last two | The two alive good players in random order |
+| Last two | The two alive good players in their shuffled order |
 
-All other players fill the front of `revealOrder` randomly.
+All other players fill the front of `revealOrder` in random order (dead before alive).
 
 **Fallthrough:** If no dead evil-aligned demon exists, skip to Rule 2.
 
@@ -78,13 +90,25 @@ All other players fill the front of `revealOrder` randomly.
 
 **Priority:** 1 (evil wins)
 
-**Trigger:** Winning team is **evil** AND exactly **2 players alive** AND an alive demon exists.
+**Trigger:** Winning team is **evil** AND exactly **2 players alive** AND an alive demon exists (any alignment — no effective-alignment check is applied here).
 
-**Effect:** The alive demon and the other alive player → `finalPair`. All remaining players in `revealOrder` randomly. `finalThree = true`.
+**Effect:** The alive demon and the other alive player → `finalPair`. All remaining players in the body in random order (dead before alive). `finalThree = true`.
 
-All remaining evil players are revealed with the **shockwave-animation** visual effect.
+All evil players are revealed with the **shockwave-animation** visual effect (including the demon in the simultaneous reveal).
 
 **Fallthrough:** If no alive demon exists, skip to Rule 2.
+
+---
+
+### Overwhelming Evil Victory — All Alive Players Are Evil
+
+**Priority:** 1 (evil wins — checked before Rules 1c/1d)
+
+**Trigger:** Winning team is **evil** AND **more than 2 players alive** AND **every** alive player is evil-aligned (effective alignment `"evil"`; alive travelers with null alignment prevent this rule from firing).
+
+**Effect:** Every alive player is collected into `finalPair`. All dead players are revealed one-by-one in the primary sequence. `finalThree = true`.
+
+This produces the most dramatic possible reveal — the entire surviving evil team shakes and pops simultaneously. Dead players (any alignment) are revealed first in the primary sequence, then the full living evil contingent appears together.
 
 ---
 
@@ -98,10 +122,10 @@ All remaining evil players are revealed with the **shockwave-animation** visual 
 
 | Condition | Outcome |
 |-----------|---------|
-| Alive good player exists | `finalPair` = [demon, random alive good]. `finalThree = true`. |
+| Alive good player exists | `finalPair` = [demon, first alive good in shuffled order]. `finalThree = true`. |
 | No alive good players (all alive are evil) | Demon placed **last** in `revealOrder`. No `finalPair`. `finalThree = false`. |
 
-All remaining evil players are revealed with the **shockwave-animation** visual effect.
+Remaining body players in random order (dead before alive). All evil players are revealed with the **shockwave-animation** visual effect.
 
 ---
 
@@ -115,9 +139,11 @@ All remaining evil players are revealed with the **shockwave-animation** visual 
 
 | Priority | Pair |
 |----------|------|
-| First choice | Alive evil + alive good |
-| Second choice | Two alive evil players |
+| First choice | First alive evil + first alive good (in shuffled order) |
+| Second choice | First alive evil + second alive evil (in shuffled order) |
 | Cannot pair (only 1 alive evil, no alive good) | Fall through to Rule 2 |
+
+Remaining body players in random order (dead before alive).
 
 **Fallthrough:** If no alive evil exists, or only 1 alive evil with no alive good → skip to Rule 2.
 
@@ -129,15 +155,15 @@ All remaining evil players are revealed with the **shockwave-animation** visual 
 
 **Trigger:** None — catches all remaining cases.
 
-**Effect:** All players shuffled randomly. One representative per alignment extracted and appended to the tail. Evil players revealed with the **shockwave-animation** visual effect.
+**Effect:** All players shuffled randomly. One alive representative per alignment extracted and appended to the tail. Evil players revealed with the **shockwave-animation** visual effect.
 
-- Only **alive** players qualify for the tail slots — dead players remain in the body and are naturally sorted to the front by the dead-before-alive ordering
+- Only **alive** players qualify for the tail slots — dead players remain in the body where the dead-before-alive sort places them before the alive body players
 - **Losing team** goes second-to-last
 - **Winning team** goes last
 
-**Tail order:** `[…rest…, losing-team representative, winning-team representative]`
+**Tail order:** `[…body (dead before alive)…, losing-team representative, winning-team representative]`
 
-If only one alignment is present, only one representative is appended.
+If only one alignment has an alive representative, only one player is appended to the tail.
 
 ---
 
@@ -160,10 +186,11 @@ Good win:
   Rule 2   → standard tail
 
 Evil win:
-  Rule 1b  → finalPair (demon + other alive) — exactly 2 alive
-  Rule 1c  → finalPair (demon + alive good) OR demon last — >2 alive, alive demon
-  Rule 1d  → finalPair (evil + evil/good) if possible — >2 alive, dead demon
-  Rule 2   → standard tail
+  Rule 1b          → finalPair (demon [any alignment] + other alive) — exactly 2 alive
+  Overwhelming     → ALL alive in finalPair — >2 alive, all alive are evil
+  Rule 1c          → finalPair (evil demon + alive good) OR demon last — >2 alive, alive evil demon, alive good/traveler present
+  Rule 1d          → finalPair (evil + evil/good) if possible — >2 alive, dead demon, alive good/traveler present
+  Rule 2           → standard tail
 ```
 
 ---
@@ -184,8 +211,14 @@ Evil win:
 
 ### VictoryReveal.vue — local fallback order
 
-`startReveal()` compares the incoming `snapshot.revealOrder` length against the expected player count. If it is absent or mismatched (e.g. a client joins mid-reveal with a stale snapshot), it generates a local fallback order using **Rule 2 logic only** (standard tail, no Rules 1a–1d). `finalPairIndices` is still read from `snapshot.finalThree` / `snapshot.finalPair`, so the simultaneous-reveal animation still fires correctly even on the fallback path — only the primary ordering may differ.
+`startReveal()` compares the incoming `snapshot.revealOrder` length against the expected player count. If it is absent or mismatched (e.g. a client joins mid-reveal with a stale snapshot), it generates a local fallback order using a **Rule 2-style tail** (no Rules 1a–1d).
+
+The fallback `featuredPos` is alive-only, matching the main `buildRevealOrder` Rule 2 — if no alive representative of an alignment exists that slot is omitted from the tail. `finalPairIndices` is still read from `snapshot.finalThree` / `snapshot.finalPair`, so the simultaneous-reveal animation still fires correctly even on the fallback path — only the primary ordering may differ.
 
 ### buildRevealOrder — pair extraction order
 
 The two finalPair indices are extracted highest-position-first to avoid index-shift bugs when splicing from the shuffled array. The pair is stored as `[higherIndex, lowerIndex]`; VictoryReveal.vue treats them as an unordered set so the internal order does not affect the animation.
+
+### buildRevealOrder — dead-before-alive sort scope
+
+`tailLength` tracks how many elements at the end of `order` were placed there intentionally by the active rule and must not be reordered. The dead-before-alive stable sort is applied only to `order[0 .. order.length - tailLength]`. For rules that use `finalPair` (which is held separately), `tailLength` is 0 and the entire `order` array is sorted.

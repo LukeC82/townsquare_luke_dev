@@ -71,6 +71,7 @@
 <script>
 import { mapState } from "vuex";
 import Token from "./Token.vue";
+import { effectiveAlignment } from "@/utils/alignment";
 
 export default {
   components: { Token },
@@ -267,7 +268,6 @@ export default {
           // else: no dead evil demon → fall through to Rule 2
         }
         // else: no alive evil and livingCount ≠ 2 → fall through to Rule 2
-
       } else if (team === "evil") {
         if (livingCount === 2) {
           // ── Rule 1b · Evil Win, 2 Alive ─────────────────────────────────
@@ -290,69 +290,85 @@ export default {
             }
           }
           // else: no alive demon → fall through to Rule 2
-
         } else if (livingCount > 2) {
-          // Unusual evil win: >2 alive players.
-          const aliveDemonPos = order.findIndex(
-            i =>
-              !snapshotPlayers[i].isDead &&
-              snapshotPlayers[i].role.team === "demon" &&
-              this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+          // ── Overwhelming Evil Victory ─────────────────────────────────
+          // When every alive player is evil-aligned, reveal them all
+          // simultaneously as a group rather than selecting a pair.
+          const hasAliveNonEvil = snapshotPlayers.some(
+            p => !p.isDead && this.effectiveAlignment(p) !== "evil"
           );
-          if (aliveDemonPos !== -1) {
-            // ── Rule 1c · Evil Win, >2 Alive, Alive Evil Demon ──────────
-            const aliveGoodPos = order.findIndex(
-              i =>
-                !snapshotPlayers[i].isDead &&
-                this.effectiveAlignment(snapshotPlayers[i]) === "good"
-            );
-            if (aliveGoodPos !== -1) {
-              // Pair the demon with a random alive good player.
-              finalThree = true;
-              tailOrdered = true;
-              const hi = Math.max(aliveDemonPos, aliveGoodPos);
-              const lo = Math.min(aliveDemonPos, aliveGoodPos);
-              finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
-            } else {
-              // All alive are evil — reveal the demon last in the primary sequence.
-              const demon = order.splice(aliveDemonPos, 1)[0];
-              order.push(demon);
-              tailOrdered = true;
-              tailLength = 1;
+          if (!hasAliveNonEvil) {
+            // All alive are evil — collect every alive player into the reveal set.
+            for (let i = order.length - 1; i >= 0; i--) {
+              if (!snapshotPlayers[order[i]].isDead) {
+                finalPair.unshift(order.splice(i, 1)[0]);
+              }
             }
+            finalThree = true;
+            tailOrdered = true;
           } else {
-            // ── Rule 1d · Evil Win, >2 Alive, Dead Demon ────────────────
-            // Prefer alive evil + alive good; fall back to two alive evil.
-            const aliveEvilPos = order.findIndex(
+            // At least one alive non-evil player — apply standard unusual-victory rules.
+            const aliveDemonPos = order.findIndex(
               i =>
                 !snapshotPlayers[i].isDead &&
+                snapshotPlayers[i].role.team === "demon" &&
                 this.effectiveAlignment(snapshotPlayers[i]) === "evil"
             );
-            if (aliveEvilPos !== -1) {
+            if (aliveDemonPos !== -1) {
+              // ── Rule 1c · Evil Win, >2 Alive, Alive Evil Demon ──────────
               const aliveGoodPos = order.findIndex(
                 i =>
                   !snapshotPlayers[i].isDead &&
                   this.effectiveAlignment(snapshotPlayers[i]) === "good"
               );
-              let secondPos = aliveGoodPos;
-              if (secondPos === -1) {
-                secondPos = order.findIndex(
-                  (i, pos) =>
-                    pos !== aliveEvilPos &&
-                    !snapshotPlayers[i].isDead &&
-                    this.effectiveAlignment(snapshotPlayers[i]) === "evil"
-                );
-              }
-              if (secondPos !== -1) {
+              if (aliveGoodPos !== -1) {
+                // Pair the demon with a random alive good player.
                 finalThree = true;
                 tailOrdered = true;
-                const hi = Math.max(aliveEvilPos, secondPos);
-                const lo = Math.min(aliveEvilPos, secondPos);
+                const hi = Math.max(aliveDemonPos, aliveGoodPos);
+                const lo = Math.min(aliveDemonPos, aliveGoodPos);
                 finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
+              } else {
+                // No alive good (alive non-evil must be travelers) — demon last.
+                const demon = order.splice(aliveDemonPos, 1)[0];
+                order.push(demon);
+                tailOrdered = true;
+                tailLength = 1;
               }
-              // else: only 1 alive evil, no alive good → fall through to Rule 2
+            } else {
+              // ── Rule 1d · Evil Win, >2 Alive, Dead Demon ──────────────
+              // Prefer alive evil + alive good; fall back to two alive evil.
+              const aliveEvilPos = order.findIndex(
+                i =>
+                  !snapshotPlayers[i].isDead &&
+                  this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+              );
+              if (aliveEvilPos !== -1) {
+                const aliveGoodPos = order.findIndex(
+                  i =>
+                    !snapshotPlayers[i].isDead &&
+                    this.effectiveAlignment(snapshotPlayers[i]) === "good"
+                );
+                let secondPos = aliveGoodPos;
+                if (secondPos === -1) {
+                  secondPos = order.findIndex(
+                    (i, pos) =>
+                      pos !== aliveEvilPos &&
+                      !snapshotPlayers[i].isDead &&
+                      this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+                  );
+                }
+                if (secondPos !== -1) {
+                  finalThree = true;
+                  tailOrdered = true;
+                  const hi = Math.max(aliveEvilPos, secondPos);
+                  const lo = Math.min(aliveEvilPos, secondPos);
+                  finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
+                }
+                // else: only 1 alive evil, no alive good → fall through to Rule 2
+              }
+              // else: no alive evil → fall through to Rule 2
             }
-            // else: no alive evil → fall through to Rule 2
           }
         }
         // else: livingCount ≤ 1 → fall through to Rule 2
@@ -455,13 +471,7 @@ export default {
         transform: `translate(calc(-50% + ${x}vh), calc(-50% + ${y}vh))`
       };
     },
-    effectiveAlignment(player) {
-      if (player.alignment) return player.alignment;
-      if (!player.role || !player.role.team) return null;
-      if (["townsfolk", "outsider"].includes(player.role.team)) return "good";
-      if (["minion", "demon"].includes(player.role.team)) return "evil";
-      return null;
-    }
+    effectiveAlignment
   }
 };
 </script>

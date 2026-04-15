@@ -636,8 +636,16 @@ describe("VictoryModal — revealGrimoire", () => {
       expect(payload.finalThree).toBe(true);
       expect(payload.finalPair).toHaveLength(2);
       const pairPlayers = payload.finalPair.map(i => payload.players[i]);
-      expect(pairPlayers.some(p => !p.isDead && ["minion", "demon"].includes(p.role.team))).toBe(true);
-      expect(pairPlayers.some(p => !p.isDead && ["townsfolk", "outsider"].includes(p.role.team))).toBe(true);
+      expect(
+        pairPlayers.some(
+          p => !p.isDead && ["minion", "demon"].includes(p.role.team)
+        )
+      ).toBe(true);
+      expect(
+        pairPlayers.some(
+          p => !p.isDead && ["townsfolk", "outsider"].includes(p.role.team)
+        )
+      ).toBe(true);
     });
 
     // ── Sub-case B (both alive are good) ───────────────────
@@ -729,7 +737,11 @@ describe("VictoryModal — revealGrimoire", () => {
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
-      const { revealOrder, finalPair, finalThree } = mockCommit.mock.calls[0][1];
+      const {
+        revealOrder,
+        finalPair,
+        finalThree
+      } = mockCommit.mock.calls[0][1];
       expect(finalThree).toBe(false);
       expect(finalPair).toHaveLength(0);
       expect(revealOrder).toHaveLength(goodDemonPlayers.length);
@@ -842,30 +854,45 @@ describe("VictoryModal — revealGrimoire", () => {
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
-      const { finalThree, finalPair, players: snap } = mockCommit.mock.calls[0][1];
+      const {
+        finalThree,
+        finalPair,
+        players: snap
+      } = mockCommit.mock.calls[0][1];
       expect(finalThree).toBe(true);
       expect(finalPair).toHaveLength(2);
       const pairPlayers = finalPair.map(i => snap[i]);
-      expect(pairPlayers.some(p => p.role.team === "demon" && !p.isDead)).toBe(true);
-      expect(pairPlayers.some(p => ["townsfolk", "outsider"].includes(p.role.team))).toBe(true);
+      expect(pairPlayers.some(p => p.role.team === "demon" && !p.isDead)).toBe(
+        true
+      );
+      expect(
+        pairPlayers.some(p => ["townsfolk", "outsider"].includes(p.role.team))
+      ).toBe(true);
     });
 
-    it("demon placed last in revealOrder when no alive good exists", () => {
+    it("demon placed last in revealOrder when only alive non-evil is a traveler", () => {
+      // A traveler (null alignment) keeps hasAliveNonEvil=true so the all-evil
+      // path does not fire, and Rule 1c's demon-last sub-case applies.
       const mockCommit = jest.fn();
       const ctx = makeCtx({
         selectedCount: 1,
         team: "evil",
         players: [
-          makePlayer("Alice", "minion", null, false), // alive evil
+          makePlayer("Alice", "traveler", null, false), // alive, null alignment
           makePlayer("Bob", "minion", null, false), // alive evil
           makePlayer("Carol", "demon", null, false) // alive evil demon
         ],
-        winners: [true, true, true],
+        winners: [false, true, true],
         $store: { commit: mockCommit },
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
-      const { finalThree, finalPair, revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+      const {
+        finalThree,
+        finalPair,
+        revealOrder,
+        players: snap
+      } = mockCommit.mock.calls[0][1];
       expect(finalThree).toBe(false);
       expect(finalPair).toHaveLength(0);
       const last = snap[revealOrder[revealOrder.length - 1]];
@@ -913,38 +940,60 @@ describe("VictoryModal — revealGrimoire", () => {
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
-      const { finalThree, finalPair, players: snap } = mockCommit.mock.calls[0][1];
+      const {
+        finalThree,
+        finalPair,
+        players: snap
+      } = mockCommit.mock.calls[0][1];
       expect(finalThree).toBe(true);
       expect(finalPair).toHaveLength(2);
       const pairPlayers = finalPair.map(i => snap[i]);
-      expect(pairPlayers.some(p => ["minion", "demon"].includes(p.role.team) && !p.isDead)).toBe(true);
-      expect(pairPlayers.some(p => ["townsfolk", "outsider"].includes(p.role.team) && !p.isDead)).toBe(true);
+      expect(
+        pairPlayers.some(
+          p => ["minion", "demon"].includes(p.role.team) && !p.isDead
+        )
+      ).toBe(true);
+      expect(
+        pairPlayers.some(
+          p => ["townsfolk", "outsider"].includes(p.role.team) && !p.isDead
+        )
+      ).toBe(true);
     });
 
-    it("finalPair = [alive evil 1, alive evil 2] when no alive good exists", () => {
+    it("finalPair = [alive evil 1, alive evil 2] when alive non-evil is only a traveler", () => {
+      // A traveler (null alignment) keeps hasAliveNonEvil=true so the all-evil
+      // path does not fire, and Rule 1d's two-evil fallback applies.
       const mockCommit = jest.fn();
       const ctx = makeCtx({
         selectedCount: 1,
         team: "evil",
         players: [
-          makePlayer("Alice", "minion", null, false), // alive evil
+          makePlayer("Alice", "traveler", null, false), // alive, null alignment
           makePlayer("Bob", "minion", null, false), // alive evil
           makePlayer("Carol", "minion", null, false), // alive evil
           makePlayer("Dave", "demon", null, true) // dead demon
         ],
-        winners: [true, true, true, false],
+        winners: [false, true, true, false],
         $store: { commit: mockCommit },
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
-      const { finalThree, finalPair, players: snap } = mockCommit.mock.calls[0][1];
+      const {
+        finalThree,
+        finalPair,
+        players: snap
+      } = mockCommit.mock.calls[0][1];
       expect(finalThree).toBe(true);
       expect(finalPair).toHaveLength(2);
       const pairPlayers = finalPair.map(i => snap[i]);
-      expect(pairPlayers.every(p => ["minion", "demon"].includes(p.role.team) && !p.isDead)).toBe(true);
+      expect(
+        pairPlayers.every(
+          p => ["minion", "demon"].includes(p.role.team) && !p.isDead
+        )
+      ).toBe(true);
     });
 
-    it("falls through to Rule 2 when only 1 alive evil and no alive good", () => {
+    it("falls through to Rule 2 when only 1 alive evil and no alive good (no traveler)", () => {
       const mockCommit = jest.fn();
       const ctx = makeCtx({
         selectedCount: 1,
@@ -960,11 +1009,86 @@ describe("VictoryModal — revealGrimoire", () => {
         close: jest.fn()
       });
       revealGrimoire.call(ctx);
-      const { finalThree, finalPair, revealOrder } = mockCommit.mock.calls[0][1];
+      const {
+        finalThree,
+        finalPair,
+        revealOrder
+      } = mockCommit.mock.calls[0][1];
       expect(finalThree).toBe(false);
       expect(finalPair).toHaveLength(0);
       expect(revealOrder).toHaveLength(4); // all players in revealOrder
     });
   });
-});
 
+  // ── Overwhelming Evil Victory (all alive are evil) ──────────
+  describe("Overwhelming evil victory — all alive players are evil", () => {
+    // 3 alive minions + dead townsfolk — all alive are evil
+    const allEvilPlayers = [
+      makePlayer("Alice", "minion", null, false), // idx 0, alive evil
+      makePlayer("Bob", "minion", null, false), // idx 1, alive evil
+      makePlayer("Carol", "demon", null, false), // idx 2, alive evil demon
+      makePlayer("Dave", "townsfolk", null, true) // idx 3, dead good
+    ];
+
+    it("finalThree=true when all 3+ alive players are evil", () => {
+      const mockCommit = jest.fn();
+      const ctx = makeCtx({
+        selectedCount: 1,
+        team: "evil",
+        players: allEvilPlayers,
+        winners: [true, true, true, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      expect(mockCommit.mock.calls[0][1].finalThree).toBe(true);
+    });
+
+    it("finalPair contains every alive player", () => {
+      const mockCommit = jest.fn();
+      const ctx = makeCtx({
+        selectedCount: 1,
+        team: "evil",
+        players: allEvilPlayers,
+        winners: [true, true, true, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { finalPair, players: snap } = mockCommit.mock.calls[0][1];
+      expect(finalPair).toHaveLength(3);
+      expect(finalPair.every(i => !snap[i].isDead)).toBe(true);
+    });
+
+    it("revealOrder contains only dead players", () => {
+      const mockCommit = jest.fn();
+      const ctx = makeCtx({
+        selectedCount: 1,
+        team: "evil",
+        players: allEvilPlayers,
+        winners: [true, true, true, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder, players: snap } = mockCommit.mock.calls[0][1];
+      expect(revealOrder.every(i => snap[i].isDead)).toBe(true);
+    });
+
+    it("revealOrder + finalPair covers all players", () => {
+      const mockCommit = jest.fn();
+      const ctx = makeCtx({
+        selectedCount: 1,
+        team: "evil",
+        players: allEvilPlayers,
+        winners: [true, true, true, false],
+        $store: { commit: mockCommit },
+        close: jest.fn()
+      });
+      revealGrimoire.call(ctx);
+      const { revealOrder, finalPair } = mockCommit.mock.calls[0][1];
+      const all = [...revealOrder, ...finalPair].sort((a, b) => a - b);
+      expect(all).toEqual(allEvilPlayers.map((_, i) => i));
+    });
+  });
+});
