@@ -788,8 +788,12 @@ describe("VictoryModal — revealGrimoire", () => {
       revealGrimoire.call(ctx);
       const { finalPair, players: snap } = mockCommit.mock.calls[0][1];
       const pairPlayers = finalPair.map(i => snap[i]);
-      const hasEvil = pairPlayers.some(p => ["minion", "demon"].includes(p.role.team));
-      const hasGood = pairPlayers.some(p => ["townsfolk", "outsider"].includes(p.role.team));
+      const hasEvil = pairPlayers.some(p =>
+        ["minion", "demon"].includes(p.role.team)
+      );
+      const hasGood = pairPlayers.some(p =>
+        ["townsfolk", "outsider"].includes(p.role.team)
+      );
       expect(hasEvil).toBe(true);
       expect(hasGood).toBe(true);
       expect(pairPlayers.every(p => !p.isDead)).toBe(true);

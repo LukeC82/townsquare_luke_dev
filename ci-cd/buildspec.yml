@@ -18,6 +18,6 @@ phases:
       - npm run build
       # Copy files to S3 static site bucket
       - cd dist/
-      - aws s3 sync . s3://${WEBSITE_BUCKET_NAME} --exclude ".*"
+      - aws s3 sync . s3://${WEBSITE_BUCKET_NAME} --exclude ".*" --exclude "*.sh"
       # Invalidate CloudFront cache to reflect changes
       - aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DISTRIBUTION}" --paths "/*"

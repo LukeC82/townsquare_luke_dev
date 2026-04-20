@@ -63,11 +63,16 @@ const makeCtx = (
 
 // Fixed player set used by reveal-order tests (good/evil mix)
 const MIXED_PLAYERS = [
-  { name: "Alice", role: { team: "townsfolk" }, alignment: null, isDead: false }, // good
-  { name: "Bob",   role: { team: "minion"    }, alignment: null, isDead: false }, // evil
-  { name: "Carol", role: { team: "outsider"  }, alignment: null, isDead: false }, // good
-  { name: "Dave",  role: { team: "demon"     }, alignment: null, isDead: false }, // evil
-  { name: "Eve",   role: { team: "townsfolk" }, alignment: null, isDead: false }  // good
+  {
+    name: "Alice",
+    role: { team: "townsfolk" },
+    alignment: null,
+    isDead: false
+  }, // good
+  { name: "Bob", role: { team: "minion" }, alignment: null, isDead: false }, // evil
+  { name: "Carol", role: { team: "outsider" }, alignment: null, isDead: false }, // good
+  { name: "Dave", role: { team: "demon" }, alignment: null, isDead: false }, // evil
+  { name: "Eve", role: { team: "townsfolk" }, alignment: null, isDead: false } // good
 ];
 
 const makeMixedCtx = (winningTeam = "evil") => ({
