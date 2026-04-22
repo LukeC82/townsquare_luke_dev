@@ -71,6 +71,7 @@
 <script>
 import { mapState } from "vuex";
 import Token from "./Token.vue";
+import { effectiveAlignment } from "@/utils/alignment";
 
 export default {
   components: { Token },
@@ -164,113 +165,226 @@ export default {
       }
       this.$set(this.winners, i, isWinner);
     },
+    _serializeRole(r) {
+      return {
+        id: r.id,
+        name: r.name,
+        team: r.team,
+        image: r.image,
+        imageAlt: r.imageAlt
+      };
+    },
     trueRoleFor(player) {
       if (!player.reminders || !player.reminders.length) return null;
+      let roleData = null;
       const match = player.reminders.find(r => {
-        const roleData =
+        const rd =
           this.$store.state.roles.get(r.role) ||
           this.$store.getters.rolesJSONbyId.get(r.role);
-        return (
-          roleData &&
-          Array.isArray(roleData.remindersPersonaGlobal) &&
-          roleData.remindersPersonaGlobal.includes(r.name)
-        );
+        if (
+          rd &&
+          Array.isArray(rd.remindersPersonaGlobal) &&
+          rd.remindersPersonaGlobal.includes(r.name)
+        ) {
+          roleData = rd;
+          return true;
+        }
+        return false;
       });
-      if (!match) return null;
-      const roleData =
-        this.$store.state.roles.get(match.role) ||
-        this.$store.getters.rolesJSONbyId.get(match.role);
-      if (!roleData) return null;
+      if (!match || !roleData) return null;
       let alignment = null;
       if (["townsfolk", "outsider"].includes(roleData.team)) alignment = "good";
       else if (["minion", "demon"].includes(roleData.team)) alignment = "evil";
       if (match.name.startsWith("GOOD ")) alignment = "good";
       else if (match.name.startsWith("EVIL ")) alignment = "evil";
-      return {
-        id: roleData.id,
-        name: roleData.name,
-        team: roleData.team,
-        image: roleData.image,
-        imageAlt: roleData.imageAlt,
-        alignment
-      };
+      return { ...this._serializeRole(roleData), alignment };
     },
-    revealGrimoire() {
-      if (this.selectedCount === 0) return;
-      const team = this.team;
-      const snapshotPlayers = this.players.map((player, i) => ({
-        name: player.name,
-        role:
-          player.role && player.role.id
-            ? {
-                id: player.role.id,
-                name: player.role.name,
-                team: player.role.team,
-                image: player.role.image,
-                imageAlt: player.role.imageAlt
-              }
-            : {},
-        alignment: player.alignment,
-        isDead: player.isDead,
-        trueRole: this.playerTrueRoles[i]
-      }));
-
-      // Generate the reveal order here so every client uses the same sequence.
+    // ─────────────────────────────────────────────────────────────────────────
+    // buildRevealOrder
+    // Determines the reveal sequence for a grimoire reveal.
+    // Returns { revealOrder, finalThree, finalPair }.
+    //   revealOrder  — ordered array of player indices for the primary reveal
+    //   finalThree   — true when the special pair-reveal animation should fire
+    //   finalPair    — two player indices held back for the simultaneous reveal
+    // ─────────────────────────────────────────────────────────────────────────
+    buildRevealOrder(snapshotPlayers, team) {
       const n = snapshotPlayers.length;
       const order = Array.from({ length: n }, (_, i) => i).sort(
         () => Math.random() - 0.5
       );
-      // Good-victory cinematic override:
-      // If good wins AND there is a dead evil-aligned demon AND 2+ players are alive
-      // AND at least 1 alive good player exists → feature the dead demon then a
-      // living good player as the final two reveals (demon penultimate, good last).
       const livingCount = snapshotPlayers.filter(p => !p.isDead).length;
-      const deadDemonIdx = order.findIndex(
-        i =>
-          snapshotPlayers[i].isDead &&
-          snapshotPlayers[i].role.team === "demon" &&
-          this.effectiveAlignment(snapshotPlayers[i]) === "evil"
-      );
-      const livingGoodIdx =
-        team === "good"
-          ? order.findIndex(
+
+      let finalThree = false;
+      let finalPair = [];
+      let tailOrdered = false;
+      // tailLength tracks how many elements at the END of order are intentionally
+      // ordered by a rule and must not be moved by the dead-before-alive sort.
+      let tailLength = 0;
+
+      if (team === "good") {
+        // ── Rule 1a · Good Win FinalPair ──────────────────────────────────
+        // Any good win where ≥1 alive evil AND ≥1 alive good → finalPair.
+        const aliveEvilPos = order.findIndex(
+          i =>
+            !snapshotPlayers[i].isDead &&
+            this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+        );
+        const aliveGoodPos = order.findIndex(
+          i =>
+            !snapshotPlayers[i].isDead &&
+            this.effectiveAlignment(snapshotPlayers[i]) === "good"
+        );
+        if (aliveEvilPos !== -1 && aliveGoodPos !== -1) {
+          finalThree = true;
+          tailOrdered = true;
+          const hi = Math.max(aliveEvilPos, aliveGoodPos);
+          const lo = Math.min(aliveEvilPos, aliveGoodPos);
+          finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
+        } else if (livingCount === 2) {
+          // ── Rule 1a-B · Good Win Sequential (2 alive, both good) ────────
+          // Activate only when a dead evil-aligned demon exists.
+          const deadEvilDemonPos = order.findIndex(
+            i =>
+              snapshotPlayers[i].isDead &&
+              snapshotPlayers[i].role.team === "demon" &&
+              this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+          );
+          if (deadEvilDemonPos !== -1) {
+            const deadDemon = order.splice(deadEvilDemonPos, 1)[0];
+            const aliveGoods = [];
+            for (let i = order.length - 1; i >= 0; i--) {
+              if (
+                !snapshotPlayers[order[i]].isDead &&
+                this.effectiveAlignment(snapshotPlayers[order[i]]) === "good"
+              ) {
+                aliveGoods.unshift(order.splice(i, 1)[0]);
+              }
+            }
+            order.push(deadDemon);
+            order.push(...aliveGoods);
+            tailOrdered = true;
+            tailLength = 1 + aliveGoods.length;
+          }
+          // else: no dead evil demon → fall through to Rule 2
+        }
+        // else: no alive evil and livingCount ≠ 2 → fall through to Rule 2
+      } else if (team === "evil") {
+        if (livingCount === 2) {
+          // ── Rule 1b · Evil Win, 2 Alive ─────────────────────────────────
+          // Different alignments → finalPair for dramatic simultaneous reveal.
+          const aliveEvilPos = order.findIndex(
+            i =>
+              !snapshotPlayers[i].isDead &&
+              this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+          );
+          const aliveGoodPos = order.findIndex(
+            i =>
+              !snapshotPlayers[i].isDead &&
+              this.effectiveAlignment(snapshotPlayers[i]) === "good"
+          );
+          if (aliveEvilPos !== -1 && aliveGoodPos !== -1) {
+            finalThree = true;
+            tailOrdered = true;
+            const hi = Math.max(aliveEvilPos, aliveGoodPos);
+            const lo = Math.min(aliveEvilPos, aliveGoodPos);
+            finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
+          }
+          // else: same alignment (both evil or edge case) → fall through to Rule 2
+        } else if (livingCount > 2) {
+          // ── Overwhelming Evil Victory ─────────────────────────────────
+          // When every alive player is evil-aligned, reveal them all
+          // simultaneously as a group rather than selecting a pair.
+          const hasAliveNonEvil = snapshotPlayers.some(
+            p => !p.isDead && this.effectiveAlignment(p) !== "evil"
+          );
+          if (!hasAliveNonEvil) {
+            // All alive are evil — collect every alive player into the reveal set.
+            for (let i = order.length - 1; i >= 0; i--) {
+              if (!snapshotPlayers[order[i]].isDead) {
+                finalPair.unshift(order.splice(i, 1)[0]);
+              }
+            }
+            finalThree = true;
+            tailOrdered = true;
+          } else {
+            // At least one alive non-evil player — apply standard unusual-victory rules.
+            const aliveDemonPos = order.findIndex(
               i =>
                 !snapshotPlayers[i].isDead &&
-                this.effectiveAlignment(snapshotPlayers[i]) === "good"
-            )
-          : -1;
-      const useCinematic =
-        team === "good" &&
-        deadDemonIdx !== -1 &&
-        livingCount >= 2 &&
-        livingGoodIdx !== -1;
+                snapshotPlayers[i].role.team === "demon" &&
+                this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+            );
+            if (aliveDemonPos !== -1) {
+              // ── Rule 1c · Evil Win, >2 Alive, Alive Evil Demon ──────────
+              const aliveGoodPos = order.findIndex(
+                i =>
+                  !snapshotPlayers[i].isDead &&
+                  this.effectiveAlignment(snapshotPlayers[i]) === "good"
+              );
+              if (aliveGoodPos !== -1) {
+                // Pair the demon with a random alive good player.
+                finalThree = true;
+                tailOrdered = true;
+                const hi = Math.max(aliveDemonPos, aliveGoodPos);
+                const lo = Math.min(aliveDemonPos, aliveGoodPos);
+                finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
+              } else {
+                // No alive good (alive non-evil must be travelers) — demon last.
+                const demon = order.splice(aliveDemonPos, 1)[0];
+                order.push(demon);
+                tailOrdered = true;
+                tailLength = 1;
+              }
+            } else {
+              // ── Rule 1d · Evil Win, >2 Alive, Dead Demon ──────────────
+              // Prefer alive evil + alive good; fall back to two alive evil.
+              const aliveEvilPos = order.findIndex(
+                i =>
+                  !snapshotPlayers[i].isDead &&
+                  this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+              );
+              if (aliveEvilPos !== -1) {
+                const aliveGoodPos = order.findIndex(
+                  i =>
+                    !snapshotPlayers[i].isDead &&
+                    this.effectiveAlignment(snapshotPlayers[i]) === "good"
+                );
+                let secondPos = aliveGoodPos;
+                if (secondPos === -1) {
+                  secondPos = order.findIndex(
+                    (i, pos) =>
+                      pos !== aliveEvilPos &&
+                      !snapshotPlayers[i].isDead &&
+                      this.effectiveAlignment(snapshotPlayers[i]) === "evil"
+                  );
+                }
+                if (secondPos !== -1) {
+                  finalThree = true;
+                  tailOrdered = true;
+                  const hi = Math.max(aliveEvilPos, secondPos);
+                  const lo = Math.min(aliveEvilPos, secondPos);
+                  finalPair = [order.splice(hi, 1)[0], order.splice(lo, 1)[0]];
+                }
+                // else: only 1 alive evil, no alive good → fall through to Rule 2
+              }
+              // else: no alive evil → fall through to Rule 2
+            }
+          }
+        }
+        // else: livingCount ≤ 1 → fall through to Rule 2
+      }
 
-      if (useCinematic) {
-        // Extract in reverse-index order so splicing doesn't shift the other
-        const first = Math.max(deadDemonIdx, livingGoodIdx);
-        const second = Math.min(deadDemonIdx, livingGoodIdx);
-        const firstPlayer = order.splice(first, 1)[0];
-        const secondPlayer = order.splice(second, 1)[0];
-        // dead demon goes penultimate, living good player goes last
-        const penultimate = snapshotPlayers[firstPlayer].isDead
-          ? firstPlayer
-          : secondPlayer;
-        const last = snapshotPlayers[firstPlayer].isDead
-          ? secondPlayer
-          : firstPlayer;
-        order.push(penultimate, last);
-      } else {
-        const featuredPos = alignment => {
-          const living = order.findIndex(
+      if (!tailOrdered) {
+        // ── Rule 2 · Standard tail ────────────────────────────────────────
+        // Losing-team representative second-to-last; winning-team last.
+        // Only alive players qualify for the tail — dead players stay in the
+        // body so the dead-before-alive sort places them correctly.
+        const featuredPos = alignment =>
+          order.findIndex(
             i =>
               !snapshotPlayers[i].isDead &&
               this.effectiveAlignment(snapshotPlayers[i]) === alignment
           );
-          if (living !== -1) return living;
-          return order.findIndex(
-            i => this.effectiveAlignment(snapshotPlayers[i]) === alignment
-          );
-        };
         const goodPos = featuredPos("good");
         const evilPos = featuredPos("evil");
         const candidates = [
@@ -284,10 +398,47 @@ export default {
           extracted[key] = order.splice(pos, 1)[0];
         }
         const losingTeam = team === "evil" ? "good" : "evil";
-        if (extracted[losingTeam] !== undefined)
+        if (extracted[losingTeam] !== undefined) {
           order.push(extracted[losingTeam]);
-        if (extracted[team] !== undefined) order.push(extracted[team]);
+          tailLength++;
+        }
+        if (extracted[team] !== undefined) {
+          order.push(extracted[team]);
+          tailLength++;
+        }
       }
+
+      // Dead players revealed before alive players within the body (non-tail portion).
+      // The tail is intentionally ordered by the rule that set it, so it is excluded.
+      const bodyEnd = order.length - tailLength;
+      if (bodyEnd > 1) {
+        const body = order.slice(0, bodyEnd);
+        body.sort(
+          (a, b) =>
+            (snapshotPlayers[a].isDead ? 0 : 1) -
+            (snapshotPlayers[b].isDead ? 0 : 1)
+        );
+        order.splice(0, bodyEnd, ...body);
+      }
+
+      return { revealOrder: order, finalThree, finalPair };
+    },
+    revealGrimoire() {
+      if (this.selectedCount === 0) return;
+      const team = this.team;
+      const snapshotPlayers = this.players.map((player, i) => ({
+        name: player.name,
+        role:
+          player.role && player.role.id ? this._serializeRole(player.role) : {},
+        alignment: player.alignment,
+        isDead: player.isDead,
+        trueRole: this.playerTrueRoles[i]
+      }));
+
+      const { revealOrder, finalThree, finalPair } = this.buildRevealOrder(
+        snapshotPlayers,
+        team
+      );
 
       const snapshot = {
         players: snapshotPlayers,
@@ -296,7 +447,15 @@ export default {
           return acc;
         }, []),
         winningTeam: team,
-        revealOrder: order
+        revealOrder,
+        bluffs: this.$store.state.players.bluffs
+          .filter(r => r && r.id)
+          .map(r => this._serializeRole(r)),
+        fabled: this.$store.state.players.fabled
+          .filter(r => r && r.id)
+          .map(r => this._serializeRole(r)),
+        finalThree,
+        finalPair
       };
       this.$store.commit("session/setVictoryReveal", snapshot);
       this.close();
@@ -312,13 +471,7 @@ export default {
         transform: `translate(calc(-50% + ${x}vh), calc(-50% + ${y}vh))`
       };
     },
-    effectiveAlignment(player) {
-      if (player.alignment) return player.alignment;
-      if (!player.role || !player.role.team) return null;
-      if (["townsfolk", "outsider"].includes(player.role.team)) return "good";
-      if (["minion", "demon"].includes(player.role.team)) return "evil";
-      return null;
-    }
+    effectiveAlignment
   }
 };
 </script>

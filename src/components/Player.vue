@@ -14,6 +14,7 @@
           'hidden-voting': session.isHiddenVoting,
           'hand-raised': player.handRaised,
           'point-vote-leader': isPointVoteLeader,
+          'my-vote-leader': isMyVoteTarget,
           'glow-good':
             session.isSpectator &&
             player.id === session.playerId &&
@@ -148,8 +149,16 @@
       <!-- Point Vote direction arrow -->
       <div
         class="point-vote-arrow"
-        v-if="pointVoteBearing !== null"
-        :style="{ transform: `rotate(${pointVoteBearing - 90}deg)` }"
+        v-if="displayedBearing !== null"
+        :class="{
+          dimmed:
+            session.pointVoteActive &&
+            session.isSpectator &&
+            !isOwnPointVoteHand,
+          own:
+            session.pointVoteActive && session.isSpectator && isOwnPointVoteHand
+        }"
+        :style="{ transform: `rotate(${displayedBearing - 90}deg)` }"
       >
         <font-awesome-icon icon="hand-point-right" />
       </div>
@@ -322,6 +331,17 @@ export default {
         this.pointVoteLeaders.includes(this.index)
       );
     },
+    myPlayerIndex() {
+      if (!this.session.isSpectator) return -1;
+      return this.players.findIndex(p => p.id === this.session.playerId);
+    },
+    isOwnPointVoteHand() {
+      return this.myPlayerIndex === this.index;
+    },
+    isMyVoteTarget() {
+      if (this.myPlayerIndex < 0) return false;
+      return this.session.pointVotes[this.myPlayerIndex] === this.index;
+    },
     pointVoteBearing() {
       if (!this.session.pointVoteActive && !this.session.pointVoteEnded)
         return null;
@@ -371,12 +391,30 @@ export default {
   data() {
     return {
       isMenuOpen: false,
-      selfAlignment: null
+      selfAlignment: null,
+      displayedBearing: null
     };
   },
   mounted() {
     const key = `localAlignment_${this.session.playerId}_${this.player.id}`;
     this.selfAlignment = localStorage.getItem(key) || null;
+  },
+  watch: {
+    pointVoteBearing(newVal) {
+      if (newVal === null) {
+        this.displayedBearing = null;
+        return;
+      }
+      if (this.displayedBearing === null) {
+        // First vote — snap to position with no animation
+        this.displayedBearing = newVal;
+        return;
+      }
+      // Shortest-path delta so the hand always spins the right way
+      let delta = newVal - this.displayedBearing;
+      delta = ((((delta + 180) % 360) + 360) % 360) - 180;
+      this.displayedBearing = this.displayedBearing + delta;
+    }
   },
   methods: {
     cycleCurrentAlignment() {
@@ -1341,6 +1379,15 @@ li.move:not(.from) .player .overlay svg.move {
   justify-content: center;
   pointer-events: none;
   transform-origin: center center;
+  transition: transform 300ms ease-out;
+
+  &.dimmed svg {
+    opacity: 0.75;
+  }
+
+  &.own svg {
+    color: #1aeb21;
+  }
 
   svg {
     width: 70%;
@@ -1354,16 +1401,39 @@ li.move:not(.from) .player .overlay svg.move {
 @keyframes point-vote-leader-glow {
   0%,
   100% {
-    box-shadow: 0 0 6px 3px rgba(255, 215, 0, 0.7);
-    border-color: gold;
+    box-shadow: 0 0 8px 6px rgba(255, 215, 0, 0.7);
   }
   50% {
-    box-shadow: 0 0 16px 6px rgba(255, 215, 0, 0.95);
-    border-color: gold;
+    box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.95);
   }
 }
 
-.player.point-vote-leader .token {
+@keyframes point-vote-leader-glow-green {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 6px rgba(32, 197, 38, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(76, 175, 80, 0.95);
+  }
+}
+
+// Glow ring matches the token circle exactly (same as .alignment-overlay),
+// sits above it at z-index 4 so mix-blend-mode never tints the colour.
+.player.point-vote-leader::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
   animation: point-vote-leader-glow 1.2s ease-in-out infinite;
+}
+
+.player.point-vote-leader.my-vote-leader::after {
+  animation: point-vote-leader-glow-green 1.2s ease-in-out infinite;
 }
 </style>

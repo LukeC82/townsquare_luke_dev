@@ -26,7 +26,13 @@
           :class="{
             revealed: isRevealed(i),
             winner: isRevealed(i) && isWinner(i),
-            dead: player.isDead
+            dead: player.isDead,
+            'evil-reveal':
+              isRevealed(i) && effectiveAlignment(player) === 'evil',
+            'final-pair-shaking':
+              finalPairShaking && finalPairIndices.includes(i),
+            'final-pair-revealed':
+              finalPairRevealed && finalPairIndices.includes(i)
           }"
           :style="playerPosition(i, snapshotPlayers.length)"
         >
@@ -37,10 +43,7 @@
               :class="effectiveAlignment(player)"
               v-if="isRevealed(i) && effectiveAlignment(player)"
             ></div>
-            <div
-              class="token-shroud"
-              v-if="isRevealed(i) && player.isDead"
-            ></div>
+            <div class="token-shroud" v-if="player.isDead"></div>
             <div
               class="true-token-wrap"
               v-if="player.trueRole && isTrueRevealed(i)"
@@ -59,6 +62,38 @@
           <div class="reveal-name-blank" v-else>&nbsp;</div>
         </div>
       </div>
+
+      <div
+        v-if="extrasVisible && snapshotExtras.fabled.length"
+        class="fabled-section"
+      >
+        <h3>Fabled &amp; Loric</h3>
+        <ul>
+          <li
+            v-for="(f, i) in snapshotExtras.fabled"
+            :key="i"
+            :style="{ animationDelay: i * 350 + 'ms' }"
+          >
+            <Token :role="f" />
+          </li>
+        </ul>
+      </div>
+
+      <div
+        v-if="extrasVisible && snapshotExtras.bluffs.length"
+        class="bluffs-section"
+      >
+        <h3>Demon Bluffs</h3>
+        <ul>
+          <li
+            v-for="(bluff, i) in snapshotExtras.bluffs"
+            :key="i"
+            :style="{ animationDelay: i * 350 + 'ms' }"
+          >
+            <Token :role="bluff" />
+          </li>
+        </ul>
+      </div>
     </div>
   </transition>
 </template>
@@ -66,6 +101,14 @@
 <script>
 import { mapState } from "vuex";
 import Token from "./Token.vue";
+import { effectiveAlignment } from "@/utils/alignment";
+
+const PHASE1_DELAY_MS = 1000;
+const MAIN_REVEAL_INTERVAL_MS = 650;
+const TRUE_REVEAL_INTERVAL_MS = 450;
+const FINAL_PAIR_PAUSE_MS = 1000;
+const FINAL_PAIR_SHAKE_MS = 1000;
+const EXTRAS_DELAY_MS = 1200;
 
 export default {
   components: { Token },
@@ -90,10 +133,16 @@ export default {
       return this.session.victoryRevealActive && !this.dismissed;
     },
     allRevealed() {
-      return (
-        this.revealedIndices.length >= this.snapshotPlayers.length &&
-        this.snapshotPlayers.length > 0
-      );
+      const excluded = (this.finalPairIndices || []).length;
+      const target = this.snapshotPlayers.length - excluded;
+      return this.revealedIndices.length >= target && target > 0;
+    },
+    snapshotExtras() {
+      const snap = this.session.victoryRevealSnapshot;
+      return {
+        bluffs: snap ? snap.bluffs || [] : [],
+        fabled: snap ? snap.fabled || [] : []
+      };
     }
   },
   data() {
@@ -104,22 +153,37 @@ export default {
       revealIdx: 0,
       revealedTrueIndices: [],
       trueRevealOrder: [],
-      trueRevealIdx: 0
+      trueRevealIdx: 0,
+      extrasVisible: false,
+      finalPairIndices: [],
+      finalPairShaking: false,
+      finalPairRevealed: false
     };
   },
   created() {
     this.phase1Timer = null;
     this.phase2Interval = null;
     this.trueRevealInterval = null;
+    this.bluffsTimer = null;
+    this.finalShakeTimer = null;
+    this.finalRevealTimer = null;
   },
   beforeDestroy() {
     clearTimeout(this.phase1Timer);
     clearInterval(this.phase2Interval);
     clearInterval(this.trueRevealInterval);
+    clearTimeout(this.bluffsTimer);
+    clearTimeout(this.finalShakeTimer);
+    clearTimeout(this.finalRevealTimer);
   },
   watch: {
     allRevealed(val) {
-      if (val) this.startTrueReveal();
+      if (!val) return;
+      if (this.finalPairIndices.length) {
+        this.triggerFinalPair();
+      } else {
+        this.startTrueReveal();
+      }
     },
     "session.revealCount"(val) {
       if (val > 0) this.startReveal();
@@ -134,10 +198,12 @@ export default {
         .map((p, i) => (p.trueRole ? i : -1))
         .filter(i => i !== -1)
         .sort(() => Math.random() - 0.5);
-      if (!personaIndices.length) return;
+      if (!personaIndices.length) {
+        this.scheduleExtras();
+        return;
+      }
       this.trueRevealOrder = personaIndices;
       this.trueRevealIdx = 0;
-      const TRUE_REVEAL_INTERVAL_MS = 450;
       this.trueRevealInterval = setInterval(() => {
         if (this.trueRevealIdx < this.trueRevealOrder.length) {
           this.revealedTrueIndices = [
@@ -147,42 +213,76 @@ export default {
           this.trueRevealIdx++;
         } else {
           clearInterval(this.trueRevealInterval);
+          this.scheduleExtras();
         }
       }, TRUE_REVEAL_INTERVAL_MS);
+    },
+    scheduleExtras() {
+      if (
+        !this.snapshotExtras.bluffs.length &&
+        !this.snapshotExtras.fabled.length
+      )
+        return;
+      clearTimeout(this.bluffsTimer);
+      this.bluffsTimer = setTimeout(() => {
+        this.extrasVisible = true;
+      }, EXTRAS_DELAY_MS);
+    },
+    triggerFinalPair() {
+      if (!this.finalPairIndices.length) return;
+      clearTimeout(this.finalShakeTimer);
+      clearTimeout(this.finalRevealTimer);
+      // Dramatic pause → shake → simultaneous reveal.
+      // True reveal (persona tokens) and extras run AFTER the final pair pops.
+      this.finalShakeTimer = setTimeout(() => {
+        this.finalPairShaking = true;
+        this.finalRevealTimer = setTimeout(() => {
+          this.finalPairShaking = false;
+          this.finalPairRevealed = true;
+          this.startTrueReveal();
+        }, FINAL_PAIR_SHAKE_MS);
+      }, FINAL_PAIR_PAUSE_MS);
     },
     startReveal() {
       this.dismissed = false;
       clearTimeout(this.phase1Timer);
       clearInterval(this.phase2Interval);
       clearInterval(this.trueRevealInterval);
+      clearTimeout(this.bluffsTimer);
+      clearTimeout(this.finalShakeTimer);
+      clearTimeout(this.finalRevealTimer);
       this.revealedIndices = [];
       this.revealIdx = 0;
       this.revealedTrueIndices = [];
       this.trueRevealOrder = [];
       this.trueRevealIdx = 0;
+      this.extrasVisible = false;
       const n = this.snapshotPlayers.length;
+      // Read Final 3 state from snapshot
+      const snap = this.session.victoryRevealSnapshot;
+      const snapFinalPair = snap && snap.finalThree ? snap.finalPair || [] : [];
+      this.finalPairIndices = snapFinalPair;
+      this.finalPairShaking = false;
+      this.finalPairRevealed = false;
       // Use the ST-generated order from the snapshot so all clients reveal
       // in the same sequence. Fall back to local generation if unavailable.
-      const snapshotOrder =
-        this.session.victoryRevealSnapshot &&
-        this.session.victoryRevealSnapshot.revealOrder;
-      if (snapshotOrder && snapshotOrder.length === n) {
+      // When Final 3 is active, revealOrder covers only the n-2 non-pair players.
+      const snapshotOrder = snap && snap.revealOrder;
+      const expectedLen = n - snapFinalPair.length;
+      if (snapshotOrder && snapshotOrder.length === expectedLen) {
         this.revealOrder = [...snapshotOrder];
       } else {
-        this.revealOrder = Array.from({ length: n }, (_, i) => i).sort(
-          () => Math.random() - 0.5
-        );
-        const featuredPos = alignment => {
-          const living = this.revealOrder.findIndex(
+        // Local fallback — generate order excluding final pair (alive-only tail reps,
+        // matching the Rule 2 logic used by buildRevealOrder in VictoryModal).
+        this.revealOrder = Array.from({ length: n }, (_, i) => i)
+          .filter(i => !snapFinalPair.includes(i))
+          .sort(() => Math.random() - 0.5);
+        const featuredPos = alignment =>
+          this.revealOrder.findIndex(
             i =>
               !this.snapshotPlayers[i].isDead &&
               this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
           );
-          if (living !== -1) return living;
-          return this.revealOrder.findIndex(
-            i => this.effectiveAlignment(this.snapshotPlayers[i]) === alignment
-          );
-        };
         const goodPos = featuredPos("good");
         const evilPos = featuredPos("evil");
         const candidates = [
@@ -204,8 +304,7 @@ export default {
         }
       }
 
-      const MAIN_REVEAL_INTERVAL_MS = 650;
-      // Phase 1 — blank for 1s
+      // Phase 1 — blank pause
       this.phase1Timer = setTimeout(() => {
         // Phase 2 — reveal one token per interval in reveal order
         this.phase2Interval = setInterval(() => {
@@ -219,31 +318,31 @@ export default {
             clearInterval(this.phase2Interval);
           }
         }, MAIN_REVEAL_INTERVAL_MS);
-      }, 1000);
+      }, PHASE1_DELAY_MS);
     },
     dismiss() {
       this.dismissed = true;
       clearTimeout(this.phase1Timer);
       clearInterval(this.phase2Interval);
       clearInterval(this.trueRevealInterval);
+      clearTimeout(this.bluffsTimer);
+      clearTimeout(this.finalShakeTimer);
+      clearTimeout(this.finalRevealTimer);
       // ST clears reveal from Vuex so new joiners don't inherit a stale reveal state
       if (!this.session.isSpectator) {
         this.$store.commit("session/clearVictoryReveal");
       }
     },
     isRevealed(i) {
-      return this.revealedIndices.includes(i);
+      return (
+        this.revealedIndices.includes(i) ||
+        (this.finalPairRevealed && this.finalPairIndices.includes(i))
+      );
     },
     isWinner(i) {
       return this.snapshotWinners.includes(i);
     },
-    effectiveAlignment(player) {
-      if (player.alignment) return player.alignment;
-      if (!player.role || !player.role.team) return null;
-      if (["townsfolk", "outsider"].includes(player.role.team)) return "good";
-      if (["minion", "demon"].includes(player.role.team)) return "evil";
-      return null;
-    },
+    effectiveAlignment,
     trueAlignment(player) {
       if (!player.trueRole) return null;
       if (player.trueRole.alignment) return player.trueRole.alignment;
@@ -470,12 +569,22 @@ export default {
   animation: token-pop 300ms cubic-bezier(0.2, 0.8, 0.3, 1.3) both;
 }
 
-.reveal-player.winner .reveal-token-wrap .token {
-  animation: winner-glow-pulse 2.5s ease-in-out infinite;
+.reveal-player.revealed.evil-reveal .reveal-token-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 80, 80, 0.95);
+  pointer-events: none;
+  z-index: 10;
+  animation: shockwave-ring 0.7s ease-out both;
 }
 
-.reveal-player.winner .reveal-token-wrap .true-token-wrap .token {
-  animation: none;
+.reveal-player.winner .reveal-token-wrap > .token {
+  animation: winner-glow-pulse 2.5s ease-in-out infinite;
 }
 
 // Phase 1: unrevealed token appears as a dimmed bare token disc
@@ -606,6 +715,141 @@ export default {
     opacity: 0;
     transform: translate(-50%, -50%) rotate(var(--angle))
       translateY(calc(-1 * var(--distance)));
+  }
+}
+
+.fabled-section,
+.bluffs-section {
+  position: absolute;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  border: 3px solid black;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+  z-index: 5;
+  animation: name-appear 300ms ease both;
+
+  h3 {
+    margin: 5px 1vh 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: normal;
+    letter-spacing: 0.05em;
+  }
+
+  ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 4px 6px 6px;
+    li {
+      width: 10vh;
+      height: 10vh;
+      margin: 0 0.5%;
+      display: inline-block;
+      opacity: 0;
+      animation: bluff-appear 600ms ease-in-out both;
+
+      .token {
+        height: 100%;
+        cursor: default;
+      }
+    }
+  }
+}
+
+.fabled-section {
+  top: 10px;
+}
+
+.bluffs-section {
+  bottom: 10px;
+}
+
+@keyframes bluff-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Final 3 animations ────────────────────────────────────────
+
+.reveal-player.final-pair-shaking .reveal-token-wrap {
+  animation: final-pair-shake 0.09s ease-in-out infinite !important;
+}
+
+@keyframes final-pair-shake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-5px) rotate(-2.5deg);
+  }
+  75% {
+    transform: translateX(5px) rotate(2.5deg);
+  }
+}
+
+// Shockwave ring expands outward on simultaneous reveal (Option D)
+.reveal-player.final-pair-revealed .reveal-token-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+  animation: shockwave-ring 0.7s ease-out both;
+}
+
+.good .reveal-player.final-pair-revealed .reveal-token-wrap::before {
+  border: 3px solid rgba(100, 180, 255, 0.95);
+}
+
+.evil .reveal-player.final-pair-revealed .reveal-token-wrap::before {
+  border: 3px solid rgba(255, 80, 80, 0.95);
+}
+
+@keyframes shockwave-ring {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+// Winner glow: one-shot burst that fades to the dim baseline, then the steady
+// pulse takes over seamlessly. The burst ends at the same value that
+// winner-glow-pulse starts at (0%/100%), so there is no seam on the handoff.
+.reveal-player.final-pair-revealed.winner .reveal-token-wrap > .token {
+  animation: winner-glow-burst 1s ease-out forwards,
+    winner-glow-pulse 2.5s ease-in-out 1s infinite !important;
+}
+
+@keyframes winner-glow-burst {
+  0% {
+    box-shadow: 0 0 40px 18px rgba(255, 215, 0, 1),
+      0 0 100px rgba(255, 200, 0, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 12px 3px rgba(255, 215, 0, 0.4),
+      0 0 28px rgba(255, 200, 0, 0.2);
   }
 }
 </style>

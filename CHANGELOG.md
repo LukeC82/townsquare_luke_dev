@@ -3,6 +3,14 @@
 - Add a set of emotes that come from a players seated position
 -- probably disable emotes during an active votes/other important activites
 
+### Version 3.0.2
+- Added Fabled & Bluffs to the Victory reveal screen.
+- Minor fix to the point vote sync feature.
+- Revised reveal logic and add cliff-hanger paired reveal.
+- Added dramatic pair-reveals when applicable.
+- Added a visual affect when Evil players are revealed.
+- Added some tools to quickly start a dev session.
+
 ### Version 3.0.1
 - Added reveal for the true character tokens, such as Drunk, Marionette, etc.
 - Removed the Exit Presentation button and other minor fixes.

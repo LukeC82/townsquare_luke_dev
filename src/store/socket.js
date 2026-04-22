@@ -1192,14 +1192,13 @@ export default store => {
         break;
       case "session/setPointVoteActive":
         session.setPointVoteActive();
+        clearInterval(session._pointVoteSyncTimer);
+        session._pointVoteSyncTimer = null;
         if (store.state.session.pointVoteActive) {
           session._pointVoteSyncTimer = setInterval(
             () => session.syncPointVotes(),
-            3000
+            2000
           );
-        } else {
-          clearInterval(session._pointVoteSyncTimer);
-          session._pointVoteSyncTimer = null;
         }
         break;
       case "session/castPointVoteSync":
