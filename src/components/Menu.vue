@@ -400,6 +400,7 @@ export default {
           if (confirm("Are you sure you want to un-hide voting?")) {
             this.$store.commit("session/toggleHiddenVoting");
             this.$store.commit("session/toggleNight");
+            this.$store.commit("session/addNightSeparator");
             this.$store.commit("session/setMarkedPlayer", -1);
             this.players.forEach(player => {
               this.$store.commit("players/update", {
@@ -413,6 +414,7 @@ export default {
       } else {
         this.$store.commit("session/toggleNight");
         if (this.session.isNight) {
+          this.$store.commit("session/addNightSeparator");
           this.$store.commit("session/setMarkedPlayer", -1);
           this.players.forEach(player => {
             this.$store.commit("players/update", {

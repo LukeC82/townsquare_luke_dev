@@ -886,7 +886,7 @@ export default {
 .player .overlay svg {
   position: absolute;
   filter: drop-shadow(0 0 3px black);
-  z-index: 2;
+  z-index: 5;
   cursor: pointer;
   &.swap,
   &.move,

@@ -45,12 +45,12 @@ export default {
       // ── Audio config per team — adjust these to taste ──────────────
       audioConfig: {
         good: {
-          volume: 0.08, // 0.0 (silent) → 1.0 (full)
+          volume: 0.085, // 0.0 (silent) → 1.0 (full)
           startTime: 1.6, // seconds into the track to begin playback
           duration: 10000 // ms to play before auto-stopping (null = play to end)
         },
         evil: {
-          volume: 0.08,
+          volume: 0.085,
           startTime: 0.5,
           duration: 10000
         }

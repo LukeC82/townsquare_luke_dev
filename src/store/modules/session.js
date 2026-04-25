@@ -156,6 +156,12 @@ const mutations = {
       votes
     });
   },
+  addNightSeparator(state) {
+    if (!canRecord(state)) return;
+    const last = state.voteHistory[state.voteHistory.length - 1];
+    if (last && last.type === "night") return;
+    state.voteHistory.push({ type: "night" });
+  },
   clearVoteHistory(state) {
     state.voteHistory = [];
   },

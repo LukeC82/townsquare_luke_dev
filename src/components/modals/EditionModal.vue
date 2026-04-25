@@ -95,6 +95,10 @@ export default {
       isCustom: false,
       scripts: [
         [
+          "Trouble with Violets",
+          "https://gist.githubusercontent.com/LukeC82/6b3591278b5f97b4a0d31822c7fc8b53/raw/1edabb8171e49fdf69148f082e864d13ae6a1bf0/trouble_with_violets.json"
+        ],
+        [
           "House of Madness",
           "https://gist.githubusercontent.com/LukeC82/72a23aa50dcb035ad251b4c8e4dd3ad4/raw/d48c2c65b03455f1872cc221fe66406926f4e16f/House_of_Madness_v1.json"
         ],
@@ -103,11 +107,11 @@ export default {
           "https://gist.githubusercontent.com/LukeC82/bbd4324a334e38bf2a78dfd5c36bedc4/raw/89c8189a883727c91ac1d644ac9944cb02b382b8/Lunar_Eclipse_v1.6.json"
         ],
         [
-          "Brainworms v2",
+          "Brainworms v2.0",
           "https://gist.githubusercontent.com/LukeC82/24a9b4af13f0e8b82dccb84b0a6f46c7/raw/57274f87c9d554ff76aeaab48f195abe0ef1ee99/Brain_Worms_v2.json"
         ],
         [
-          "Hide & Seek v1",
+          "Hide & Seek",
           "https://gist.githubusercontent.com/LukeC82/64cb5ee4fb0efb4d1baf75964a477743/raw/453b456d004fe9d8463c39177c41c9c20ce897e7/Hide_&_Seek_v1.json"
         ],
         [
@@ -115,12 +119,8 @@ export default {
           "https://gist.githubusercontent.com/LukeC82/0bee5191ee630d773007f0848320786e/raw/2e22f0f3d583a19c7b6222d5b964a2ae68064e78/Harold_Holts_Revenge.json"
         ],
         [
-          "Murder by Death v1",
+          "Murder by Death",
           "https://gist.githubusercontent.com/LukeC82/04789e52b4055d1dc07275bb81a1311c/raw/53a50a39bac097f2005fb264cfa19fe5cc856292/Murder_by_Death_v1.json"
-        ],
-        [
-          "Vigormortis High School (Teensyville)",
-          "https://gist.githubusercontent.com/bra1n/1f65bd4a999524719d5dabe98c3c2d27/raw/22bbec6bf56a51a7459e5ae41ed47e41971c5445/VigormortisHighSchool.json"
         ]
       ]
     };
