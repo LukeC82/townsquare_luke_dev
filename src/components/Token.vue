@@ -66,6 +66,7 @@ export default {
       return (
         (this.role.reminders || []).length +
         (this.role.remindersGlobal || []).length +
+        (this.role.remindersPersona || []).length +
         (this.role.remindersPersonaGlobal || []).length
       );
     },
