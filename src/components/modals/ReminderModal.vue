@@ -61,10 +61,16 @@ export default {
         // add reminders from player roles
         if (players.some(p => p.role.id === role.id)) {
           reminders = [...reminders, ...role.reminders.map(mapReminder(role))];
+          if (role.remindersPersona && role.remindersPersona.length) {
+            reminders = [...reminders, ...role.remindersPersona.map(mapReminder(role))];
+          }
         }
         // add reminders from bluff/other roles
         else if (bluffs.some(bluff => bluff.id === role.id)) {
           reminders = [...reminders, ...role.reminders.map(mapReminder(role))];
+          if (role.remindersPersona && role.remindersPersona.length) {
+            reminders = [...reminders, ...role.remindersPersona.map(mapReminder(role))];
+          }
         }
         // add global reminders
         if (role.remindersGlobal && role.remindersGlobal.length) {

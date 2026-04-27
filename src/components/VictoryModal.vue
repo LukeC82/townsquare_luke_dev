@@ -183,8 +183,10 @@ export default {
           this.$store.getters.rolesJSONbyId.get(r.role);
         if (
           rd &&
-          Array.isArray(rd.remindersPersonaGlobal) &&
-          rd.remindersPersonaGlobal.includes(r.name)
+          (
+            (Array.isArray(rd.remindersPersonaGlobal) && rd.remindersPersonaGlobal.includes(r.name)) ||
+            (Array.isArray(rd.remindersPersona) && rd.remindersPersona.includes(r.name))
+          )
         ) {
           roleData = rd;
           return true;
@@ -197,7 +199,14 @@ export default {
       else if (["minion", "demon"].includes(roleData.team)) alignment = "evil";
       if (match.name.startsWith("GOOD ")) alignment = "good";
       else if (match.name.startsWith("EVIL ")) alignment = "evil";
-      return { ...this._serializeRole(roleData), alignment };
+      const serialized = this._serializeRole(roleData);
+      // Evil Twin: the "Twin" persona is placed on the good player — show "Twin" and
+      // reflect that player's own alignment rather than the Evil Twin's minion team.
+      if (roleData.id === "eviltwin") {
+        serialized.name = match.name;
+        alignment = this.effectiveAlignment(player);
+      }
+      return { ...serialized, alignment };
     },
     // ─────────────────────────────────────────────────────────────────────────
     // buildRevealOrder

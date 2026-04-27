@@ -547,6 +547,8 @@ video#background {
   justify-content: center;
   width: 100%;
   height: 100%;
+  z-index: 30;
+  pointer-events: none;
   transition: opacity 1s ease-in-out;
   background: url("assets/returntotown.png") center center no-repeat;
   opacity: 0;

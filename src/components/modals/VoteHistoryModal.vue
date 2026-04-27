@@ -47,40 +47,48 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(vote, index) in session.voteHistory" :key="index">
-          <td>
-            {{
-              vote.timestamp
-                .getHours()
-                .toString()
-                .padStart(2, "0")
-            }}:{{
-              vote.timestamp
-                .getMinutes()
-                .toString()
-                .padStart(2, "0")
-            }}
-          </td>
-          <td>{{ vote.nominator }}</td>
-          <td>{{ vote.nominee }}</td>
-          <td>{{ vote.type }}</td>
-          <td>
-            {{ vote.votes.length }}
-            <font-awesome-icon icon="hand-paper" />
-          </td>
-          <td>
-            {{ vote.majority }}
-            <font-awesome-icon
-              :icon="[
-                'fas',
-                vote.votes.length >= vote.majority ? 'check-square' : 'square'
-              ]"
-            />
-          </td>
-          <td>
-            {{ vote.votes.join(", ") }}
-          </td>
-        </tr>
+        <template v-for="(vote, index) in session.voteHistory">
+          <tr v-if="vote.type === 'night'" :key="index" class="night-separator">
+            <td colspan="7">
+              <font-awesome-icon icon="moon" />
+              Night
+            </td>
+          </tr>
+          <tr v-else :key="'v' + index">
+            <td>
+              {{
+                vote.timestamp
+                  .getHours()
+                  .toString()
+                  .padStart(2, "0")
+              }}:{{
+                vote.timestamp
+                  .getMinutes()
+                  .toString()
+                  .padStart(2, "0")
+              }}
+            </td>
+            <td>{{ vote.nominator }}</td>
+            <td>{{ vote.nominee }}</td>
+            <td>{{ vote.type }}</td>
+            <td>
+              {{ vote.votes.length }}
+              <font-awesome-icon icon="hand-paper" />
+            </td>
+            <td>
+              {{ vote.majority }}
+              <font-awesome-icon
+                :icon="[
+                  'fas',
+                  vote.votes.length >= vote.majority ? 'check-square' : 'square'
+                ]"
+              />
+            </td>
+            <td>
+              {{ vote.votes.join(", ") }}
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </Modal>
@@ -180,6 +188,19 @@ tbody {
   }
   td:nth-child(6) {
     text-align: center;
+  }
+}
+
+tr.night-separator td {
+  text-align: center;
+  padding: 4px 0;
+  color: #aac4ff;
+  font-style: italic;
+  border-top: 1px solid rgba(150, 180, 255, 0.3);
+  border-bottom: 1px solid rgba(150, 180, 255, 0.3);
+  svg {
+    margin-right: 6px;
+    vertical-align: middle;
   }
 }
 </style>
